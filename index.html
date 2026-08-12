@@ -131,7 +131,6 @@
         <div class="booking-container">
             <div class="booking-widget">
                 <h2>BOOK <span>A RIDE</span></h2>
-                <!-- FORM 1: INITIAL BOOKING REQUEST -->
                 <form name="hkj-bookings" method="POST" data-netlify="true" netlify-honeypot="bot-field" onsubmit="return handleBooking(event)">
                     <input type="hidden" name="form-name" value="hkj-bookings">
                     <input type="hidden" name="bot-field">
@@ -143,7 +142,6 @@
                         <div class="form-group"><label>WhatsApp Number *</label><input type="tel" name="clientPhone" id="clientPhone" placeholder="868-XXX-XXXX" required></div>
                     </div>
                     
-                    <!-- SIMPLIFIED PICKUP LOCATION -->
                     <div class="location-method">
                         <h4><i class="fas fa-map-marker-alt" style="color: #0066CC;"></i> Pickup Location *</h4>
                         <div class="method-content">
@@ -173,7 +171,6 @@
                         </div>
                     </div>
 
-                    <!-- SIMPLIFIED DROP-OFF LOCATION -->
                     <div class="location-method">
                         <h4><i class="fas fa-location-arrow" style="color: #0066CC;"></i> Drop-off Location *</h4>
                         <div class="method-content">
@@ -225,14 +222,12 @@
         </div>
     </section>
 
-    <!-- CONFIRM BOOKING SECTION (AUTO-FILL NAME) -->
     <section class="booking" id="confirm" style="background: #f0fff4;">
         <div class="booking-container">
             <div class="booking-widget" style="border-top: 5px solid #25D366;">
                 <h2 style="color: #25D366;"><i class="fas fa-lock"></i> FAST LOCK-IN</h2>
                 <p style="text-align: center; color: #555; margin-bottom: 2rem;">Have your Reference Code? Enter it below to lock in your booking instantly.</p>
                 
-                <!-- FORM 2: SIMPLE LOCK IN -->
                 <form name="hkj-confirm" method="POST" data-netlify="true" onsubmit="return lockInBooking(event)">
                     <input type="hidden" name="form-name" value="hkj-confirm">
                     
@@ -271,7 +266,6 @@
 
     <footer class="footer-contact" id="contact"><div class="footer-container"><div class="footer-item"><div class="footer-icon"><i class="fas fa-map-marker-alt"></i></div><div class="footer-details"><h4>OUR LOCATION</h4><p>Chaguanas, Trinidad</p><div class="sub">Proudly serving all areas</div></div></div><div class="footer-item"><div class="footer-icon"><i class="fas fa-phone"></i></div><div class="footer-details"><h4>CALL US</h4><p>+1 (868) 780-0300</p><div class="sub">24/7 Service</div></div></div><div class="footer-item"><div class="footer-icon"><i class="fab fa-whatsapp"></i></div><div class="footer-details"><h4>WHATSAPP</h4><p>+1 (868) 780-0300</p><div class="sub">Chat with us anytime</div></div></div><div class="footer-item"><div class="footer-icon"><i class="fas fa-envelope"></i></div><div class="footer-details"><h4>EMAIL US</h4><p>hkjlogisticsltd@gmail.com</p><div class="sub">We'll respond quickly</div></div></div><div class="footer-item"><div class="footer-icon"><i class="fas fa-shield-alt"></i></div><div class="footer-details"><h4>SAFE & SECURE</h4><p>Your safety is</p><div class="sub">our top priority</div></div></div></div></footer>
 
-    <!-- CUSTOM RED POPUP -->
     <div id="successPopup" class="popup-overlay">
         <div class="popup-box">
             <h3><i class="fas fa-check-circle"></i> REQUEST SENT!</h3>
@@ -306,7 +300,6 @@
         function getBaseFare(timeStr) { if (!timeStr) return 30.00; const [hours, minutes] = timeStr.split(':').map(Number); const totalMinutes = (hours * 60) + minutes; if (totalMinutes >= 22 * 60 || totalMinutes < 6 * 60) { return 50.00; } if ((totalMinutes >= 7 * 60 && totalMinutes < 9 * 60) || (totalMinutes >= 16 * 60 && totalMinutes < 19 * 60)) { return 40.00; } return 30.00; }
         function getTimeNote(timeStr) { if (!timeStr) return ""; const [hours, minutes] = timeStr.split(':').map(Number); const totalMinutes = (hours * 60) + minutes; if (totalMinutes >= 22 * 60 || totalMinutes < 6 * 60) { return `<div class="airport-note" style="color:#DC2626;"><i class="fas fa-moon"></i> Late Night/Early Morning Rate Applied (10PM - 6AM)</div>`; } if ((totalMinutes >= 7 * 60 && totalMinutes < 9 * 60) || (totalMinutes >= 16 * 60 && totalMinutes < 19 * 60)) { return `<div class="airport-note" style="color:#D97706;"><i class="fas fa-clock"></i> Peak Hour Rate Applied (7-9AM & 4-7PM)</div>`; } return `<div class="airport-note"><i class="fas fa-sun"></i> Standard Daytime Rate Applied</div>`; }
         
-        // DIRECT HUB-TO-HUB CALCULATOR (NO MORE 10KM BUG)
         function calculateFare() { 
             const pickup = getActiveLocation('pickup'); 
             const dropoff = getActiveLocation('dropoff'); 
@@ -327,10 +320,10 @@
             const pickupHub = detectLocation(pickup); 
             const dropoffHub = detectLocation(dropoff); 
             
-            let distanceKm = 15; // Default safe distance
+            let distanceKm = 15;
             if (pickupHub && dropoffHub) { 
                 distanceKm = hubDistances[pickupHub][dropoffHub] || 15; 
-                if (pickupHub === dropoffHub) distanceKm = 5; // Same area minimum
+                if (pickupHub === dropoffHub) distanceKm = 5;
             } 
             
             displayFare(distanceKm, waitHours, origin, destination, time); 
@@ -362,10 +355,8 @@
             document.getElementById('fareDisplay').innerHTML = html; 
         }
         
-        // GENERATE UNIQUE REFERENCE CODE
         function generateReferenceCode() { return 'HKJ-' + Math.floor(1000 + Math.random() * 9000); }
 
-        // GOOGLE CALENDAR GENERATOR
         function generateCalendarLink(name, phone, pickup, dropoff, date, time, price) {
             const dateClean = date.replace(/-/g, '');
             const timeClean = time.replace(/:/g, '') + '00';
@@ -379,21 +370,16 @@
             return `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${title}&dates=${startDT}/${endDT}&details=${details}&location=${location}`;
         }
 
-        // POPUP FUNCTIONS
         function showPopup(code) { document.getElementById('popupCodeDisplay').innerText = code; document.getElementById('successPopup').style.display = 'flex'; }
         function closePopup() { document.getElementById('successPopup').style.display = 'none'; }
 
-        // AUTO-FILL NAME LOGIC
         document.getElementById('lockInCode').addEventListener('input', function() {
             const code = this.value.trim().toUpperCase();
             const nameField = document.getElementById('lockInName');
-            
-            // Check browser memory for this specific code
             const storedName = localStorage.getItem('hkj_booking_' + code);
-            
             if (storedName) {
                 nameField.value = storedName;
-                nameField.style.borderColor = '#25D366'; // Turn border green to show success
+                nameField.style.borderColor = '#25D366';
                 nameField.style.backgroundColor = '#f0fff4';
             } else {
                 nameField.style.borderColor = '#e0e0e0';
@@ -421,9 +407,9 @@
             
             const refCode = generateReferenceCode();
             document.getElementById('hiddenRefCode').value = refCode;
-            document.getElementById('calendarLink').value = generateCalendarLink(name, phone, pickup, dropoff, date, time, currentEstimate);
+            const calLink = generateCalendarLink(name, phone, pickup, dropoff, date, time, currentEstimate);
+            document.getElementById('calendarLink').value = calLink;
             
-            // SAVE TO BROWSER MEMORY FOR AUTO-FILL LATER
             localStorage.setItem('hkj_booking_' + refCode, name);
             
             let waMessage = `*NEW BOOKING REQUEST - HKJ LOGISTICS*\n\n`; 
@@ -432,6 +418,7 @@
             if(notes) waMessage += `*Notes:* ${notes}\n`; 
             if(isCarnival) { waMessage += `\n🎉 *CARNIVAL EVENT BOOKING - $400.00 MINIMUM RATE APPLIES*\n`; }
             waMessage += `\n*Website Estimate:* $${currentEstimate} TTD`; 
+            waMessage += `\n\n📅 *SAVE TO CALENDAR:*\n${calLink}`;
             
             const waUrl = `https://wa.me/18687800300?text=${encodeURIComponent(waMessage)}`; 
             window.open(waUrl, '_blank'); 
