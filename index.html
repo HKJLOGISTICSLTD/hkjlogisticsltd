@@ -273,7 +273,7 @@
 
     <script>
         // PASTE YOUR GOOGLE SCRIPT URL BELOW (from Step 3)
-        const GOOGLE_SHEETS_URL = 'YOUR_GOOGLE_SCRIPT_URL_HERE';
+        const GOOGLE_SHEETS_URL = 'https://script.google.com/macros/s/AKfycbwgfiToWJCu0hxvUgYWB-Naq9vPXLfzvy6o7dBPR_H6wj-0dOZwRDCCQKOoh0sFZJYGzA/exec';
         
         function toggleMenu() { document.getElementById('navMenu').classList.toggle('active'); }
         document.querySelectorAll('a[href^="#"]').forEach(anchor => { anchor.addEventListener('click', function(e) { e.preventDefault(); const target = document.querySelector(this.getAttribute('href')); if (target) window.scrollTo({ top: target.offsetTop - 80, behavior: 'smooth' }); }); });
