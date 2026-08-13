@@ -126,6 +126,8 @@
             <input type="hidden" id="modalRef">
             <input type="hidden" id="modalPhone">
             <input type="hidden" id="modalName">
+            <!-- NEW: Hidden field to store original price for comparison -->
+            <input type="hidden" id="modalOriginalPrice">
             
             <div class="form-group">
                 <label>Final Price (TTD)</label>
@@ -153,11 +155,8 @@
     </div>
 
     <script>
-        // ️ CHANGE THIS PASSWORD TO SOMETHING SECURE
         const ADMIN_PASSWORD = 'hkj5762'; 
-        
-        // Your Google Script URL
-        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxbN56M5aAw7chGTT-1Oons1TU82Pv9aPgiTwUdqWSdoPgA-xU3KNIMS6D0pm_Jgm4X/exec';
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxbN56M5aAw7chGTT-1Oons1TU82Pv9aPgiTwUdqWsdopGA-xU3KNIMS6D0pm_Jgm4X/exec';
 
         let bookingsData = [];
 
@@ -172,9 +171,7 @@
             }
         }
 
-        function logout() {
-            location.reload();
-        }
+        function logout() { location.reload(); }
 
         function loadData() {
             document.getElementById('loadingMsg').style.display = 'block';
@@ -198,12 +195,9 @@
         function renderTable() {
             const tbody = document.getElementById('tableBody');
             tbody.innerHTML = '';
-            
-            // Reverse array to show newest first
             const reversedData = [...bookingsData].reverse();
 
             reversedData.forEach(booking => {
-                // Use the EXACT column names from your Google Sheet
                 const refCode = booking['REF CODE'] || '';
                 const date = booking['DATE'] || '';
                 const time = booking['TIME'] || '';
@@ -236,7 +230,6 @@
             let pending = 0;
 
             bookingsData.forEach(b => {
-                // Use the EXACT column names from your Google Sheet
                 const price = parseFloat(b['FINAL PRICE'] || b['FARES'] || 0);
                 if (!isNaN(price)) totalRevenue += price;
                 if ((b['STATUS'] || 'Pending') === 'Pending') pending++;
@@ -255,7 +248,12 @@
             document.getElementById('modalRefCode').innerText = booking['REF CODE'];
             document.getElementById('modalPhone').value = booking['PHONE'];
             document.getElementById('modalName').value = booking['NAME'];
-            document.getElementById('modalPrice').value = booking['FINAL PRICE'] || booking['FARES'] || 0;
+            
+            // Store original price for comparison later
+            const originalPrice = booking['FINAL PRICE'] || booking['FARES'] || 0;
+            document.getElementById('modalOriginalPrice').value = originalPrice;
+            
+            document.getElementById('modalPrice').value = originalPrice;
             document.getElementById('modalStatus').value = booking['STATUS'] || 'Pending';
             document.getElementById('modalNotes').value = booking['ADMIN NOTES'] || '';
             
@@ -273,6 +271,7 @@
             const finalPrice = document.getElementById('modalPrice').value;
             const status = document.getElementById('modalStatus').value;
             const notes = document.getElementById('modalNotes').value;
+            const originalPrice = document.getElementById('modalOriginalPrice').value;
 
             const updateData = {
                 action: 'update',
@@ -282,7 +281,6 @@
                 adminNotes: notes
             };
 
-            // Save to Google Sheet
             fetch(SCRIPT_URL, {
                 method: 'POST',
                 body: JSON.stringify(updateData)
@@ -292,14 +290,31 @@
                 if (result.result === 'updated') {
                     alert('Booking updated successfully!');
                     closeModal();
-                    loadData(); // Refresh table
+                    loadData(); 
                     
-                    // Open WhatsApp
+                    // --- WhatsApp Logic ---
+                    let messageBody = `Hello ${name}, your HKJ Logistics booking (${refCode}) is now *${status}*.\n\n`;
+                    
+                    if (status !== 'Cancelled') {
+                        messageBody += `Final Price: $${finalPrice} TTD.\n`;
+                        
+                        // Check if price changed
+                        if (parseFloat(finalPrice) !== parseFloat(originalPrice)) {
+                            messageBody += `Price adjusted by admin.\n`;
+                        }
+                        messageBody += `\n`;
+                    }
+
+                    if (notes) {
+                        messageBody += `Note: ${notes}\n\n`;
+                    }
+                    
+                    messageBody += `Thank you for choosing HKJ Logistics!`;
+
                     let cleanPhone = phone.replace(/\D/g, ''); 
-                    if (cleanPhone.length === 10) cleanPhone = '1' + cleanPhone; // Add country code if missing
+                    if (cleanPhone.length === 10) cleanPhone = '1' + cleanPhone; 
                     
-                    const waText = `Hello ${name}, your HKJ Logistics booking (${refCode}) is now *${status}*. \n\nFinal Price: $${finalPrice} TTD.\n\n${notes ? 'Note: ' + notes + '\n\n' : ''}Thank you for choosing HKJ Logistics!`;
-                    const waUrl = `https://wa.me/${cleanPhone}?text=${encodeURIComponent(waText)}`;
+                    const waUrl = `https://wa.me/${cleanPhone}?text=${encodeURIComponent(messageBody)}`;
                     window.open(waUrl, '_blank');
                 } else {
                     alert('Error updating booking: ' + (result.message || 'Unknown error'));
