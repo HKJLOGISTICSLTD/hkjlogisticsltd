@@ -68,7 +68,7 @@
     <!-- Login Screen -->
     <div class="login-overlay" id="loginOverlay">
         <div class="login-box">
-            <h2> HKJ Admin Access</h2>
+            <h2>🔒 HKJ Admin Access</h2>
             <input type="password" id="adminPassword" placeholder="Enter Admin Password">
             <button onclick="checkPassword()">LOGIN</button>
             <p id="loginError" style="color: red; margin-top: 1rem; display: none;">Incorrect password!</p>
@@ -153,11 +153,11 @@
     </div>
 
     <script>
-        // ⚠️ CHANGE THIS PASSWORD TO SOMETHING SECURE
+        // ️ CHANGE THIS PASSWORD TO SOMETHING SECURE
         const ADMIN_PASSWORD = 'hkj5762'; 
         
         // Your Google Script URL
-        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxbN56M5aAw7chGTT-1Oons1TU82Pv9aPgiTwUdqWSdoPgA-xU3KNIMS6D0pm_Jgm4X/exec';
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxbN56M5aAw7chGTT-1Oons1TU82Pv9aPgiTwUdqWsdopGA-xU3KNIMS6D0pm_Jgm4X/exec';
 
         let bookingsData = [];
 
@@ -203,19 +203,28 @@
             const reversedData = [...bookingsData].reverse();
 
             reversedData.forEach(booking => {
-                const status = booking['Status'] || 'Pending';
-                const price = booking['Final Price'] || booking['Fare'] || '0.00';
+                // Use the EXACT column names from your Google Sheet
+                const refCode = booking['REF CODE'] || '';
+                const date = booking['DATE'] || '';
+                const time = booking['TIME'] || '';
+                const name = booking['NAME'] || '';
+                const phone = booking['PHONE'] || '';
+                const pickup = booking['PICK UP'] || '';
+                const dropoff = booking['DROP OFF'] || '';
+                const fare = booking['FARES'] || booking['FINAL PRICE'] || '0.00';
+                const status = booking['STATUS'] || 'Pending';
+                
                 const statusClass = `status-${status.toLowerCase()}`;
                 
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
-                    <td><strong>${booking['Ref Code'] || ''}</strong></td>
-                    <td>${booking['Date'] || ''}<br><small>${booking['Time'] || ''}</small></td>
-                    <td>${booking['Name'] || ''}<br><small>${booking['Phone'] || ''}</small></td>
-                    <td><small>From: ${booking['Pickup'] || ''}</small><br><small>To: ${booking['Dropoff'] || ''}</small></td>
-                    <td><strong>$${price}</strong></td>
+                    <td><strong>${refCode}</strong></td>
+                    <td>${date}<br><small>${time}</small></td>
+                    <td>${name}<br><small>${phone}</small></td>
+                    <td><small>From: ${pickup}</small><br><small>To: ${dropoff}</small></td>
+                    <td><strong>$${fare}</strong></td>
                     <td><span class="status-badge ${statusClass}">${status}</span></td>
-                    <td><button class="btn-action btn-edit" onclick="openEditModal('${booking['Ref Code']}')"><i class="fas fa-edit"></i> Edit</button></td>
+                    <td><button class="btn-action btn-edit" onclick="openEditModal('${refCode}')"><i class="fas fa-edit"></i> Edit</button></td>
                 `;
                 tbody.appendChild(tr);
             });
@@ -227,9 +236,10 @@
             let pending = 0;
 
             bookingsData.forEach(b => {
-                const price = parseFloat(b['Final Price'] || b['Fare'] || 0);
+                // Use the EXACT column names from your Google Sheet
+                const price = parseFloat(b['FINAL PRICE'] || b['FARES'] || 0);
                 if (!isNaN(price)) totalRevenue += price;
-                if ((b['Status'] || 'Pending') === 'Pending') pending++;
+                if ((b['STATUS'] || 'Pending') === 'Pending') pending++;
             });
 
             document.getElementById('totalTrips').innerText = totalTrips;
@@ -238,16 +248,16 @@
         }
 
         function openEditModal(refCode) {
-            const booking = bookingsData.find(b => b['Ref Code'] === refCode);
+            const booking = bookingsData.find(b => b['REF CODE'] === refCode);
             if (!booking) return;
 
-            document.getElementById('modalRef').value = booking['Ref Code'];
-            document.getElementById('modalRefCode').innerText = booking['Ref Code'];
-            document.getElementById('modalPhone').value = booking['Phone'];
-            document.getElementById('modalName').value = booking['Name'];
-            document.getElementById('modalPrice').value = booking['Final Price'] || booking['Fare'] || 0;
-            document.getElementById('modalStatus').value = booking['Status'] || 'Pending';
-            document.getElementById('modalNotes').value = booking['Admin Notes'] || '';
+            document.getElementById('modalRef').value = booking['REF CODE'];
+            document.getElementById('modalRefCode').innerText = booking['REF CODE'];
+            document.getElementById('modalPhone').value = booking['PHONE'];
+            document.getElementById('modalName').value = booking['NAME'];
+            document.getElementById('modalPrice').value = booking['FINAL PRICE'] || booking['FARES'] || 0;
+            document.getElementById('modalStatus').value = booking['STATUS'] || 'Pending';
+            document.getElementById('modalNotes').value = booking['ADMIN NOTES'] || '';
             
             document.getElementById('editModal').style.display = 'flex';
         }
