@@ -122,7 +122,7 @@
     </div>
     <script>
         const ADMIN_PASSWORD = 'hkj5762'; 
-        const SCRIPT_URL = https://script.google.com/macros/s/AKfycbxbN56M5aAw7chGTT-1Oons1TU82Pv9aPgiTwUdqWSdoPgA-xU3KNIMS6D0pm_Jgm4X/exec'';
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxbN56M5aAw7chGTT-1Oons1TU82Pv9aPgiTwUdqWsdopGA-xU3KNIMS6D0pm_Jgm4X/exec';
         let bookingsData = [];
 
         function checkPassword() {
@@ -136,7 +136,9 @@
             }
         }
 
-        function logout() { location.reload(); }
+        function logout() { 
+            location.reload(); 
+        }
 
         function loadData() {
             document.getElementById('loadingMsg').style.display = 'block';
@@ -173,10 +175,9 @@
                 const phone = booking['PHONE'] || '';
                 const pickup = booking['PICK UP'] || '';
                 const dropoff = booking['DROP OFF'] || '';
-                // FIXED: Check FINAL PRICE first, then FARES
                 const fare = booking['FINAL PRICE'] || booking['FARES'] || '0.00';
                 const status = booking['STATUS'] || 'Pending';
-                const statusClass = `status-${status.toLowerCase()}`;
+                const statusClass = 'status-' + status.toLowerCase();
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
                     <td><strong>${refCode}</strong></td>
@@ -196,7 +197,6 @@
             let totalRevenue = 0;
             let pending = 0;
             bookingsData.forEach(b => {
-                // FIXED: Check FINAL PRICE first
                 const price = parseFloat(b['FINAL PRICE'] || b['FARES'] || 0);
                 if (!isNaN(price)) totalRevenue += price;
                 if ((b['STATUS'] || 'Pending') === 'Pending') pending++;
@@ -213,7 +213,6 @@
             document.getElementById('modalRefCode').innerText = booking['REF CODE'];
             document.getElementById('modalPhone').value = booking['PHONE'];
             document.getElementById('modalName').value = booking['NAME'];
-            // FIXED: Check FINAL PRICE first
             const originalPrice = booking['FINAL PRICE'] || booking['FARES'] || 0;
             document.getElementById('modalOriginalPrice').value = originalPrice;
             document.getElementById('modalPrice').value = parseFloat(originalPrice).toFixed(2);
@@ -253,18 +252,18 @@
                     loadData();
                     closeModal();
                     setTimeout(() => {
-                        let messageBody = `Hello ${name}, your HKJ Logistics booking (${refCode}) is now *${status}*.\n\n`;
+                        let messageBody = 'Hello ' + name + ', your HKJ Logistics booking (' + refCode + ') is now *' + status + '*.\n\n';
                         if (status !== 'Cancelled') {
-                            messageBody += `Final Price: ${formatPrice(finalPrice)}\n`;
+                            messageBody += 'Final Price: ' + formatPrice(finalPrice) + '\n';
                             if (parseFloat(finalPrice) !== parseFloat(originalPrice)) {
-                                messageBody += `Price adjusted by admin.\n`;
+                                messageBody += 'Price adjusted by admin.\n';
                             }
-                            messageBody += `\n`;
+                            messageBody += '\n';
                         }
                         if (notes) {
-                            messageBody += `Note: ${notes}\n\n`;
+                            messageBody += 'Note: ' + notes + '\n\n';
                         }
-                        messageBody += `Thank you for choosing HKJ Logistics!`;
+                        messageBody += 'Thank you for choosing HKJ Logistics!';
                         let cleanPhone = phone.replace(/\D/g, '');
                         if (cleanPhone.startsWith('1868')) {
                             // Already has country code
@@ -275,7 +274,7 @@
                         } else if (cleanPhone.length === 10) {
                             cleanPhone = '1' + cleanPhone;
                         }
-                        const waUrl = `https://wa.me/${cleanPhone}?text=${encodeURIComponent(messageBody)}`;
+                        const waUrl = 'https://wa.me/' + cleanPhone + '?text=' + encodeURIComponent(messageBody);
                         window.open(waUrl, '_blank');
                     }, 500);
                     alert('Booking updated successfully!');
