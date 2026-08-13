@@ -126,7 +126,6 @@
             <input type="hidden" id="modalRef">
             <input type="hidden" id="modalPhone">
             <input type="hidden" id="modalName">
-            <!-- NEW: Hidden field to store original price for comparison -->
             <input type="hidden" id="modalOriginalPrice">
             
             <div class="form-group">
@@ -156,7 +155,7 @@
 
     <script>
         const ADMIN_PASSWORD = 'hkj5762'; 
-        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxbN56M5aAw7chGTT-1Oons1TU82Pv9aPgiTwUdqWSdoPgA-xU3KNIMS6D0pm_Jgm4X/exec';
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxbN56M5aAw7chGTT-1Oons1TU82Pv9aPgiTwUdqWsdopGA-xU3KNIMS6D0pm_Jgm4X/exec';
 
         let bookingsData = [];
 
@@ -192,6 +191,11 @@
                 });
         }
 
+        function formatPrice(price) {
+            const num = parseFloat(price) || 0;
+            return '$' + num.toFixed(2);
+        }
+
         function renderTable() {
             const tbody = document.getElementById('tableBody');
             tbody.innerHTML = '';
@@ -216,7 +220,7 @@
                     <td>${date}<br><small>${time}</small></td>
                     <td>${name}<br><small>${phone}</small></td>
                     <td><small>From: ${pickup}</small><br><small>To: ${dropoff}</small></td>
-                    <td><strong>$${fare}</strong></td>
+                    <td><strong>${formatPrice(fare)}</strong></td>
                     <td><span class="status-badge ${statusClass}">${status}</span></td>
                     <td><button class="btn-action btn-edit" onclick="openEditModal('${refCode}')"><i class="fas fa-edit"></i> Edit</button></td>
                 `;
@@ -236,7 +240,7 @@
             });
 
             document.getElementById('totalTrips').innerText = totalTrips;
-            document.getElementById('totalRevenue').innerText = '$' + totalRevenue.toFixed(2);
+            document.getElementById('totalRevenue').innerText = formatPrice(totalRevenue);
             document.getElementById('pendingTrips').innerText = pending;
         }
 
@@ -249,11 +253,10 @@
             document.getElementById('modalPhone').value = booking['PHONE'];
             document.getElementById('modalName').value = booking['NAME'];
             
-            // Store original price for comparison later
             const originalPrice = booking['FINAL PRICE'] || booking['FARES'] || 0;
             document.getElementById('modalOriginalPrice').value = originalPrice;
+            document.getElementById('modalPrice').value = parseFloat(originalPrice).toFixed(2);
             
-            document.getElementById('modalPrice').value = originalPrice;
             document.getElementById('modalStatus').value = booking['STATUS'] || 'Pending';
             document.getElementById('modalNotes').value = booking['ADMIN NOTES'] || '';
             
@@ -288,34 +291,51 @@
             .then(res => res.json())
             .then(result => {
                 if (result.result === 'updated') {
-                    alert('Booking updated successfully!');
+                    // Refresh data immediately
+                    loadData();
                     closeModal();
-                    loadData(); 
                     
-                    // --- WhatsApp Logic ---
-                    let messageBody = `Hello ${name}, your HKJ Logistics booking (${refCode}) is now *${status}*.\n\n`;
-                    
-                    if (status !== 'Cancelled') {
-                        messageBody += `Final Price: $${finalPrice} TTD.\n`;
+                    // Small delay to ensure data is saved before opening WhatsApp
+                    setTimeout(() => {
+                        // Build WhatsApp message
+                        let messageBody = `Hello ${name}, your HKJ Logistics booking (${refCode}) is now *${status}*.\n\n`;
                         
-                        // Check if price changed
-                        if (parseFloat(finalPrice) !== parseFloat(originalPrice)) {
-                            messageBody += `Price adjusted by admin.\n`;
+                        if (status !== 'Cancelled') {
+                            messageBody += `Final Price: ${formatPrice(finalPrice)}\n`;
+                            
+                            // Check if price changed
+                            if (parseFloat(finalPrice) !== parseFloat(originalPrice)) {
+                                messageBody += `Price adjusted by admin.\n`;
+                            }
+                            messageBody += `\n`;
                         }
-                        messageBody += `\n`;
-                    }
 
-                    if (notes) {
-                        messageBody += `Note: ${notes}\n\n`;
-                    }
-                    
-                    messageBody += `Thank you for choosing HKJ Logistics!`;
+                        if (notes) {
+                            messageBody += `Note: ${notes}\n\n`;
+                        }
+                        
+                        messageBody += `Thank you for choosing HKJ Logistics!`;
 
-                    let cleanPhone = phone.replace(/\D/g, ''); 
-                    if (cleanPhone.length === 10) cleanPhone = '1' + cleanPhone; 
+                        // Clean and format phone number for WhatsApp
+                        let cleanPhone = phone.replace(/\D/g, '');
+                        
+                        // Handle Trinidad & Tobago numbers (1868...)
+                        if (cleanPhone.startsWith('1868')) {
+                            // Already has country code
+                        } else if (cleanPhone.length === 10 && cleanPhone.startsWith('868')) {
+                            cleanPhone = '1' + cleanPhone;
+                        } else if (cleanPhone.length === 7) {
+                            // Just local number, add 1868
+                            cleanPhone = '1868' + cleanPhone;
+                        } else if (cleanPhone.length === 10) {
+                            cleanPhone = '1' + cleanPhone;
+                        }
+                        
+                        const waUrl = `https://wa.me/${cleanPhone}?text=${encodeURIComponent(messageBody)}`;
+                        window.open(waUrl, '_blank');
+                    }, 500);
                     
-                    const waUrl = `https://wa.me/${cleanPhone}?text=${encodeURIComponent(messageBody)}`;
-                    window.open(waUrl, '_blank');
+                    alert('Booking updated successfully!');
                 } else {
                     alert('Error updating booking: ' + (result.message || 'Unknown error'));
                 }
