@@ -272,10 +272,8 @@
     </div>
 
     <script>
-        // ️ PASTE YOUR NEW WEB APP URL BELOW ⚠️
         const GOOGLE_SHEETS_URL = 'https://script.google.com/macros/s/AKfycbxbN56M5aAw7chGTT-1Oons1TU82Pv9aPgiTwUdqWSdoPgA-xU3KNIMS6D0pm_Jgm4X/exec';
         
-        // Convert 24-hour time to 12-hour AM/PM
         function convertTo12Hour(timeString) {
             if (!timeString) return '';
             let [hours, minutes] = timeString.split(':');
@@ -413,6 +411,40 @@
             
             if (!pickup || !dropoff) { alert("Please specify both Pickup and Drop-off locations."); return false; } 
             if (!time) { alert("Please select a Time for your trip."); return false; }
+            
+            // 🔧 AUTO-CALCULATE FARE IF NOT ALREADY CALCULATED
+            if (currentEstimate === 0 || currentEstimate === '') {
+                const waitHours = parseFloat(waitTime) || 0;
+                const origin = pickup + (pickup.includes(',') ? '' : ', Trinidad');
+                const destination = dropoff + (dropoff.includes(',') ? '' : ', Trinidad');
+                
+                const pickupHub = detectLocation(pickup);
+                const dropoffHub = detectLocation(dropoff);
+                
+                let distanceKm = 15;
+                if (pickupHub && dropoffHub) { 
+                    distanceKm = hubDistances[pickupHub][dropoffHub] || 15; 
+                    if (pickupHub === dropoffHub) distanceKm = 5;
+                }
+                
+                const waitingCost = waitHours * 100.00;
+                let total = 0;
+                let isCaroni = origin.toLowerCase().includes('caroni') || destination.toLowerCase().includes('caroni');
+                const baseFare = getBaseFare(time);
+                let carnivalFee = isCarnival ? 400.00 : 0;
+                
+                if (isCaroni) { 
+                    total = 300.00 + waitingCost; 
+                } else { 
+                    const distanceCost = distanceKm * 5.00; 
+                    total = baseFare + distanceCost + waitingCost; 
+                }
+                if (isCarnival && total < carnivalFee) { total = carnivalFee; }
+                else if (isCarnival) { total += carnivalFee; }
+                
+                currentEstimate = total.toFixed(2);
+            }
+            // 🔧 END AUTO-CALCULATION
             
             const refCode = generateReferenceCode();
             document.getElementById('hiddenRefCode').value = refCode;
