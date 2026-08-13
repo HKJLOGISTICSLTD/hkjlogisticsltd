@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HKJ Admin Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Open Sans', sans-serif; background: #f4f6f8; color: #333; }
+        
+        /* Login Screen */
+        .login-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 9999; display: flex; justify-content: center; align-items: center; flex-direction: column; }
+        .login-box { background: #fff; padding: 2rem; border-radius: 12px; text-align: center; width: 90%; max-width: 400px; border-top: 5px solid #FFD700; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        .login-box h2 { font-family: 'Montserrat', sans-serif; margin-bottom: 1rem; color: #000; }
+        .login-box input { width: 100%; padding: 1rem; margin: 1rem 0; border: 2px solid #ddd; border-radius: 8px; font-size: 1rem; }
+        .login-box button { width: 100%; padding: 1rem; background: #FFD700; border: none; border-radius: 8px; font-weight: 800; font-size: 1.1rem; cursor: pointer; font-family: 'Montserrat', sans-serif; transition: 0.3s; }
+        .login-box button:hover { background: #e6c200; }
+        
+        /* Dashboard */
+        .dashboard { display: none; padding: 2rem; max-width: 1400px; margin: 0 auto; }
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem; }
+        .header h1 { font-family: 'Montserrat', sans-serif; font-weight: 800; color: #000; }
+        .header h1 span { color: #FFD700; }
+        .btn-logout { background: #DC2626; color: #fff; border: none; padding: 0.75rem 1.5rem; border-radius: 8px; font-weight: 700; cursor: pointer; }
+        
+        /* Stats */
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem; margin-bottom: 2rem; }
+        .stat-card { background: #fff; padding: 1.5rem; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border-left: 5px solid #FFD700; }
+        .stat-card h3 { font-size: 0.9rem; color: #666; text-transform: uppercase; margin-bottom: 0.5rem; }
+        .stat-card .value { font-family: 'Montserrat', sans-serif; font-size: 2rem; font-weight: 800; color: #000; }
+        
+        /* Table */
+        .table-container { background: #fff; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); overflow-x: auto; padding: 1rem; }
+        table { width: 100%; border-collapse: collapse; min-width: 800px; }
+        th, td { padding: 1rem; text-align: left; border-bottom: 1px solid #eee; }
+        th { background: #f9f9f9; font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: 0.85rem; text-transform: uppercase; color: #666; }
+        
+        .status-badge { padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.8rem; font-weight: 700; display: inline-block; }
+        .status-pending { background: #FEF3C7; color: #92400E; }
+        .status-confirmed { background: #D1FAE5; color: #065F46; }
+        .status-completed { background: #DBEAFE; color: #1E40AF; }
+        .status-cancelled { background: #FEE2E2; color: #991B1B; }
+        
+        .btn-action { padding: 0.5rem 1rem; border: none; border-radius: 6px; font-weight: 700; cursor: pointer; font-size: 0.85rem; margin-right: 0.5rem; transition: 0.2s; }
+        .btn-edit { background: #0066CC; color: #fff; }
+        .btn-edit:hover { background: #0052A3; }
+        
+        /* Modal */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 1000; justify-content: center; align-items: center; padding: 1rem; }
+        .modal-content { background: #fff; padding: 2rem; border-radius: 12px; width: 100%; max-width: 500px; max-height: 90vh; overflow-y: auto; }
+        .modal-content h3 { margin-bottom: 1.5rem; font-family: 'Montserrat', sans-serif; color: #000; }
+        .form-group { margin-bottom: 1rem; }
+        .form-group label { display: block; margin-bottom: 0.5rem; font-weight: 600; font-size: 0.9rem; }
+        .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 0.75rem; border: 2px solid #ddd; border-radius: 8px; font-size: 1rem; font-family: inherit; }
+        .modal-actions { display: flex; gap: 1rem; margin-top: 1.5rem; }
+        .modal-actions button { flex: 1; padding: 1rem; border: none; border-radius: 8px; font-weight: 700; cursor: pointer; font-size: 1rem; }
+        .btn-save { background: #FFD700; color: #000; }
+        .btn-cancel { background: #eee; color: #333; }
+        
+        .loading { text-align: center; padding: 3rem; font-size: 1.2rem; color: #666; }
+        .refresh-btn { background: #000; color: #FFD700; border: none; padding: 0.75rem 1.5rem; border-radius: 8px; font-weight: 700; cursor: pointer; }
+    </style>
+</head>
+<body>
+
+    <!-- Login Screen -->
+    <div class="login-overlay" id="loginOverlay">
+        <div class="login-box">
+            <h2> HKJ Admin Access</h2>
+            <input type="password" id="adminPassword" placeholder="Enter Admin Password">
+            <button onclick="checkPassword()">LOGIN</button>
+            <p id="loginError" style="color: red; margin-top: 1rem; display: none;">Incorrect password!</p>
+        </div>
+    </div>
+
+    <!-- Main Dashboard -->
+    <div class="dashboard" id="dashboard">
+        <div class="header">
+            <h1>HKJ <span>ADMIN DASHBOARD</span></h1>
+            <div>
+                <button class="refresh-btn" onclick="loadData()"><i class="fas fa-sync-alt"></i> Refresh</button>
+                <button class="btn-logout" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</button>
+            </div>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <h3>Total Trips</h3>
+                <div class="value" id="totalTrips">0</div>
+            </div>
+            <div class="stat-card">
+                <h3>Total Revenue</h3>
+                <div class="value" id="totalRevenue">$0.00</div>
+            </div>
+            <div class="stat-card">
+                <h3>Pending Bookings</h3>
+                <div class="value" id="pendingTrips">0</div>
+            </div>
+        </div>
+
+        <div class="table-container">
+            <div id="loadingMsg" class="loading"><i class="fas fa-spinner fa-spin"></i> Loading bookings...</div>
+            <table id="bookingsTable" style="display: none;">
+                <thead>
+                    <tr>
+                        <th>Ref Code</th>
+                        <th>Date & Time</th>
+                        <th>Client</th>
+                        <th>Route</th>
+                        <th>Price</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Edit Modal -->
+    <div class="modal" id="editModal">
+        <div class="modal-content">
+            <h3>Update Booking: <span id="modalRefCode"></span></h3>
+            <input type="hidden" id="modalRef">
+            <input type="hidden" id="modalPhone">
+            <input type="hidden" id="modalName">
+            
+            <div class="form-group">
+                <label>Final Price (TTD)</label>
+                <input type="number" id="modalPrice" step="0.01">
+            </div>
+            <div class="form-group">
+                <label>Status</label>
+                <select id="modalStatus">
+                    <option value="Pending">Pending</option>
+                    <option value="Confirmed">Confirmed</option>
+                    <option value="Completed">Completed</option>
+                    <option value="Cancelled">Cancelled</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Admin Notes</label>
+                <textarea id="modalNotes" rows="3" placeholder="e.g., Driver assigned: John"></textarea>
+            </div>
+            
+            <div class="modal-actions">
+                <button class="btn-cancel" onclick="closeModal()">Cancel</button>
+                <button class="btn-save" onclick="saveAndUpdate()"><i class="fas fa-save"></i> Save & WhatsApp</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ⚠️ CHANGE THIS PASSWORD TO SOMETHING SECURE
+        const ADMIN_PASSWORD = 'hkj2024'; 
+        
+        // Your Google Script URL
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxbN56M5aAw7chGTT-1Oons1TU82Pv9aPgiTwUdqWsdopGA-xU3KNIMS6D0pm_Jgm4X/exec';
+
+        let bookingsData = [];
+
+        function checkPassword() {
+            const input = document.getElementById('adminPassword').value;
+            if (input === ADMIN_PASSWORD) {
+                document.getElementById('loginOverlay').style.display = 'none';
+                document.getElementById('dashboard').style.display = 'block';
+                loadData();
+            } else {
+                document.getElementById('loginError').style.display = 'block';
+            }
+        }
+
+        function logout() {
+            location.reload();
+        }
+
+        function loadData() {
+            document.getElementById('loadingMsg').style.display = 'block';
+            document.getElementById('bookingsTable').style.display = 'none';
+            
+            fetch(SCRIPT_URL)
+                .then(response => response.json())
+                .then(data => {
+                    bookingsData = data;
+                    renderTable();
+                    calculateStats();
+                    document.getElementById('loadingMsg').style.display = 'none';
+                    document.getElementById('bookingsTable').style.display = 'table';
+                })
+                .catch(err => {
+                    document.getElementById('loadingMsg').innerHTML = 'Error loading data. Check console.';
+                    console.error(err);
+                });
+        }
+
+        function renderTable() {
+            const tbody = document.getElementById('tableBody');
+            tbody.innerHTML = '';
+            
+            // Reverse array to show newest first
+            const reversedData = [...bookingsData].reverse();
+
+            reversedData.forEach(booking => {
+                const status = booking['Status'] || 'Pending';
+                const price = booking['Final Price'] || booking['Fare'] || '0.00';
+                const statusClass = `status-${status.toLowerCase()}`;
+                
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td><strong>${booking['Ref Code'] || ''}</strong></td>
+                    <td>${booking['Date'] || ''}<br><small>${booking['Time'] || ''}</small></td>
+                    <td>${booking['Name'] || ''}<br><small>${booking['Phone'] || ''}</small></td>
+                    <td><small>From: ${booking['Pickup'] || ''}</small><br><small>To: ${booking['Dropoff'] || ''}</small></td>
+                    <td><strong>$${price}</strong></td>
+                    <td><span class="status-badge ${statusClass}">${status}</span></td>
+                    <td><button class="btn-action btn-edit" onclick="openEditModal('${booking['Ref Code']}')"><i class="fas fa-edit"></i> Edit</button></td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function calculateStats() {
+            let totalTrips = bookingsData.length;
+            let totalRevenue = 0;
+            let pending = 0;
+
+            bookingsData.forEach(b => {
+                const price = parseFloat(b['Final Price'] || b['Fare'] || 0);
+                if (!isNaN(price)) totalRevenue += price;
+                if ((b['Status'] || 'Pending') === 'Pending') pending++;
+            });
+
+            document.getElementById('totalTrips').innerText = totalTrips;
+            document.getElementById('totalRevenue').innerText = '$' + totalRevenue.toFixed(2);
+            document.getElementById('pendingTrips').innerText = pending;
+        }
+
+        function openEditModal(refCode) {
+            const booking = bookingsData.find(b => b['Ref Code'] === refCode);
+            if (!booking) return;
+
+            document.getElementById('modalRef').value = booking['Ref Code'];
+            document.getElementById('modalRefCode').innerText = booking['Ref Code'];
+            document.getElementById('modalPhone').value = booking['Phone'];
+            document.getElementById('modalName').value = booking['Name'];
+            document.getElementById('modalPrice').value = booking['Final Price'] || booking['Fare'] || 0;
+            document.getElementById('modalStatus').value = booking['Status'] || 'Pending';
+            document.getElementById('modalNotes').value = booking['Admin Notes'] || '';
+            
+            document.getElementById('editModal').style.display = 'flex';
+        }
+
+        function closeModal() {
+            document.getElementById('editModal').style.display = 'none';
+        }
+
+        function saveAndUpdate() {
+            const refCode = document.getElementById('modalRef').value;
+            const phone = document.getElementById('modalPhone').value;
+            const name = document.getElementById('modalName').value;
+            const finalPrice = document.getElementById('modalPrice').value;
+            const status = document.getElementById('modalStatus').value;
+            const notes = document.getElementById('modalNotes').value;
+
+            const updateData = {
+                action: 'update',
+                refCode: refCode,
+                finalPrice: finalPrice,
+                status: status,
+                adminNotes: notes
+            };
+
+            // Save to Google Sheet
+            fetch(SCRIPT_URL, {
+                method: 'POST',
+                body: JSON.stringify(updateData)
+            })
+            .then(res => res.json())
+            .then(result => {
+                if (result.result === 'updated') {
+                    alert('Booking updated successfully!');
+                    closeModal();
+                    loadData(); // Refresh table
+                    
+                    // Open WhatsApp
+                    let cleanPhone = phone.replace(/\D/g, ''); 
+                    if (cleanPhone.length === 10) cleanPhone = '1' + cleanPhone; // Add country code if missing
+                    
+                    const waText = `Hello ${name}, your HKJ Logistics booking (${refCode}) is now *${status}*. \n\nFinal Price: $${finalPrice} TTD.\n\n${notes ? 'Note: ' + notes + '\n\n' : ''}Thank you for choosing HKJ Logistics!`;
+                    const waUrl = `https://wa.me/${cleanPhone}?text=${encodeURIComponent(waText)}`;
+                    window.open(waUrl, '_blank');
+                } else {
+                    alert('Error updating booking: ' + (result.message || 'Unknown error'));
+                }
+            })
+            .catch(err => {
+                console.error(err);
+                alert('Network error. Please try again.');
+            });
+        }
+    </script>
+</body>
+</html>
