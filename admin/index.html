@@ -9,45 +9,33 @@
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Open Sans', sans-serif; background: #f4f6f8; color: #333; }
-        
-        /* Login Screen */
         .login-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 9999; display: flex; justify-content: center; align-items: center; flex-direction: column; }
         .login-box { background: #fff; padding: 2rem; border-radius: 12px; text-align: center; width: 90%; max-width: 400px; border-top: 5px solid #FFD700; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
         .login-box h2 { font-family: 'Montserrat', sans-serif; margin-bottom: 1rem; color: #000; }
         .login-box input { width: 100%; padding: 1rem; margin: 1rem 0; border: 2px solid #ddd; border-radius: 8px; font-size: 1rem; }
         .login-box button { width: 100%; padding: 1rem; background: #FFD700; border: none; border-radius: 8px; font-weight: 800; font-size: 1.1rem; cursor: pointer; font-family: 'Montserrat', sans-serif; transition: 0.3s; }
         .login-box button:hover { background: #e6c200; }
-        
-        /* Dashboard */
         .dashboard { display: none; padding: 2rem; max-width: 1400px; margin: 0 auto; }
         .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem; }
         .header h1 { font-family: 'Montserrat', sans-serif; font-weight: 800; color: #000; }
         .header h1 span { color: #FFD700; }
         .btn-logout { background: #DC2626; color: #fff; border: none; padding: 0.75rem 1.5rem; border-radius: 8px; font-weight: 700; cursor: pointer; }
-        
-        /* Stats */
         .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem; margin-bottom: 2rem; }
         .stat-card { background: #fff; padding: 1.5rem; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border-left: 5px solid #FFD700; }
         .stat-card h3 { font-size: 0.9rem; color: #666; text-transform: uppercase; margin-bottom: 0.5rem; }
         .stat-card .value { font-family: 'Montserrat', sans-serif; font-size: 2rem; font-weight: 800; color: #000; }
-        
-        /* Table */
         .table-container { background: #fff; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); overflow-x: auto; padding: 1rem; }
         table { width: 100%; border-collapse: collapse; min-width: 800px; }
         th, td { padding: 1rem; text-align: left; border-bottom: 1px solid #eee; }
         th { background: #f9f9f9; font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: 0.85rem; text-transform: uppercase; color: #666; }
-        
         .status-badge { padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.8rem; font-weight: 700; display: inline-block; }
         .status-pending { background: #FEF3C7; color: #92400E; }
         .status-confirmed { background: #D1FAE5; color: #065F46; }
         .status-completed { background: #DBEAFE; color: #1E40AF; }
         .status-cancelled { background: #FEE2E2; color: #991B1B; }
-        
         .btn-action { padding: 0.5rem 1rem; border: none; border-radius: 6px; font-weight: 700; cursor: pointer; font-size: 0.85rem; margin-right: 0.5rem; transition: 0.2s; }
         .btn-edit { background: #0066CC; color: #fff; }
         .btn-edit:hover { background: #0052A3; }
-        
-        /* Modal */
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 1000; justify-content: center; align-items: center; padding: 1rem; }
         .modal-content { background: #fff; padding: 2rem; border-radius: 12px; width: 100%; max-width: 500px; max-height: 90vh; overflow-y: auto; }
         .modal-content h3 { margin-bottom: 1.5rem; font-family: 'Montserrat', sans-serif; color: #000; }
@@ -58,14 +46,11 @@
         .modal-actions button { flex: 1; padding: 1rem; border: none; border-radius: 8px; font-weight: 700; cursor: pointer; font-size: 1rem; }
         .btn-save { background: #FFD700; color: #000; }
         .btn-cancel { background: #eee; color: #333; }
-        
         .loading { text-align: center; padding: 3rem; font-size: 1.2rem; color: #666; }
         .refresh-btn { background: #000; color: #FFD700; border: none; padding: 0.75rem 1.5rem; border-radius: 8px; font-weight: 700; cursor: pointer; }
     </style>
 </head>
 <body>
-
-    <!-- Login Screen -->
     <div class="login-overlay" id="loginOverlay">
         <div class="login-box">
             <h2>🔒 HKJ Admin Access</h2>
@@ -74,8 +59,6 @@
             <p id="loginError" style="color: red; margin-top: 1rem; display: none;">Incorrect password!</p>
         </div>
     </div>
-
-    <!-- Main Dashboard -->
     <div class="dashboard" id="dashboard">
         <div class="header">
             <h1>HKJ <span>ADMIN DASHBOARD</span></h1>
@@ -84,22 +67,11 @@
                 <button class="btn-logout" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</button>
             </div>
         </div>
-
         <div class="stats-grid">
-            <div class="stat-card">
-                <h3>Total Trips</h3>
-                <div class="value" id="totalTrips">0</div>
-            </div>
-            <div class="stat-card">
-                <h3>Total Revenue</h3>
-                <div class="value" id="totalRevenue">$0.00</div>
-            </div>
-            <div class="stat-card">
-                <h3>Pending Bookings</h3>
-                <div class="value" id="pendingTrips">0</div>
-            </div>
+            <div class="stat-card"><h3>Total Trips</h3><div class="value" id="totalTrips">0</div></div>
+            <div class="stat-card"><h3>Total Revenue</h3><div class="value" id="totalRevenue">$0.00</div></div>
+            <div class="stat-card"><h3>Pending Bookings</h3><div class="value" id="pendingTrips">0</div></div>
         </div>
-
         <div class="table-container">
             <div id="loadingMsg" class="loading"><i class="fas fa-spinner fa-spin"></i> Loading bookings...</div>
             <table id="bookingsTable" style="display: none;">
@@ -118,8 +90,6 @@
             </table>
         </div>
     </div>
-
-    <!-- Edit Modal -->
     <div class="modal" id="editModal">
         <div class="modal-content">
             <h3>Update Booking: <span id="modalRefCode"></span></h3>
@@ -127,7 +97,6 @@
             <input type="hidden" id="modalPhone">
             <input type="hidden" id="modalName">
             <input type="hidden" id="modalOriginalPrice">
-            
             <div class="form-group">
                 <label>Final Price (TTD)</label>
                 <input type="number" id="modalPrice" step="0.01">
@@ -145,18 +114,15 @@
                 <label>Admin Notes</label>
                 <textarea id="modalNotes" rows="3" placeholder="e.g., Driver assigned: John"></textarea>
             </div>
-            
             <div class="modal-actions">
                 <button class="btn-cancel" onclick="closeModal()">Cancel</button>
                 <button class="btn-save" onclick="saveAndUpdate()"><i class="fas fa-save"></i> Save & WhatsApp</button>
             </div>
         </div>
     </div>
-
     <script>
         const ADMIN_PASSWORD = 'hkj5762'; 
-        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxbN56M5aAw7chGTT-1Oons1TU82Pv9aPgiTwUdqWSdoPgA-xU3KNIMS6D0pm_Jgm4X/exec';
-
+        const SCRIPT_URL = https://script.google.com/macros/s/AKfycbxbN56M5aAw7chGTT-1Oons1TU82Pv9aPgiTwUdqWSdoPgA-xU3KNIMS6D0pm_Jgm4X/exec'';
         let bookingsData = [];
 
         function checkPassword() {
@@ -175,7 +141,6 @@
         function loadData() {
             document.getElementById('loadingMsg').style.display = 'block';
             document.getElementById('bookingsTable').style.display = 'none';
-            
             fetch(SCRIPT_URL)
                 .then(response => response.json())
                 .then(data => {
@@ -200,7 +165,6 @@
             const tbody = document.getElementById('tableBody');
             tbody.innerHTML = '';
             const reversedData = [...bookingsData].reverse();
-
             reversedData.forEach(booking => {
                 const refCode = booking['REF CODE'] || '';
                 const date = booking['DATE'] || '';
@@ -209,11 +173,10 @@
                 const phone = booking['PHONE'] || '';
                 const pickup = booking['PICK UP'] || '';
                 const dropoff = booking['DROP OFF'] || '';
-                const fare = booking['FARES'] || booking['FINAL PRICE'] || '0.00';
+                // FIXED: Check FINAL PRICE first, then FARES
+                const fare = booking['FINAL PRICE'] || booking['FARES'] || '0.00';
                 const status = booking['STATUS'] || 'Pending';
-                
                 const statusClass = `status-${status.toLowerCase()}`;
-                
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
                     <td><strong>${refCode}</strong></td>
@@ -232,13 +195,12 @@
             let totalTrips = bookingsData.length;
             let totalRevenue = 0;
             let pending = 0;
-
             bookingsData.forEach(b => {
+                // FIXED: Check FINAL PRICE first
                 const price = parseFloat(b['FINAL PRICE'] || b['FARES'] || 0);
                 if (!isNaN(price)) totalRevenue += price;
                 if ((b['STATUS'] || 'Pending') === 'Pending') pending++;
             });
-
             document.getElementById('totalTrips').innerText = totalTrips;
             document.getElementById('totalRevenue').innerText = formatPrice(totalRevenue);
             document.getElementById('pendingTrips').innerText = pending;
@@ -247,19 +209,16 @@
         function openEditModal(refCode) {
             const booking = bookingsData.find(b => b['REF CODE'] === refCode);
             if (!booking) return;
-
             document.getElementById('modalRef').value = booking['REF CODE'];
             document.getElementById('modalRefCode').innerText = booking['REF CODE'];
             document.getElementById('modalPhone').value = booking['PHONE'];
             document.getElementById('modalName').value = booking['NAME'];
-            
+            // FIXED: Check FINAL PRICE first
             const originalPrice = booking['FINAL PRICE'] || booking['FARES'] || 0;
             document.getElementById('modalOriginalPrice').value = originalPrice;
             document.getElementById('modalPrice').value = parseFloat(originalPrice).toFixed(2);
-            
             document.getElementById('modalStatus').value = booking['STATUS'] || 'Pending';
             document.getElementById('modalNotes').value = booking['ADMIN NOTES'] || '';
-            
             document.getElementById('editModal').style.display = 'flex';
         }
 
@@ -291,50 +250,34 @@
             .then(res => res.json())
             .then(result => {
                 if (result.result === 'updated') {
-                    // Refresh data immediately
                     loadData();
                     closeModal();
-                    
-                    // Small delay to ensure data is saved before opening WhatsApp
                     setTimeout(() => {
-                        // Build WhatsApp message
                         let messageBody = `Hello ${name}, your HKJ Logistics booking (${refCode}) is now *${status}*.\n\n`;
-                        
                         if (status !== 'Cancelled') {
                             messageBody += `Final Price: ${formatPrice(finalPrice)}\n`;
-                            
-                            // Check if price changed
                             if (parseFloat(finalPrice) !== parseFloat(originalPrice)) {
                                 messageBody += `Price adjusted by admin.\n`;
                             }
                             messageBody += `\n`;
                         }
-
                         if (notes) {
                             messageBody += `Note: ${notes}\n\n`;
                         }
-                        
                         messageBody += `Thank you for choosing HKJ Logistics!`;
-
-                        // Clean and format phone number for WhatsApp
                         let cleanPhone = phone.replace(/\D/g, '');
-                        
-                        // Handle Trinidad & Tobago numbers (1868...)
                         if (cleanPhone.startsWith('1868')) {
                             // Already has country code
                         } else if (cleanPhone.length === 10 && cleanPhone.startsWith('868')) {
                             cleanPhone = '1' + cleanPhone;
                         } else if (cleanPhone.length === 7) {
-                            // Just local number, add 1868
                             cleanPhone = '1868' + cleanPhone;
                         } else if (cleanPhone.length === 10) {
                             cleanPhone = '1' + cleanPhone;
                         }
-                        
                         const waUrl = `https://wa.me/${cleanPhone}?text=${encodeURIComponent(messageBody)}`;
                         window.open(waUrl, '_blank');
                     }, 500);
-                    
                     alert('Booking updated successfully!');
                 } else {
                     alert('Error updating booking: ' + (result.message || 'Unknown error'));
