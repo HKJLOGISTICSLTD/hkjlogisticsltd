@@ -272,8 +272,8 @@
     </div>
 
     <script>
-        // PASTE YOUR GOOGLE SCRIPT URL BELOW (from Step 3)
-        const GOOGLE_SHEETS_URL = 'https://script.google.com/macros/s/AKfycbwQIRzpSyU8iG7AUVkbqcxklJeHMvuJQItJ7Ly3p7kpV3lsNnjIgTxR-YzPoR37yJpCXA/exec';
+        // ️ PASTE YOUR NEW WEB APP URL BELOW ⚠️
+        const GOOGLE_SHEETS_URL = 'https://script.google.com/macros/s/AKfycbxbN56M5aAw7chGTT-1Oons1TU82Pv9aPgiTwUdqWSdoPgA-xU3KNIMS6D0pm_Jgm4X/exec';
         
         // Convert 24-hour time to 12-hour AM/PM
         function convertTo12Hour(timeString) {
@@ -421,7 +421,6 @@
             
             localStorage.setItem('hkj_booking_' + refCode, name);
             
-            // Send to Google Sheets
             const sheetData = {
                 refCode: refCode,
                 clientName: name,
@@ -435,8 +434,7 @@
                 notes: notes || ''
             };
             
-            // Send to Google Sheets (if URL is set)
-            if (GOOGLE_SHEETS_URL !== 'YOUR_GOOGLE_SCRIPT_URL_HERE') {
+            if (GOOGLE_SHEETS_URL !== 'PASTE_YOUR_NEW_WEB_APP_URL_HERE') {
                 fetch(GOOGLE_SHEETS_URL, {
                     method: 'POST',
                     body: JSON.stringify(sheetData)
