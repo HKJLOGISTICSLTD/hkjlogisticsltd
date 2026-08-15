@@ -89,8 +89,8 @@
                         <label>Preferred Payment Method *</label>
                         <select name="confirmPayment" id="confirmPayment" style="font-size: 1.1rem; font-weight: 600;" required>
                             <option value="Online Payment (Wipay Link)">1️⃣ Online Payment (Send me the Wipay link)</option>
-                            <option value="Card Payment on Drop-off">2️⃣ Card Payment (Pay on drop-off)</option>
-                            <option value="Cash Payment">3️⃣ Cash Payment</option>
+                            <option value="Card Payment on Drop-off">2️ Card Payment (Pay on drop-off)</option>
+                            <option value="Cash Payment">3️ Cash Payment</option>
                         </select>
                     </div>
 
@@ -111,7 +111,7 @@
     <script>
         function toggleMenu() { document.getElementById('navMenu').classList.toggle('active'); }
         
-        // FIXED AUTO-FILL LOGIC
+        // AUTO-FILL LOGIC
         document.getElementById('lockInCode').addEventListener('input', function() {
             let rawCode = this.value.trim().toUpperCase();
             // Remove hyphens to get clean code (e.g. HKJ9969)
@@ -120,15 +120,19 @@
             const nameField = document.getElementById('lockInName');
             let storedName = null;
 
+            console.log("Searching for code:", cleanCode);
+
             // Try finding it with the hyphen (HKJ-9969)
             if (cleanCode.startsWith('HKJ') && cleanCode.length > 3) {
                 let codeWithHyphen = 'HKJ-' + cleanCode.substring(3);
                 storedName = localStorage.getItem('hkj_booking_' + codeWithHyphen);
+                console.log("Tried with hyphen (" + codeWithHyphen + "):", storedName);
             }
             
             // If not found, try without hyphen (HKJ9969)
             if (!storedName) {
                 storedName = localStorage.getItem('hkj_booking_' + cleanCode);
+                console.log("Tried without hyphen (" + cleanCode + "):", storedName);
             }
 
             if (storedName) {
@@ -155,7 +159,7 @@
             if (!code) { alert("Please enter your Reference Code."); return false; }
             if (!name) { alert("Please enter your Name."); return false; }
 
-            let waMessage = `*🔒 FAST LOCK-IN CONFIRMATION*\n\n`;
+            let waMessage = `* FAST LOCK-IN CONFIRMATION*\n\n`;
             waMessage += `*Client Name:* ${name}\n`;
             waMessage += `*Reference Code:* ${code}\n\n`;
             waMessage += `*Preferred Payment Method:*\n${paymentMethod}\n\n`;
