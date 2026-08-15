@@ -93,6 +93,7 @@
         .btn-calculate:disabled { background: #ccc; cursor: not-allowed; }
         select { cursor: pointer; }
         
+        /* CUSTOM RED POPUP STYLES */
         .popup-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 9999; justify-content: center; align-items: center; padding: 1rem; }
         .popup-box { background: #fff; padding: 2.5rem; border-radius: 12px; max-width: 500px; text-align: center; border-top: 8px solid #DC2626; box-shadow: 0 10px 40px rgba(220, 38, 38, 0.4); animation: slideIn 0.3s ease-out; }
         @keyframes slideIn { from { transform: translateY(-30px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
@@ -130,13 +131,17 @@
         <div class="booking-container">
             <div class="booking-widget">
                 <h2>BOOK <span>A RIDE</span></h2>
-                <form id="bookingForm" onsubmit="return handleBooking(event)">
+                <form name="hkj-bookings" method="POST" onsubmit="return handleBooking(event)">
                     <input type="hidden" name="calendarLink" id="calendarLink">
                     <input type="hidden" name="referenceCode" id="hiddenRefCode">
                     
                     <div class="form-row">
                         <div class="form-group"><label>Your Name *</label><input type="text" name="clientName" id="clientName" required></div>
                         <div class="form-group"><label>WhatsApp Number *</label><input type="tel" name="clientPhone" id="clientPhone" placeholder="868-XXX-XXXX" required></div>
+                    </div>
+                    <div class="form-group">
+                        <label>Your Email Address *</label>
+                        <input type="email" name="clientEmail" id="clientEmail" placeholder="example@email.com" required>
                     </div>
                     
                     <div class="location-method">
@@ -164,7 +169,7 @@
                         </div>
                         <div class="method-content">
                             <label style="font-weight:600; color:#555;">2. Type Exact Address / Landmark:</label>
-                            <input type="text" name="pickupAddress" id="pickupAddressText" placeholder="e.g., 123 Main Street, Marabella">
+                            <input type="text" name="pickupAddressText" id="pickupAddressText" placeholder="e.g., 123 Main Street, Marabella">
                         </div>
                     </div>
 
@@ -193,7 +198,7 @@
                         </div>
                         <div class="method-content">
                             <label style="font-weight:600; color:#555;">2. Type Exact Address / Landmark:</label>
-                            <input type="text" name="dropoffAddress" id="dropoffAddressText" placeholder="e.g., First Citizens Bank, Marabella">
+                            <input type="text" name="dropoffAddressText" id="dropoffAddressText" placeholder="e.g., First Citizens Bank, Marabella">
                         </div>
                     </div>
 
@@ -203,7 +208,7 @@
                     <div class="form-group" style="background: #fff0f0; padding: 1rem; border-radius: 8px; border: 2px solid #DC2626;">
                         <label style="display: flex; align-items: center; gap: 10px; cursor: pointer; margin: 0; font-weight: 700; color: #DC2626;">
                             <input type="checkbox" id="isCarnival" style="width: 20px; height: 20px;">
-                            <span> Is this for a Carnival Event? (J'ouvert, Parade, Fete)</span>
+                            <span>🎉 Is this for a Carnival Event? (J'ouvert, Parade, Fete)</span>
                         </label>
                         <p style="font-size: 0.85rem; color: #555; margin-top: 5px; margin-left: 30px;">Special event rates apply. Minimum starting price: $400.00 TTD.</p>
                     </div>
@@ -225,7 +230,9 @@
                 <h2 style="color: #25D366;"><i class="fas fa-lock"></i> FAST LOCK-IN</h2>
                 <p style="text-align: center; color: #555; margin-bottom: 2rem;">Have your Reference Code? Enter it below to lock in your booking instantly.</p>
                 
-                <form name="hkj-confirm" onsubmit="return lockInBooking(event)">
+                <form name="hkj-confirm" method="POST" onsubmit="return lockInBooking(event)">
+                    <input type="hidden" name="form-name" value="hkj-confirm">
+                    
                     <div class="form-group">
                         <label style="font-size: 1.3rem; color: #000;">Client Name *</label>
                         <input type="text" name="clientNameLock" id="lockInName" placeholder="Type your code above to auto-fill" style="font-weight: 700;" required>
@@ -241,9 +248,9 @@
                     <div class="form-group">
                         <label>Preferred Payment Method *</label>
                         <select name="confirmPayment" id="confirmPayment" style="font-size: 1.1rem; font-weight: 600;" required>
-                            <option value="Online Payment (Wipay Link)">1️ Online Payment (Send me the Wipay link)</option>
+                            <option value="Online Payment (Wipay Link)">1️⃣ Online Payment (Send me the Wipay link)</option>
                             <option value="Card Payment on Drop-off">2️⃣ Card Payment (Pay on drop-off)</option>
-                            <option value="Cash Payment">3️ Cash Payment</option>
+                            <option value="Cash Payment">3️⃣ Cash Payment</option>
                         </select>
                     </div>
 
@@ -272,18 +279,6 @@
     </div>
 
     <script>
-        const GOOGLE_SHEETS_URL = 'https://script.google.com/macros/s/AKfycbxbN56M5aAw7chGTT-1Oons1TU82Pv9aPgiTwUdqWSdoPgA-xU3KNIMS6D0pm_Jgm4X/exec';
-        
-        function convertTo12Hour(timeString) {
-            if (!timeString) return '';
-            let [hours, minutes] = timeString.split(':');
-            hours = parseInt(hours, 10);
-            let ampm = hours >= 12 ? 'PM' : 'AM';
-            hours = hours % 12;
-            hours = hours ? hours : 12; 
-            return hours + ':' + minutes + ' ' + ampm;
-        }
-        
         function toggleMenu() { document.getElementById('navMenu').classList.toggle('active'); }
         document.querySelectorAll('a[href^="#"]').forEach(anchor => { anchor.addEventListener('click', function(e) { e.preventDefault(); const target = document.querySelector(this.getAttribute('href')); if (target) window.scrollTo({ top: target.offsetTop - 80, behavior: 'smooth' }); }); });
         document.querySelector('input[type="date"]').setAttribute('min', new Date().toISOString().split('T')[0]);
@@ -327,10 +322,10 @@
             const pickupHub = detectLocation(pickup); 
             const dropoffHub = detectLocation(dropoff); 
             
-            let distanceKm = 15;
+            let distanceKm = 15; 
             if (pickupHub && dropoffHub) { 
                 distanceKm = hubDistances[pickupHub][dropoffHub] || 15; 
-                if (pickupHub === dropoffHub) distanceKm = 5;
+                if (pickupHub === dropoffHub) distanceKm = 5; 
             } 
             
             displayFare(distanceKm, waitHours, origin, destination, time); 
@@ -400,6 +395,7 @@
             const formData = new FormData(form);
             const name = formData.get('clientName');
             const phone = formData.get('clientPhone');
+            const email = formData.get('clientEmail');
             const pickup = getActiveLocation('pickup');
             const dropoff = getActiveLocation('dropoff');
             const date = formData.get('bookDate');
@@ -412,78 +408,46 @@
             if (!pickup || !dropoff) { alert("Please specify both Pickup and Drop-off locations."); return false; } 
             if (!time) { alert("Please select a Time for your trip."); return false; }
             
-            // 🔧 AUTO-CALCULATE FARE IF NOT ALREADY CALCULATED
-            if (currentEstimate === 0 || currentEstimate === '') {
-                const waitHours = parseFloat(waitTime) || 0;
-                const origin = pickup + (pickup.includes(',') ? '' : ', Trinidad');
-                const destination = dropoff + (dropoff.includes(',') ? '' : ', Trinidad');
-                
-                const pickupHub = detectLocation(pickup);
-                const dropoffHub = detectLocation(dropoff);
-                
-                let distanceKm = 15;
-                if (pickupHub && dropoffHub) { 
-                    distanceKm = hubDistances[pickupHub][dropoffHub] || 15; 
-                    if (pickupHub === dropoffHub) distanceKm = 5;
-                }
-                
-                const waitingCost = waitHours * 100.00;
-                let total = 0;
-                let isCaroni = origin.toLowerCase().includes('caroni') || destination.toLowerCase().includes('caroni');
-                const baseFare = getBaseFare(time);
-                let carnivalFee = isCarnival ? 400.00 : 0;
-                
-                if (isCaroni) { 
-                    total = 300.00 + waitingCost; 
-                } else { 
-                    const distanceCost = distanceKm * 5.00; 
-                    total = baseFare + distanceCost + waitingCost; 
-                }
-                if (isCarnival && total < carnivalFee) { total = carnivalFee; }
-                else if (isCarnival) { total += carnivalFee; }
-                
-                currentEstimate = total.toFixed(2);
-            }
-            // 🔧 END AUTO-CALCULATION
-            
             const refCode = generateReferenceCode();
             document.getElementById('hiddenRefCode').value = refCode;
-            const calLink = generateCalendarLink(name, phone, pickup, dropoff, date, time, currentEstimate);
-            document.getElementById('calendarLink').value = calLink;
+            document.getElementById('calendarLink').value = generateCalendarLink(name, phone, pickup, dropoff, date, time, currentEstimate);
             
             localStorage.setItem('hkj_booking_' + refCode, name);
             
-            const sheetData = {
-                refCode: refCode,
-                clientName: name,
-                clientPhone: phone,
-                pickupLocation: pickup,
-                dropoffLocation: dropoff,
-                bookDate: date,
-                bookTime: convertTo12Hour(time),
-                serviceType: service,
-                estimatedFare: currentEstimate,
-                notes: notes || ''
-            };
-            
-            if (GOOGLE_SHEETS_URL !== 'PASTE_YOUR_NEW_WEB_APP_URL_HERE') {
-                fetch(GOOGLE_SHEETS_URL, {
-                    method: 'POST',
-                    body: JSON.stringify(sheetData)
-                }).catch(err => console.log("Sheets submission error:", err));
-            }
-            
             let waMessage = `*NEW BOOKING REQUEST - HKJ LOGISTICS*\n\n`; 
             waMessage += `*Reference Code:* ${refCode}\n`;
-            waMessage += `*Name:* ${name}\n*Phone:* ${phone}\n*Pickup:* ${pickup}\n*Drop-off:* ${dropoff}\n*Date:* ${date}\n*Time:* ${time}\n*Service:* ${service}\n*Waiting:* ${waitTime}\n`; 
+            waMessage += `*Name:* ${name}\n*Phone:* ${phone}\n*Email:* ${email}\n*Pickup:* ${pickup}\n*Drop-off:* ${dropoff}\n*Date:* ${date}\n*Time:* ${time}\n*Service:* ${service}\n*Waiting:* ${waitTime}\n`; 
             if(notes) waMessage += `*Notes:* ${notes}\n`; 
             if(isCarnival) { waMessage += `\n🎉 *CARNIVAL EVENT BOOKING - $400.00 MINIMUM RATE APPLIES*\n`; }
             waMessage += `\n*Website Estimate:* $${currentEstimate} TTD`; 
-            waMessage += `\n\n📅 *SAVE TO CALENDAR:*\n${calLink}`;
             
             const waUrl = `https://wa.me/18687800300?text=${encodeURIComponent(waMessage)}`; 
-            window.open(waUrl, '_blank'); 
-            showPopup(refCode); 
+            
+            // SEND TO GOOGLE SHEETS AUTOMATICALLY
+            const scriptURL = 'https://script.google.com/macros/s/AKfycbx6xDIYPUdE0Vxl3ndy1axkjX0Y6MWYYNRJ7tla1o-nUUPEMpcssfucjxL3qZIXnHdj/exec';
+            const submitBtn = document.getElementById('submitBtn');
+            const originalBtnText = submitBtn.innerHTML;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> SENDING...';
+            submitBtn.disabled = true;
+
+            fetch(scriptURL, { 
+                method: "POST", 
+                body: new URLSearchParams(formData) 
+            })
+            .then(response => {
+                window.open(waUrl, '_blank'); 
+                showPopup(refCode); 
+                form.reset(); 
+                submitBtn.innerHTML = originalBtnText;
+                submitBtn.disabled = false;
+            })
+            .catch(error => {
+                console.error('Error!', error.message);
+                window.open(waUrl, '_blank'); 
+                showPopup(refCode);
+                submitBtn.innerHTML = originalBtnText;
+                submitBtn.disabled = false;
+            });
             
             return false; 
         }
@@ -491,14 +455,15 @@
         function lockInBooking(e) {
             e.preventDefault(); 
             const form = e.target;
-            const code = form.querySelector('[name="refCode"]').value;
+            const formData = new FormData(form);
+            const code = formData.get('refCode');
             const name = document.getElementById('lockInName').value;
-            const paymentMethod = form.querySelector('[name="confirmPayment"]').value;
+            const paymentMethod = formData.get('confirmPayment');
 
             if (!code) { alert("Please enter your Reference Code."); return false; }
             if (!name) { alert("Please enter your Name."); return false; }
 
-            let waMessage = `* FAST LOCK-IN CONFIRMATION*\n\n`;
+            let waMessage = `*🔒 FAST LOCK-IN CONFIRMATION*\n\n`;
             waMessage += `*Client Name:* ${name}\n`;
             waMessage += `*Reference Code:* ${code}\n\n`;
             waMessage += `*Preferred Payment Method:*\n${paymentMethod}\n\n`;
@@ -507,7 +472,6 @@
             const waUrl = `https://wa.me/18687800300?text=${encodeURIComponent(waMessage)}`;
             window.open(waUrl, '_blank');
             alert("✅ Code sent! WhatsApp is opening...");
-            
             return false; 
         }
     </script>
