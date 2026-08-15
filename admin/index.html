@@ -116,11 +116,38 @@ body { font-family: 'Open Sans', sans-serif; background: #f5f5f5; color: #333; }
 </div>
 
 <script>
+// ⚠️ MAKE SURE THIS IS YOUR CORRECT APPS SCRIPT URL
 const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbx6xDIYPUdE0Vxl3ndy1axkjX0Y6MWYYNRJ7tla1o-nUUPEMpcssfucjxL3qZIXnHdj/exec';
 const ADMIN_PASSWORD = 'hkj5762';
 let allBookings = [];
 let currentFilter = 'all';
 
+// --- DATE & TIME FORMATTERS ---
+function formatDate(dateString) {
+  if (!dateString) return '';
+  try {
+    const date = new Date(dateString);
+    const day = String(date.getUTCDate()).padStart(2, '0');
+    const month = String(date.getUTCMonth() + 1).padStart(2, '0');
+    const year = date.getUTCFullYear();
+    return `${day}/${month}/${year}`;
+  } catch (e) { return dateString; }
+}
+
+function formatTime(timeString) {
+  if (!timeString) return '';
+  try {
+    const date = new Date(timeString);
+    let hours = date.getUTCHours();
+    const minutes = String(date.getUTCMinutes()).padStart(2, '0');
+    const ampm = hours >= 12 ? 'PM' : 'AM';
+    hours = hours % 12;
+    hours = hours ? hours : 12;
+    return `${hours}:${minutes} ${ampm}`;
+  } catch (e) { return timeString; }
+}
+
+// --- AUTH ---
 function checkLogin() {
   const pwd = document.getElementById('adminPassword').value;
   if (pwd === ADMIN_PASSWORD) {
@@ -141,14 +168,16 @@ if (sessionStorage.getItem('hkj_admin') === 'true') {
   loadBookings();
 }
 
+// --- HELPERS ---
 function getVal(b, names) {
   for (const name of names) {
     const key = Object.keys(b).find(k => k.trim().toUpperCase() === name.toUpperCase());
-    if (key && b[key]) return b[key];
+    if (key && b[key] !== undefined && b[key] !== '') return b[key];
   }
   return '';
 }
 
+// --- LOAD DATA ---
 async function loadBookings() {
   const list = document.getElementById('bookingsList');
   list.innerHTML = '<div class="loading"><i class="fas fa-spinner fa-spin"></i> Loading bookings...</div>';
@@ -162,7 +191,7 @@ async function loadBookings() {
       updateStats();
       renderBookings();
     } else {
-      list.innerHTML = '<div class="empty">⚠️ No data returned. Check Apps Script deployment.</div>';
+      list.innerHTML = '<div class="empty">️ No data returned. Check Apps Script deployment.</div>';
     }
   } catch (error) {
     list.innerHTML = '<div class="empty">❌ Failed to connect.<br><small>Check console (F12) for details</small></div>';
@@ -189,6 +218,7 @@ function filterBookings(filter, btn) {
   renderBookings();
 }
 
+// --- RENDER ---
 function renderBookings() {
   const list = document.getElementById('bookingsList');
   const filtered = currentFilter === 'all' ? allBookings : allBookings.filter(b => getVal(b, ['STATUS']) === currentFilter);
@@ -209,6 +239,9 @@ function renderBookings() {
     const email = getVal(b, ['EMAIL']) || 'None';
     const rowNum = b._rowNumber;
     
+    const formattedDate = formatDate(getVal(b, ['DATE']));
+    const formattedTime = formatTime(getVal(b, ['TIME']));
+    
     return `
       <div class="booking-card">
         <div class="booking-header">
@@ -221,8 +254,8 @@ function renderBookings() {
         <div class="booking-details">
           <div class="detail-item"><strong>Phone</strong><span>${getVal(b, ['PHONE']) || 'N/A'}</span></div>
           <div class="detail-item"><strong>Email</strong><span>${email}</span></div>
-          <div class="detail-item"><strong>Date</strong><span>${getVal(b, ['DATE']) || ''}</span></div>
-          <div class="detail-item"><strong>Time</strong><span>${getVal(b, ['TIME']) || ''}</span></div>
+          <div class="detail-item"><strong>Date</strong><span>${formattedDate}</span></div>
+          <div class="detail-item"><strong>Time</strong><span>${formattedTime}</span></div>
           <div class="detail-item"><strong>Pickup</strong><span>${pickup}</span></div>
           <div class="detail-item"><strong>Drop-off</strong><span>${dropoff}</span></div>
           <div class="detail-item"><strong>Final Price</strong><span class="price-display">${price}</span></div>
@@ -239,6 +272,7 @@ function renderBookings() {
   }).join('');
 }
 
+// --- ACTIONS ---
 function sendWhatsApp(phone, name, refCode, price) {
   const msg = encodeURIComponent(`Hello ${name}, your final price for booking ${refCode} is ${price}. Please return to our website and confirm your booking using your code: https://hkjlogisticsltdtt.vercel.app/confirm.html`);
   window.open(`https://wa.me/1${phone}?text=${msg}`, '_blank');
