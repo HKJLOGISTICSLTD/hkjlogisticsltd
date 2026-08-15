@@ -59,10 +59,11 @@ body { font-family: 'Open Sans', sans-serif; background: #f5f5f5; color: #333; }
 .modal { background: #fff; padding: 2rem; border-radius: 12px; max-width: 500px; width: 100%; max-height: 90vh; overflow-y: auto; }
 .modal h3 { font-family: 'Montserrat', sans-serif; font-weight: 800; margin-bottom: 1rem; }
 .modal input, .modal textarea { width: 100%; padding: 0.75rem; border: 2px solid #e0e0e0; border-radius: 6px; font-family: inherit; font-size: 1rem; margin-bottom: 1rem; }
-.modal-buttons { display: flex; gap: 0.5rem; justify-content: flex-end; }
+.modal-buttons { display: flex; gap: 0.5rem; justify-content: flex-end; flex-wrap: wrap; }
 .modal-btn { padding: 0.75rem 1.5rem; border: none; border-radius: 6px; font-weight: 700; cursor: pointer; }
 .modal-btn.primary { background: #FFD700; color: #000; }
 .modal-btn.secondary { background: #e0e0e0; color: #000; }
+.modal-btn.success { background: #25D366; color: #fff; }
 .login-container { max-width: 400px; margin: 5rem auto; background: #fff; padding: 2rem; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); text-align: center; }
 .login-container h2 { font-family: 'Montserrat', sans-serif; font-weight: 900; margin-bottom: 1.5rem; }
 .login-container input { width: 100%; padding: 1rem; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 1rem; margin-bottom: 1rem; }
@@ -116,13 +117,35 @@ body { font-family: 'Open Sans', sans-serif; background: #f5f5f5; color: #333; }
 </div>
 
 <script>
-// ⚠️ MAKE SURE THIS IS YOUR CORRECT APPS SCRIPT URL
 const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbx6xDIYPUdE0Vxl3ndy1axkjX0Y6MWYYNRJ7tla1o-nUUPEMpcssfucjxL3qZIXnHdj/exec';
 const ADMIN_PASSWORD = 'hkj5762';
 let allBookings = [];
 let currentFilter = 'all';
 
-// --- DATE & TIME FORMATTERS ---
+function checkLogin() {
+  const pwd = document.getElementById('adminPassword').value;
+  if (pwd === ADMIN_PASSWORD) {
+    sessionStorage.setItem('hkj_admin', 'true');
+    document.getElementById('loginScreen').classList.add('hidden');
+    document.getElementById('dashboard').classList.remove('hidden');
+    loadBookings();
+  } else { alert('Incorrect password!'); }
+}
+function logout() { sessionStorage.removeItem('hkj_admin'); location.reload(); }
+if (sessionStorage.getItem('hkj_admin') === 'true') {
+  document.getElementById('loginScreen').classList.add('hidden');
+  document.getElementById('dashboard').classList.remove('hidden');
+  loadBookings();
+}
+
+function getVal(b, names) {
+  for (const name of names) {
+    const key = Object.keys(b).find(k => k.trim().toUpperCase() === name.toUpperCase());
+    if (key && b[key] !== undefined && b[key] !== '') return b[key];
+  }
+  return '';
+}
+
 function formatDate(dateString) {
   if (!dateString) return '';
   try {
@@ -133,7 +156,6 @@ function formatDate(dateString) {
     return `${day}/${month}/${year}`;
   } catch (e) { return dateString; }
 }
-
 function formatTime(timeString) {
   if (!timeString) return '';
   try {
@@ -141,61 +163,23 @@ function formatTime(timeString) {
     let hours = date.getUTCHours();
     const minutes = String(date.getUTCMinutes()).padStart(2, '0');
     const ampm = hours >= 12 ? 'PM' : 'AM';
-    hours = hours % 12;
-    hours = hours ? hours : 12;
+    hours = hours % 12; hours = hours ? hours : 12;
     return `${hours}:${minutes} ${ampm}`;
   } catch (e) { return timeString; }
 }
 
-// --- AUTH ---
-function checkLogin() {
-  const pwd = document.getElementById('adminPassword').value;
-  if (pwd === ADMIN_PASSWORD) {
-    sessionStorage.setItem('hkj_admin', 'true');
-    document.getElementById('loginScreen').classList.add('hidden');
-    document.getElementById('dashboard').classList.remove('hidden');
-    loadBookings();
-  } else {
-    alert('Incorrect password!');
-  }
-}
-
-function logout() { sessionStorage.removeItem('hkj_admin'); location.reload(); }
-
-if (sessionStorage.getItem('hkj_admin') === 'true') {
-  document.getElementById('loginScreen').classList.add('hidden');
-  document.getElementById('dashboard').classList.remove('hidden');
-  loadBookings();
-}
-
-// --- HELPERS ---
-function getVal(b, names) {
-  for (const name of names) {
-    const key = Object.keys(b).find(k => k.trim().toUpperCase() === name.toUpperCase());
-    if (key && b[key] !== undefined && b[key] !== '') return b[key];
-  }
-  return '';
-}
-
-// --- LOAD DATA ---
 async function loadBookings() {
   const list = document.getElementById('bookingsList');
   list.innerHTML = '<div class="loading"><i class="fas fa-spinner fa-spin"></i> Loading bookings...</div>';
-  
   try {
     const response = await fetch(SCRIPT_URL);
     const data = await response.json();
-    
     if (data.success && data.bookings) {
       allBookings = data.bookings;
       updateStats();
       renderBookings();
-    } else {
-      list.innerHTML = '<div class="empty">️ No data returned. Check Apps Script deployment.</div>';
-    }
-  } catch (error) {
-    list.innerHTML = '<div class="empty">❌ Failed to connect.<br><small>Check console (F12) for details</small></div>';
-  }
+    } else { list.innerHTML = '<div class="empty">No data returned.</div>'; }
+  } catch (error) { list.innerHTML = '<div class="empty">Failed to connect.</div>'; }
 }
 
 function updateStats() {
@@ -205,7 +189,6 @@ function updateStats() {
     const price = parseFloat(String(getVal(b, ['FINAL PRICE']) || '0').replace(/[^0-9.]/g, ''));
     return sum + (isNaN(price) ? 0 : price);
   }, 0);
-  
   document.getElementById('statTrips').textContent = total;
   document.getElementById('statRevenue').textContent = '$' + revenue.toFixed(2);
   document.getElementById('statPending').textContent = pending;
@@ -218,15 +201,10 @@ function filterBookings(filter, btn) {
   renderBookings();
 }
 
-// --- RENDER ---
 function renderBookings() {
   const list = document.getElementById('bookingsList');
   const filtered = currentFilter === 'all' ? allBookings : allBookings.filter(b => getVal(b, ['STATUS']) === currentFilter);
-  
-  if (filtered.length === 0) {
-    list.innerHTML = '<div class="empty">No bookings found</div>';
-    return;
-  }
+  if (filtered.length === 0) { list.innerHTML = '<div class="empty">No bookings found</div>'; return; }
   
   list.innerHTML = filtered.map(b => {
     const status = getVal(b, ['STATUS']) || 'Pending';
@@ -238,17 +216,13 @@ function renderBookings() {
     const dropoff = getVal(b, ['DROP OFF']) || 'N/A';
     const email = getVal(b, ['EMAIL']) || 'None';
     const rowNum = b._rowNumber;
-    
     const formattedDate = formatDate(getVal(b, ['DATE']));
     const formattedTime = formatTime(getVal(b, ['TIME']));
     
     return `
       <div class="booking-card">
         <div class="booking-header">
-          <div>
-            <div class="booking-ref">${refCode}</div>
-            <div style="font-weight:700;font-size:1.1rem;">${name}</div>
-          </div>
+          <div><div class="booking-ref">${refCode}</div><div style="font-weight:700;font-size:1.1rem;">${name}</div></div>
           <span class="status-badge status-${status.toLowerCase().replace(' ', '-')}">${status}</span>
         </div>
         <div class="booking-details">
@@ -272,12 +246,12 @@ function renderBookings() {
   }).join('');
 }
 
-// --- ACTIONS ---
 function sendWhatsApp(phone, name, refCode, price) {
   const msg = encodeURIComponent(`Hello ${name}, your final price for booking ${refCode} is ${price}. Please return to our website and confirm your booking using your code: https://hkjlogisticsltdtt.vercel.app/confirm.html`);
   window.open(`https://wa.me/1${phone}?text=${msg}`, '_blank');
 }
 
+// UPDATED CALC MODAL WITH TWO BUTTONS
 function openCalcModal(rowNum) {
   const booking = allBookings.find(b => b._rowNumber === rowNum);
   document.getElementById('modalContent').innerHTML = `
@@ -289,60 +263,47 @@ function openCalcModal(rowNum) {
     <input type="number" id="calcPrice" placeholder="e.g. 250" step="0.01">
     <div class="modal-buttons">
       <button class="modal-btn secondary" onclick="closeModal()">Cancel</button>
-      <button class="modal-btn primary" onclick="applyPrice(${rowNum})">Apply & Send WhatsApp</button>
+      <button class="modal-btn primary" onclick="applyPriceOnly(${rowNum})">Apply Price Only</button>
+      <button class="modal-btn success" onclick="applyAndSend(${rowNum})">Apply & Send WhatsApp</button>
     </div>
   `;
   document.getElementById('modalOverlay').style.display = 'flex';
 }
 
-async function applyPrice(rowNum) {
+async function applyPriceOnly(rowNum) {
   const price = document.getElementById('calcPrice').value;
   if (!price) { alert('Please enter a price'); return; }
-  
-  try {
-    await fetch(SCRIPT_URL, {
-      method: 'POST',
-      mode: 'no-cors',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      body: `action=updatePrice&row=${rowNum}&price=${price}`
-    });
-    
-    closeModal();
-    alert('✅ Price updated to $' + price + ' TTD!\n\nOpening WhatsApp...');
-    
-    const booking = allBookings.find(b => b._rowNumber === rowNum);
-    const phone = String(getVal(booking, ['PHONE'])).replace(/[^0-9]/g, '');
-    const name = getVal(booking, ['NAME']);
-    const refCode = getVal(booking, ['REF CODE']);
-    
-    if (phone) {
-      const waMessage = encodeURIComponent(`Hello ${name}, your final price for booking ${refCode} is $${price} TTD. Please return to our website and confirm your booking using your code: https://hkjlogisticsltdtt.vercel.app/confirm.html`);
-      window.open(`https://wa.me/1${phone}?text=${waMessage}`, '_blank');
-    }
-    
-    setTimeout(() => loadBookings(), 1000);
-  } catch (error) {
-    console.error('Error:', error);
-    alert('Error updating price: ' + error.message);
-  }
+  await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body: `action=updatePrice&row=${rowNum}&price=${price}` });
+  closeModal();
+  alert('✅ Price saved to sheet!');
+  setTimeout(() => loadBookings(), 1000);
 }
 
+async function applyAndSend(rowNum) {
+  const price = document.getElementById('calcPrice').value;
+  if (!price) { alert('Please enter a price'); return; }
+  await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body: `action=updatePrice&row=${rowNum}&price=${price}` });
+  closeModal();
+  const booking = allBookings.find(b => b._rowNumber === rowNum);
+  const phone = String(getVal(booking, ['PHONE'])).replace(/[^0-9]/g, '');
+  const name = getVal(booking, ['NAME']);
+  const refCode = getVal(booking, ['REF CODE']);
+  if (phone) {
+    const waMessage = encodeURIComponent(`Hello ${name}, your final price for booking ${refCode} is $${price} TTD. Please return to our website and confirm your booking using your code: https://hkjlogisticsltdtt.vercel.app/confirm.html`);
+    window.open(`https://wa.me/1${phone}?text=${waMessage}`, '_blank');
+  }
+  setTimeout(() => loadBookings(), 1000);
+}
+
+// UPDATED EMAIL MODAL WITH BOLD RED PRICE
 function openEmailModal(rowNum) {
   const booking = allBookings.find(b => b._rowNumber === rowNum);
+  const price = getVal(booking, ['FINAL PRICE']) || 'TBD';
   document.getElementById('modalContent').innerHTML = `
     <h3><i class="fas fa-envelope"></i> Send Email</h3>
     <p><strong>To:</strong> ${getVal(booking, ['EMAIL'])}</p>
-    <label><strong>Message:</strong></label>
-    <textarea id="emailMsg" rows="6">Hello ${getVal(booking, ['NAME'])},
-
-Thank you for booking with HKJ Logistics!
-
-Your final price: $${getVal(booking, ['FINAL PRICE']) || 'TBD'} TTD
-
-Reference Code: ${getVal(booking, ['REF CODE'])}
-
-Thank you,
-HKJ Logistics Ltd</textarea>
+    <label><strong>Message (HTML supported):</strong></label>
+    <textarea id="emailMsg" rows="8">Hello <b>${getVal(booking, ['NAME'])}</b>,<br><br>Thank you for booking with HKJ Logistics!<br><br>Your final price for the trip is:<br><b style="color: #DC2626; font-size: 1.5em;">$${price} TTD</b><br><br>Reference Code: <b>${getVal(booking, ['REF CODE'])}</b><br><br>Please reply to confirm or visit our website.<br><br>Thank you,<br>HKJ Logistics Ltd</textarea>
     <div class="modal-buttons">
       <button class="modal-btn secondary" onclick="closeModal()">Cancel</button>
       <button class="modal-btn primary" onclick="sendEmail(${rowNum})">Send Email</button>
@@ -360,7 +321,7 @@ async function sendEmail(rowNum) {
   await fetch(SCRIPT_URL, {
     method: 'POST',
     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    body: `action=sendEmail&row=${rowNum}&email=${encodeURIComponent(email)}&subject=${encodeURIComponent('Your HKJ Booking ' + refCode)}&message=${encodeURIComponent(msg)}`
+    body: `action=sendEmail&row=${rowNum}&email=${encodeURIComponent(email)}&subject=${encodeURIComponent('Your HKJ Booking ' + refCode)}&message=${encodeURIComponent(msg)}&isHtml=true`
   });
   
   closeModal();
@@ -370,11 +331,7 @@ async function sendEmail(rowNum) {
 
 async function updateStatus(rowNum, status) {
   if (!confirm(`Mark as ${status}?`)) return;
-  await fetch(SCRIPT_URL, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    body: `action=updateStatus&row=${rowNum}&status=${status}`
-  });
+  await fetch(SCRIPT_URL, { method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body: `action=updateStatus&row=${rowNum}&status=${status}` });
   alert(`Status updated to ${status}!`);
   loadBookings();
 }
