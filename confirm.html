@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Confirm Booking - HKJ Logistics Ltd</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Open Sans', sans-serif; background: #000; color: #fff; overflow-x: hidden; }
+        .header { background: #000; padding: 1rem 2rem; position: sticky; top: 0; z-index: 1000; border-bottom: 2px solid #FFD700; }
+        .header-container { max-width: 1400px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; }
+        .logo { display: flex; align-items: center; gap: 0.5rem; }
+        .logo-icon { width: 60px; height: 60px; background: #000; border: 3px solid #FFD700; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: 'Montserrat', sans-serif; font-weight: 900; font-size: 1.2rem; color: #fff; }
+        .logo-text { display: flex; flex-direction: column; }
+        .logo-text .company { font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: 1.2rem; color: #fff; }
+        .logo-text .company span { color: #FFD700; }
+        .logo-text .tagline { font-size: 0.7rem; color: #4A90E2; font-style: italic; }
+        .nav-menu { display: flex; gap: 2rem; list-style: none; }
+        .nav-menu a { color: #fff; text-decoration: none; font-family: 'Montserrat', sans-serif; font-weight: 600; font-size: 0.9rem; transition: color 0.3s; }
+        .nav-menu a:hover, .nav-menu a.active { color: #FFD700; }
+        .header-contact { display: flex; align-items: center; gap: 1.5rem; }
+        .phone-info { display: flex; align-items: center; gap: 0.75rem; }
+        .phone-icon { width: 50px; height: 50px; background: #FFD700; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; color: #000; }
+        .phone-details { display: flex; flex-direction: column; }
+        .phone-number { font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: 1.1rem; color: #fff; }
+        .phone-label { font-size: 0.75rem; color: #FFD700; font-weight: 600; }
+        .btn-whatsapp-header { background: #FFD700; color: #000; padding: 0.75rem 1.5rem; border-radius: 6px; font-family: 'Montserrat', sans-serif; font-weight: 700; text-decoration: none; display: flex; align-items: center; gap: 0.5rem; transition: all 0.3s; }
+        .btn-whatsapp-header:hover { background: #FFC107; transform: translateY(-2px); }
+        .mobile-menu-btn { display: none; background: #FFD700; border: none; color: #000; width: 44px; height: 44px; border-radius: 8px; font-size: 1.2rem; cursor: pointer; }
+        .booking { background: #f0fff4; padding: 4rem 2rem; min-height: 80vh; }
+        .booking-container { max-width: 900px; margin: 0 auto; }
+        .booking-widget { background: #fff; padding: 2.5rem; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); border-top: 5px solid #25D366; }
+        .booking-widget h2 { font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: 2rem; margin-bottom: 1.5rem; color: #25D366; text-align: center; }
+        .form-group { margin-bottom: 1.5rem; }
+        .form-group label { display: block; margin-bottom: 0.75rem; font-weight: 700; color: #333; font-size: 1.15rem; }
+        .form-group input, .form-group select { width: 100%; padding: 1.25rem; border: 2px solid #e0e0e0; border-radius: 10px; font-family: inherit; font-size: 1.2rem; transition: border-color 0.3s; background: #fff; color: #000; box-sizing: border-box; }
+        .form-group input:focus, .form-group select:focus { outline: none; border-color: #25D366; }
+        .btn-submit { width: 100%; padding: 1.5rem; background: #25D366; color: #fff; border: none; border-radius: 8px; font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: 1.3rem; cursor: pointer; transition: all 0.3s; display: flex; align-items: center; justify-content: center; gap: 0.5rem; text-transform: uppercase; }
+        .btn-submit:hover { background: #128C7E; transform: translateY(-2px); }
+        .footer-contact { background: #000; padding: 2rem; border-top: 3px solid #FFD700; }
+        .footer-container { max-width: 1400px; margin: 0 auto; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 2rem; }
+        .footer-item { display: flex; align-items: center; gap: 1rem; }
+        .footer-icon { width: 50px; height: 50px; background: #FFD700; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; color: #000; flex-shrink: 0; }
+        .footer-details h4 { font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: 0.85rem; color: #FFD700; margin-bottom: 0.25rem; }
+        .footer-details p { font-size: 0.9rem; color: #fff; }
+        @media (max-width: 968px) { .nav-menu { display: none; position: fixed; top: 80px; left: 0; right: 0; background: #000; flex-direction: column; padding: 2rem; border-top: 2px solid #FFD700; } .nav-menu.active { display: flex; } .mobile-menu-btn { display: block; } .header-contact { display: none; } }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-container">
+            <div class="logo"><div class="logo-icon">H.K.J</div><div class="logo-text"><div class="company">LOGISTICS <span>LTD</span></div><div class="tagline">solving all your problems</div></div></div>
+            <ul class="nav-menu" id="navMenu">
+                <li><a href="index.html">HOME</a></li>
+                <li><a href="index.html#services">SERVICES</a></li>
+                <li><a href="index.html#book">BOOK A RIDE</a></li>
+                <li><a href="confirm.html" class="active" style="color: #25D366; font-weight: 800;">CONFIRM BOOKING</a></li>
+                <li><a href="index.html#contact">CONTACT US</a></li>
+            </ul>
+            <div class="header-contact"><div class="phone-info"><div class="phone-icon"><i class="fas fa-phone"></i></div><div class="phone-details"><div class="phone-number">+1 (868) 780-0300</div><div class="phone-label">24/7 SERVICE</div></div></div><a href="https://wa.me/18687800300" class="btn-whatsapp-header" target="_blank"><i class="fab fa-whatsapp"></i> WHATSAPP US</a></div>
+            <button class="mobile-menu-btn" onclick="toggleMenu()"><i class="fas fa-bars"></i></button>
+        </div>
+    </header>
+
+    <section class="booking">
+        <div class="booking-container">
+            <div class="booking-widget">
+                <h2><i class="fas fa-lock"></i> FAST LOCK-IN</h2>
+                <p style="text-align: center; color: #555; margin-bottom: 2rem;">Have your Reference Code? Enter it below to lock in your booking instantly.</p>
+                
+                <form name="hkj-confirm" method="POST" onsubmit="return lockInBooking(event)">
+                    <input type="hidden" name="form-name" value="hkj-confirm">
+                    
+                    <div class="form-group">
+                        <label style="font-size: 1.3rem; color: #000;">Client Name *</label>
+                        <input type="text" name="clientNameLock" id="lockInName" placeholder="Type your code below to auto-fill" style="font-weight: 700;" required>
+                        <p style="font-size: 0.85rem; color: #25D366; margin-top: 5px; font-weight: 600;"><i class="fas fa-magic"></i> Name will appear automatically when you enter your code!</p>
+                    </div>
+
+                    <div class="form-group">
+                        <label style="font-size: 1.3rem; color: #000;">Enter Reference Code *</label>
+                        <input type="text" name="refCode" id="lockInCode" placeholder="e.g. HKJ-1234" style="font-size: 1.5rem; font-weight: 900; text-align: center; letter-spacing: 2px; border: 2px solid #25D366;" required>
+                        <p style="font-size: 0.9rem; color: #666; margin-top: 5px;">Found in your booking confirmation popup or WhatsApp message.</p>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Preferred Payment Method *</label>
+                        <select name="confirmPayment" id="confirmPayment" style="font-size: 1.1rem; font-weight: 600;" required>
+                            <option value="Online Payment (Wipay Link)">1️ Online Payment (Send me the Wipay link)</option>
+                            <option value="Card Payment on Drop-off">2️⃣ Card Payment (Pay on drop-off)</option>
+                            <option value="Cash Payment">3️⃣ Cash Payment</option>
+                        </select>
+                    </div>
+
+                    <button type="submit" class="btn-submit">
+                        <i class="fas fa-lock"></i> LOCK IN BOOKING
+                    </button>
+                    
+                    <div style="background: #e6fffa; border: 1px solid #25D366; border-radius: 8px; padding: 1rem; margin-top: 1.5rem; text-align: center;">
+                        <p style="color: #065f46; font-size: 0.9rem; margin: 0;"><i class="fas fa-info-circle"></i> This will open WhatsApp to confirm your code with Admin.</p>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer-contact" id="contact"><div class="footer-container"><div class="footer-item"><div class="footer-icon"><i class="fas fa-map-marker-alt"></i></div><div class="footer-details"><h4>OUR LOCATION</h4><p>Chaguanas, Trinidad</p></div></div><div class="footer-item"><div class="footer-icon"><i class="fas fa-phone"></i></div><div class="footer-details"><h4>CALL US</h4><p>+1 (868) 780-0300</p></div></div><div class="footer-item"><div class="footer-icon"><i class="fab fa-whatsapp"></i></div><div class="footer-details"><h4>WHATSAPP</h4><p>+1 (868) 780-0300</p></div></div><div class="footer-item"><div class="footer-icon"><i class="fas fa-envelope"></i></div><div class="footer-details"><h4>EMAIL US</h4><p>hkjlogisticsltd@gmail.com</p></div></div></div></footer>
+
+    <script>
+        function toggleMenu() { document.getElementById('navMenu').classList.toggle('active'); }
+        
+        document.getElementById('lockInCode').addEventListener('input', function() {
+            const code = this.value.trim().toUpperCase();
+            const nameField = document.getElementById('lockInName');
+            const storedName = localStorage.getItem('hkj_booking_' + code);
+            if (storedName) {
+                nameField.value = storedName;
+                nameField.style.borderColor = '#25D366';
+                nameField.style.backgroundColor = '#f0fff4';
+            } else {
+                nameField.style.borderColor = '#e0e0e0';
+                nameField.style.backgroundColor = '#fff';
+            }
+        });
+
+        function lockInBooking(e) {
+            e.preventDefault(); 
+            const form = e.target;
+            const formData = new FormData(form);
+            const code = formData.get('refCode');
+            const name = document.getElementById('lockInName').value;
+            const paymentMethod = formData.get('confirmPayment');
+
+            if (!code) { alert("Please enter your Reference Code."); return false; }
+            if (!name) { alert("Please enter your Name."); return false; }
+
+            let waMessage = `*🔒 FAST LOCK-IN CONFIRMATION*\n\n`;
+            waMessage += `*Client Name:* ${name}\n`;
+            waMessage += `*Reference Code:* ${code}\n\n`;
+            waMessage += `*Preferred Payment Method:*\n${paymentMethod}\n\n`;
+            waMessage += `Please confirm the price we discussed and lock this in!`;
+
+            const waUrl = `https://wa.me/18687800300?text=${encodeURIComponent(waMessage)}`;
+            window.open(waUrl, '_blank');
+            alert("✅ Code sent! WhatsApp is opening...");
+            return false; 
+        }
+    </script>
+</body>
+</html>
