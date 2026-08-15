@@ -116,7 +116,6 @@ body { font-family: 'Open Sans', sans-serif; background: #f5f5f5; color: #333; }
 </div>
 
 <script>
-// ⚠️ REPLACE THIS WITH YOUR ACTUAL APPS SCRIPT URL
 const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbx6xDIYPUdE0Vxl3ndy1axkjX0Y6MWYYNRJ7tla1o-nUUPEMpcssfucjxL3qZIXnHdj/exec';
 const ADMIN_PASSWORD = 'hkj5762';
 let allBookings = [];
@@ -155,10 +154,8 @@ async function loadBookings() {
   list.innerHTML = '<div class="loading"><i class="fas fa-spinner fa-spin"></i> Loading bookings...</div>';
   
   try {
-    console.log('Fetching from:', SCRIPT_URL);
     const response = await fetch(SCRIPT_URL);
     const data = await response.json();
-    console.log('Response:', data);
     
     if (data.success && data.bookings) {
       allBookings = data.bookings;
@@ -168,7 +165,6 @@ async function loadBookings() {
       list.innerHTML = '<div class="empty">⚠️ No data returned. Check Apps Script deployment.</div>';
     }
   } catch (error) {
-    console.error('Error:', error);
     list.innerHTML = '<div class="empty">❌ Failed to connect.<br><small>Check console (F12) for details</small></div>';
   }
 }
@@ -269,15 +265,32 @@ async function applyPrice(rowNum) {
   const price = document.getElementById('calcPrice').value;
   if (!price) { alert('Please enter a price'); return; }
   
-  await fetch(SCRIPT_URL, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    body: `action=updatePrice&row=${rowNum}&price=${price}`
-  });
-  
-  closeModal();
-  alert('Price updated!');
-  loadBookings();
+  try {
+    await fetch(SCRIPT_URL, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: `action=updatePrice&row=${rowNum}&price=${price}`
+    });
+    
+    closeModal();
+    alert('✅ Price updated to $' + price + ' TTD!\n\nOpening WhatsApp...');
+    
+    const booking = allBookings.find(b => b._rowNumber === rowNum);
+    const phone = String(getVal(booking, ['PHONE'])).replace(/[^0-9]/g, '');
+    const name = getVal(booking, ['NAME']);
+    const refCode = getVal(booking, ['REF CODE']);
+    
+    if (phone) {
+      const waMessage = encodeURIComponent(`Hello ${name}, your final price for booking ${refCode} is $${price} TTD. Please return to our website and confirm your booking using your code: https://hkjlogisticsltdtt.vercel.app/confirm.html`);
+      window.open(`https://wa.me/1${phone}?text=${waMessage}`, '_blank');
+    }
+    
+    setTimeout(() => loadBookings(), 1000);
+  } catch (error) {
+    console.error('Error:', error);
+    alert('Error updating price: ' + error.message);
+  }
 }
 
 function openEmailModal(rowNum) {
