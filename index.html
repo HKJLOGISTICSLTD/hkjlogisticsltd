@@ -77,33 +77,24 @@
         .location-method h4 { color: #333; margin-bottom: 1rem; font-size: 1.15rem; display: flex; align-items: center; gap: 0.5rem; }
         .method-content { display: block; margin-bottom: 1rem; }
         .method-content input[type="text"], .method-content select { width: 100% !important; padding: 1.25rem !important; font-size: 1.2rem !important; border: 2px solid #e0e0e0 !important; border-radius: 10px !important; box-sizing: border-box !important; margin-top: 0.5rem; background: #fff; color: #000; }
-        .fare-estimate { background: #f9f9f9; padding: 1.5rem; border-radius: 8px; margin: 1.5rem 0; border: 2px solid #FFD700; text-align: center; min-height: 140px; display: flex; flex-direction: column; justify-content: center; align-items: center; }
-        .fare-amount { font-size: 2rem; color: #000; font-family: 'Montserrat', sans-serif; font-weight: 800; margin-bottom: 0.5rem; }
-        .fare-breakdown { font-size: 0.9rem; color: #555; margin-bottom: 0.75rem; }
-        .price-note { color: #DC2626; font-weight: 700; font-size: 0.9rem; margin-top: 0.5rem; line-height: 1.4; }
-        .price-note i { margin-right: 5px; }
-        .airport-note { color: #0066CC; font-weight: 600; font-size: 0.85rem; margin-top: 0.5rem; font-style: italic; }
-        .loading-text { color: #666; font-size: 1rem; }
         .btn-submit { width: 100%; padding: 1.5rem; background: #DC2626; color: #fff; border: none; border-radius: 8px; font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: 1.3rem; cursor: pointer; transition: all 0.3s; display: flex; align-items: center; justify-content: center; gap: 0.5rem; text-transform: uppercase; box-shadow: 0 4px 15px rgba(220, 38, 38, 0.4); animation: pulse 2s infinite; }
         .btn-submit:hover { background: #B91C1C; transform: translateY(-2px); box-shadow: 0 6px 20px rgba(220, 38, 38, 0.6); }
         .btn-submit:disabled { background: #999; animation: none; cursor: not-allowed; }
         @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.7); } 70% { box-shadow: 0 0 0 10px rgba(220, 38, 38, 0); } 100% { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0); } }
-        .btn-calculate { width: 100%; padding: 1.25rem; background: #0066CC; color: #fff; border: none; border-radius: 8px; font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: 1.1rem; cursor: pointer; transition: all 0.3s; margin-top: 0.75rem; }
-        .btn-calculate:hover { background: #0052A3; }
-        .btn-calculate:disabled { background: #ccc; cursor: not-allowed; }
         select { cursor: pointer; }
         
+        /* UPDATED POPUP STYLES */
         .popup-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 9999; justify-content: center; align-items: center; padding: 1rem; }
-        .popup-box { background: #fff; padding: 2.5rem; border-radius: 12px; max-width: 500px; text-align: center; border-top: 8px solid #DC2626; box-shadow: 0 10px 40px rgba(220, 38, 38, 0.4); animation: slideIn 0.3s ease-out; }
-        @keyframes slideIn { from { transform: translateY(-30px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-        .popup-box h3 { color: #DC2626; font-size: 1.5rem; margin-bottom: 1rem; font-family: 'Montserrat', sans-serif; font-weight: 800; }
-        .popup-box p { color: #333; font-size: 1.1rem; line-height: 1.6; margin-bottom: 1.5rem; }
-        .popup-box strong { color: #DC2626; }
-        .popup-box .code-display { background: #000; color: #FFD700; padding: 1rem; font-size: 2rem; font-weight: 900; border-radius: 8px; margin: 1rem 0; letter-spacing: 2px; font-family: 'Montserrat', sans-serif; }
-        .popup-btn { background: #DC2626; color: #fff; border: none; padding: 1rem 2.5rem; border-radius: 8px; font-weight: 800; cursor: pointer; font-size: 1.1rem; font-family: 'Montserrat', sans-serif; transition: all 0.3s; }
-        .popup-btn:hover { background: #B91C1C; transform: translateY(-2px); }
+        .popup-box { background: #fff; padding: 2.5rem; border-radius: 16px; max-width: 550px; width: 100%; text-align: center; border-top: 10px solid #25D366; box-shadow: 0 15px 50px rgba(0,0,0,0.5); animation: slideIn 0.4s ease-out; }
+        @keyframes slideIn { from { transform: translateY(-50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        .popup-box h3 { color: #25D366; font-size: 2.2rem; margin-bottom: 1rem; font-family: 'Montserrat', sans-serif; font-weight: 900; text-transform: uppercase; }
+        .popup-box p { color: #333; font-size: 1.1rem; line-height: 1.6; margin-bottom: 1rem; }
+        .popup-box strong { color: #000; }
+        .popup-box .code-display { background: #000; color: #FFD700; padding: 1.25rem; font-size: 2.2rem; font-weight: 900; border-radius: 10px; margin: 1.5rem 0; letter-spacing: 3px; font-family: 'Montserrat', sans-serif; box-shadow: inset 0 0 10px rgba(255,215,0,0.2); }
+        .popup-btn { background: #25D366; color: #fff; border: none; padding: 1.25rem 3rem; border-radius: 50px; font-weight: 800; cursor: pointer; font-size: 1.2rem; font-family: 'Montserrat', sans-serif; transition: all 0.3s; text-transform: uppercase; letter-spacing: 1px; }
+        .popup-btn:hover { background: #128C7E; transform: translateY(-2px); box-shadow: 0 5px 15px rgba(37,211,102,0.4); }
 
-        @media (max-width: 968px) { .nav-menu { display: none; position: fixed; top: 80px; left: 0; right: 0; background: #000; flex-direction: column; padding: 2rem; border-top: 2px solid #FFD700; } .nav-menu.active { display: flex; } .mobile-menu-btn { display: block; } .header-contact { display: none; } .hero-title { font-size: 2.5rem; } .hero-buttons { flex-direction: column; } .btn-hero { width: 100%; justify-content: center; } .form-row { grid-template-columns: 1fr; } .hero { background-attachment: scroll; } }
+        @media (max-width: 968px) { .nav-menu { display: none; position: fixed; top: 80px; left: 0; right: 0; background: #000; flex-direction: column; padding: 2rem; border-top: 2px solid #FFD700; } .nav-menu.active { display: flex; } .mobile-menu-btn { display: block; } .header-contact { display: none; } .hero-title { font-size: 2.5rem; } .hero-buttons { flex-direction: column; } .btn-hero { width: 100%; justify-content: center; } .form-row { grid-template-columns: 1fr; } .hero { background-attachment: scroll; } .popup-box { padding: 1.5rem; } .popup-box h3 { font-size: 1.8rem; } .popup-box .code-display { font-size: 1.8rem; } }
     </style>
 </head>
 <body>
@@ -212,8 +203,6 @@
                         <p style="font-size: 0.85rem; color: #555; margin-top: 5px; margin-left: 30px;">Special event rates apply. Minimum starting price: $400.00 TTD.</p>
                     </div>
                     
-                    <button type="button" class="btn-calculate" id="calcBtn" onclick="calculateFare()"><i class="fas fa-calculator"></i> Calculate Estimated Fare</button>
-                    <div class="fare-estimate" style="display: none;" id="fareContainer"><div id="fareDisplay"></div></div>
                     <div class="form-group"><label>Service Type *</label><select name="serviceType" id="serviceType" required><option value="private">Private Taxi</option><option value="airport">Airport Transfer</option><option value="corporate">Corporate Travel</option><option value="tour">Island Tour</option></select></div>
                     
                     <div class="form-group">
@@ -231,7 +220,7 @@
                     
                     <div style="background: #fff0f0; border: 2px solid #DC2626; border-radius: 8px; padding: 1.25rem; margin-top: 1.5rem; text-align: center;">
                         <p style="color: #DC2626; font-weight: 800; font-size: 1.1rem; margin-bottom: 0.5rem; text-transform: uppercase;"><i class="fas fa-exclamation-triangle"></i> IMPORTANT NOTICE</p>
-                        <p style="color: #DC2626; font-weight: 600; font-size: 1rem; margin: 0; line-height: 1.5;">The final cost is to be determined by Admin and you will be notified.<br>After receiving your final price, please confirm your booking by clicking <a href="confirm.html" style="color:#DC2626; text-decoration:underline; font-weight:800;">CONFIRM BOOKING</a> in the menu above.</p>
+                        <p style="color: #DC2626; font-weight: 600; font-size: 1rem; margin: 0; line-height: 1.5;">Admin will determine the final cost and notify you.<br>After receiving your final price, please confirm your booking by clicking <a href="confirm.html" style="color:#DC2626; text-decoration:underline; font-weight:800;">CONFIRM BOOKING</a> in the menu above.</p>
                     </div>
                 </form>
             </div>
@@ -240,12 +229,15 @@
 
     <footer class="footer-contact" id="contact"><div class="footer-container"><div class="footer-item"><div class="footer-icon"><i class="fas fa-map-marker-alt"></i></div><div class="footer-details"><h4>OUR LOCATION</h4><p>Chaguanas, Trinidad</p><div class="sub">Proudly serving all areas</div></div></div><div class="footer-item"><div class="footer-icon"><i class="fas fa-phone"></i></div><div class="footer-details"><h4>CALL US</h4><p>+1 (868) 780-0300</p><div class="sub">24/7 Service</div></div></div><div class="footer-item"><div class="footer-icon"><i class="fab fa-whatsapp"></i></div><div class="footer-details"><h4>WHATSAPP</h4><p>+1 (868) 780-0300</p><div class="sub">Chat with us anytime</div></div></div><div class="footer-item"><div class="footer-icon"><i class="fas fa-envelope"></i></div><div class="footer-details"><h4>EMAIL US</h4><p>hkjlogisticsltd@gmail.com</p><div class="sub">We'll respond quickly</div></div></div><div class="footer-item"><div class="footer-icon"><i class="fas fa-shield-alt"></i></div><div class="footer-details"><h4>SAFE & SECURE</h4><p>Your safety is</p><div class="sub">our top priority</div></div></div></div></footer>
 
+    <!-- NEW BIG THANK YOU POPUP -->
     <div id="successPopup" class="popup-overlay">
         <div class="popup-box">
-            <h3><i class="fas fa-check-circle"></i> REQUEST SENT!</h3>
-            <p>Your Reference Code is:</p>
+            <div style="font-size: 4rem; color: #25D366; margin-bottom: 0.5rem;"><i class="fas fa-check-circle"></i></div>
+            <h3>THANK YOU!</h3>
+            <p>Thank you for choosing HKJ Logistics. Your booking request has been successfully received!</p>
+            <p style="font-weight: 700; color: #000; margin-top: 1.5rem; margin-bottom: 0.5rem;">Your Reference Code is:</p>
             <div class="code-display" id="popupCodeDisplay">HKJ-0000</div>
-            <p>To secure your spot, click <a href="confirm.html" style="color:#DC2626; font-weight:800;">CONFIRM BOOKING</a> in the menu above and enter this code!</p>
+            <p style="font-size: 1rem; color: #555; margin-bottom: 1.5rem;">An Admin will contact you shortly with the final price. Once confirmed, please click <a href="confirm.html" style="color:#DC2626; font-weight:800;">CONFIRM BOOKING</a> to lock it in!</p>
             <button class="popup-btn" onclick="closePopup()">GOT IT!</button>
         </div>
     </div>
@@ -265,71 +257,6 @@
             return city; 
         }
         
-        const locationKeywords = { 'POS': ['port of spain', 'pos', 'woodbrook', 'belmont', 'st. clair', 'st. james', 'diego martin', 'petit valley', 'four roads', 'carenage', 'chaguaramas'], 'EAST': ['san juan', 'barataria', 'curepe', 'st. augustine', 'tunapuna', 'el dorado', 'arima', 'sangre grande'], 'CENTRAL': ['chaguanas', 'couva', 'point lisas', 'california', 'caroni'], 'SOUTH': ['san fernando', 'marabella', 'gasparillo', 'princes town', 'debe', 'penal', 'siparia', 'fyzabad', 'point fortin'], 'PIARCO': ['piarco', 'airport'] };
-        const hubDistances = { 'POS': { 'POS': 0, 'EAST': 15, 'CENTRAL': 25, 'SOUTH': 55, 'PIARCO': 28 }, 'EAST': { 'POS': 15, 'EAST': 0, 'CENTRAL': 30, 'SOUTH': 50, 'PIARCO': 15 }, 'CENTRAL': { 'POS': 25, 'EAST': 30, 'CENTRAL': 0, 'SOUTH': 20, 'PIARCO': 38 }, 'SOUTH': { 'POS': 55, 'EAST': 50, 'CENTRAL': 20, 'SOUTH': 0, 'PIARCO': 60 }, 'PIARCO': { 'POS': 28, 'EAST': 15, 'CENTRAL': 38, 'SOUTH': 60, 'PIARCO': 0 } };
-        
-        function detectLocation(address) { if (!address) return null; const lower = address.toLowerCase(); for (const [hub, keywords] of Object.entries(locationKeywords)) { for (const keyword of keywords) { if (lower.includes(keyword)) return hub; } } return null; }
-        
-        let currentEstimate = 0;
-        function getBaseFare(timeStr) { if (!timeStr) return 30.00; const [hours, minutes] = timeStr.split(':').map(Number); const totalMinutes = (hours * 60) + minutes; if (totalMinutes >= 22 * 60 || totalMinutes < 6 * 60) { return 50.00; } if ((totalMinutes >= 7 * 60 && totalMinutes < 9 * 60) || (totalMinutes >= 16 * 60 && totalMinutes < 19 * 60)) { return 40.00; } return 30.00; }
-        function getTimeNote(timeStr) { if (!timeStr) return ""; const [hours, minutes] = timeStr.split(':').map(Number); const totalMinutes = (hours * 60) + minutes; if (totalMinutes >= 22 * 60 || totalMinutes < 6 * 60) { return `<div class="airport-note" style="color:#DC2626;"><i class="fas fa-moon"></i> Late Night/Early Morning Rate Applied (10PM - 6AM)</div>`; } if ((totalMinutes >= 7 * 60 && totalMinutes < 9 * 60) || (totalMinutes >= 16 * 60 && totalMinutes < 19 * 60)) { return `<div class="airport-note" style="color:#D97706;"><i class="fas fa-clock"></i> Peak Hour Rate Applied (7-9AM & 4-7PM)</div>`; } return `<div class="airport-note"><i class="fas fa-sun"></i> Standard Daytime Rate Applied</div>`; }
-        
-        function calculateFare() { 
-            const pickup = getActiveLocation('pickup'); 
-            const dropoff = getActiveLocation('dropoff'); 
-            const waitHours = parseFloat(document.getElementById('waitingTime').value) || 0; 
-            const time = document.getElementById('bookTime').value; 
-            const fareDisplay = document.getElementById('fareDisplay'); 
-            const fareContainer = document.getElementById('fareContainer'); 
-            
-            if (!pickup || !dropoff) { alert("Please specify both Pickup and Drop-off locations."); return; } 
-            if (!time) { alert("Please select a Time for your trip."); return; } 
-            
-            fareContainer.style.display = 'flex'; 
-            fareDisplay.innerHTML = '<div class="loading-text"><i class="fas fa-spinner fa-spin"></i> Calculating route...</div>'; 
-            
-            const origin = pickup + (pickup.includes(',') ? '' : ', Trinidad'); 
-            const destination = dropoff + (dropoff.includes(',') ? '' : ', Trinidad'); 
-            
-            const pickupHub = detectLocation(pickup); 
-            const dropoffHub = detectLocation(dropoff); 
-            
-            let distanceKm = 15; 
-            if (pickupHub && dropoffHub) { 
-                distanceKm = hubDistances[pickupHub][dropoffHub] || 15; 
-                if (pickupHub === dropoffHub) distanceKm = 5; 
-            } 
-            
-            displayFare(distanceKm, waitHours, origin, destination, time); 
-        }
-        
-        function displayFare(distanceKm, waitHours, origin, destination, time) { 
-            const waitingCost = waitHours * 100.00; 
-            let total = 0; 
-            let isCaroni = origin.toLowerCase().includes('caroni') || destination.toLowerCase().includes('caroni'); 
-            const baseFare = getBaseFare(time); 
-            const timeNote = getTimeNote(time);
-            let isCarnival = document.getElementById('isCarnival').checked;
-            let carnivalFee = isCarnival ? 400.00 : 0; 
-            
-            if (isCaroni) { total = 300.00 + waitingCost; } 
-            else { const distanceCost = distanceKm * 5.00; total = baseFare + distanceCost + waitingCost; } 
-            if (isCarnival && total < carnivalFee) { total = carnivalFee; } 
-            else if (isCarnival) { total += carnivalFee; }
-            
-            currentEstimate = total.toFixed(2); 
-            let html = `<div class="fare-amount">Estimated Fare: $${currentEstimate} TTD</div>`; 
-            if (isCaroni) { html += `<div class="fare-breakdown" style="color: #DC2626; font-weight: 700;"><i class="fas fa-leaf"></i> Caroni Bird Sanctuary Return Trip Flat Rate</div>`; } 
-            else { html += `<div class="fare-breakdown"><i class="fas fa-road"></i> Distance: ${distanceKm} km (Base: $${baseFare.toFixed(2)})</div>`; } 
-            if (waitHours > 0) html += `<div class="fare-breakdown"><i class="fas fa-hourglass-half"></i> Waiting Time: ${waitHours} hr(s) (+ $${waitingCost.toFixed(2)})</div>`; 
-            if (isCarnival) { html += `<div class="fare-breakdown" style="color: #DC2626; font-weight: 700;"><i class="fas fa-mask"></i> Carnival Event Rate: $400.00 Minimum</div>`; }
-            html += timeNote;
-            html += `<div class="price-note"><i class="fas fa-exclamation-circle"></i> Note: This is an estimate. Final price confirmed by admin.</div>`; 
-            if (origin.toLowerCase().includes('piarco') || destination.toLowerCase().includes('piarco') || origin.toLowerCase().includes('airport') || destination.toLowerCase().includes('airport')) { html += `<div class="airport-note"><i class="fas fa-plane"></i> Airport pickups include 30 mins free waiting time.</div>`; } 
-            document.getElementById('fareDisplay').innerHTML = html; 
-        }
-        
-        // NEW FUNCTION: Convert 24h time to 12h AM/PM
         function formatTimeAMPM(time24) {
             if (!time24) return '';
             let [hours, minutes] = time24.split(':');
@@ -341,7 +268,7 @@
 
         function generateReferenceCode() { return 'HKJ-' + Math.floor(1000 + Math.random() * 9000); }
 
-        function generateCalendarLink(name, phone, pickup, dropoff, date, time, price) {
+        function generateCalendarLink(name, phone, pickup, dropoff, date, time) {
             const dateClean = date.replace(/-/g, '');
             const timeClean = time.replace(/:/g, '') + '00';
             const startDT = dateClean + 'T' + timeClean;
@@ -349,7 +276,7 @@
             hours = (hours + 1) % 24;
             const endDT = dateClean + 'T' + hours.toString().padStart(2, '0') + minutes.toString().padStart(2, '0') + '00';
             const title = encodeURIComponent(`HKJ Logistics Booking - ${name}`);
-            const details = encodeURIComponent(`Phone: ${phone}\nPickup: ${pickup}\nDrop-off: ${dropoff}\nFinal Price: $${price} TTD\n\nBooked via HKJ Logistics Ltd Website.`);
+            const details = encodeURIComponent(`Phone: ${phone}\nPickup: ${pickup}\nDrop-off: ${dropoff}\n\nBooked via HKJ Logistics Ltd Website.`);
             const location = encodeURIComponent(`${pickup} to ${dropoff}, Trinidad`);
             return `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${title}&dates=${startDT}/${endDT}&details=${details}&location=${location}`;
         }
@@ -378,15 +305,12 @@
             
             const refCode = generateReferenceCode();
             document.getElementById('hiddenRefCode').value = refCode;
-            document.getElementById('calendarLink').value = generateCalendarLink(name, phone, pickup, dropoff, date, time, currentEstimate);
+            document.getElementById('calendarLink').value = generateCalendarLink(name, phone, pickup, dropoff, date, time);
             
-            // Format time for AM/PM
             const formattedTime = formatTimeAMPM(time);
-            const priceDisplay = currentEstimate > 0 ? '$' + currentEstimate + ' TTD' : 'To be determined by Admin';
             
-            // Append vehicle and price to notes so it goes to Google Sheets automatically
             let notes = formData.get('additionalNotes') || "";
-            notes += `\nVehicle Requested: ${vehicleType}\nWebsite Estimate: ${priceDisplay}`;
+            notes += `\nVehicle Requested: ${vehicleType}`;
             formData.set('additionalNotes', notes);
             
             localStorage.setItem('hkj_booking_' + refCode, name);
@@ -399,7 +323,6 @@
             waMessage += `*Pickup:* ${pickup}\n*Drop-off:* ${dropoff}\n*Date:* ${date}\n*Time:* ${formattedTime}\n*Service:* ${service}\n*Waiting:* ${waitTime}\n`; 
             if(notes) waMessage += `*Notes:* ${notes}\n`; 
             if(isCarnival) { waMessage += `\n *CARNIVAL EVENT BOOKING - $400.00 MINIMUM RATE APPLIES*\n`; }
-            waMessage += `\n*Website Estimate:* ${priceDisplay}`; 
             
             const waUrl = `https://wa.me/18687800300?text=${encodeURIComponent(waMessage)}`; 
             
