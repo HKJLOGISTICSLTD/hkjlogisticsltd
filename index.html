@@ -93,7 +93,6 @@
         .btn-calculate:disabled { background: #ccc; cursor: not-allowed; }
         select { cursor: pointer; }
         
-        /* CUSTOM RED POPUP STYLES */
         .popup-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 9999; justify-content: center; align-items: center; padding: 1rem; }
         .popup-box { background: #fff; padding: 2.5rem; border-radius: 12px; max-width: 500px; text-align: center; border-top: 8px solid #DC2626; box-shadow: 0 10px 40px rgba(220, 38, 38, 0.4); animation: slideIn 0.3s ease-out; }
         @keyframes slideIn { from { transform: translateY(-30px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
@@ -115,7 +114,7 @@
                 <li><a href="#home" class="active">HOME</a></li>
                 <li><a href="#services">SERVICES</a></li>
                 <li><a href="#book">BOOK A RIDE</a></li>
-                <li><a href="#confirm" style="color: #25D366; font-weight: 800;">CONFIRM BOOKING</a></li>
+                <li><a href="confirm.html" style="color: #25D366; font-weight: 800;">CONFIRM BOOKING</a></li>
                 <li><a href="#contact">CONTACT US</a></li>
             </ul>
             <div class="header-contact"><div class="phone-info"><div class="phone-icon"><i class="fas fa-phone"></i></div><div class="phone-details"><div class="phone-number">+1 (868) 780-0300</div><div class="phone-label">24/7 SERVICE</div></div></div><a href="https://wa.me/18687800300" class="btn-whatsapp-header" target="_blank"><i class="fab fa-whatsapp"></i> WHATSAPP US</a></div>
@@ -140,8 +139,8 @@
                         <div class="form-group"><label>WhatsApp Number *</label><input type="tel" name="clientPhone" id="clientPhone" placeholder="868-XXX-XXXX" required></div>
                     </div>
                     <div class="form-group">
-                        <label>Your Email Address *</label>
-                        <input type="email" name="clientEmail" id="clientEmail" placeholder="example@email.com" required>
+                        <label>Your Email Address (Optional)</label>
+                        <input type="email" name="clientEmail" id="clientEmail" placeholder="example@email.com">
                     </div>
                     
                     <div class="location-method">
@@ -224,48 +223,6 @@
         </div>
     </section>
 
-    <section class="booking" id="confirm" style="background: #f0fff4;">
-        <div class="booking-container">
-            <div class="booking-widget" style="border-top: 5px solid #25D366;">
-                <h2 style="color: #25D366;"><i class="fas fa-lock"></i> FAST LOCK-IN</h2>
-                <p style="text-align: center; color: #555; margin-bottom: 2rem;">Have your Reference Code? Enter it below to lock in your booking instantly.</p>
-                
-                <form name="hkj-confirm" method="POST" onsubmit="return lockInBooking(event)">
-                    <input type="hidden" name="form-name" value="hkj-confirm">
-                    
-                    <div class="form-group">
-                        <label style="font-size: 1.3rem; color: #000;">Client Name *</label>
-                        <input type="text" name="clientNameLock" id="lockInName" placeholder="Type your code above to auto-fill" style="font-weight: 700;" required>
-                        <p style="font-size: 0.85rem; color: #25D366; margin-top: 5px; font-weight: 600;"><i class="fas fa-magic"></i> Name will appear automatically when you enter your code!</p>
-                    </div>
-
-                    <div class="form-group">
-                        <label style="font-size: 1.3rem; color: #000;">Enter Reference Code *</label>
-                        <input type="text" name="refCode" id="lockInCode" placeholder="e.g. HKJ-1234" style="font-size: 1.5rem; font-weight: 900; text-align: center; letter-spacing: 2px; border: 2px solid #25D366;" required>
-                        <p style="font-size: 0.9rem; color: #666; margin-top: 5px;">Found in your booking confirmation popup or WhatsApp message.</p>
-                    </div>
-
-                    <div class="form-group">
-                        <label>Preferred Payment Method *</label>
-                        <select name="confirmPayment" id="confirmPayment" style="font-size: 1.1rem; font-weight: 600;" required>
-                            <option value="Online Payment (Wipay Link)">1️⃣ Online Payment (Send me the Wipay link)</option>
-                            <option value="Card Payment on Drop-off">2️⃣ Card Payment (Pay on drop-off)</option>
-                            <option value="Cash Payment">3️⃣ Cash Payment</option>
-                        </select>
-                    </div>
-
-                    <button type="submit" class="btn-submit" style="background: #25D366; animation: none;">
-                        <i class="fas fa-lock"></i> LOCK IN BOOKING
-                    </button>
-                    
-                    <div style="background: #e6fffa; border: 1px solid #25D366; border-radius: 8px; padding: 1rem; margin-top: 1.5rem; text-align: center;">
-                        <p style="color: #065f46; font-size: 0.9rem; margin: 0;"><i class="fas fa-info-circle"></i> This will open WhatsApp to confirm your code with Admin.</p>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </section>
-
     <footer class="footer-contact" id="contact"><div class="footer-container"><div class="footer-item"><div class="footer-icon"><i class="fas fa-map-marker-alt"></i></div><div class="footer-details"><h4>OUR LOCATION</h4><p>Chaguanas, Trinidad</p><div class="sub">Proudly serving all areas</div></div></div><div class="footer-item"><div class="footer-icon"><i class="fas fa-phone"></i></div><div class="footer-details"><h4>CALL US</h4><p>+1 (868) 780-0300</p><div class="sub">24/7 Service</div></div></div><div class="footer-item"><div class="footer-icon"><i class="fab fa-whatsapp"></i></div><div class="footer-details"><h4>WHATSAPP</h4><p>+1 (868) 780-0300</p><div class="sub">Chat with us anytime</div></div></div><div class="footer-item"><div class="footer-icon"><i class="fas fa-envelope"></i></div><div class="footer-details"><h4>EMAIL US</h4><p>hkjlogisticsltd@gmail.com</p><div class="sub">We'll respond quickly</div></div></div><div class="footer-item"><div class="footer-icon"><i class="fas fa-shield-alt"></i></div><div class="footer-details"><h4>SAFE & SECURE</h4><p>Your safety is</p><div class="sub">our top priority</div></div></div></div></footer>
 
     <div id="successPopup" class="popup-overlay">
@@ -273,7 +230,7 @@
             <h3><i class="fas fa-check-circle"></i> REQUEST SENT!</h3>
             <p>Your Reference Code is:</p>
             <div class="code-display" id="popupCodeDisplay">HKJ-0000</div>
-            <p>To secure your spot, scroll down to <strong>"FAST LOCK-IN"</strong> and enter this code after Admin approves your price!</p>
+            <p>To secure your spot, click <a href="confirm.html" style="color:#DC2626; font-weight:800;">CONFIRM BOOKING</a> in the menu above and enter this code!</p>
             <button class="popup-btn" onclick="closePopup()">GOT IT!</button>
         </div>
     </div>
@@ -375,20 +332,6 @@
         function showPopup(code) { document.getElementById('popupCodeDisplay').innerText = code; document.getElementById('successPopup').style.display = 'flex'; }
         function closePopup() { document.getElementById('successPopup').style.display = 'none'; }
 
-        document.getElementById('lockInCode').addEventListener('input', function() {
-            const code = this.value.trim().toUpperCase();
-            const nameField = document.getElementById('lockInName');
-            const storedName = localStorage.getItem('hkj_booking_' + code);
-            if (storedName) {
-                nameField.value = storedName;
-                nameField.style.borderColor = '#25D366';
-                nameField.style.backgroundColor = '#f0fff4';
-            } else {
-                nameField.style.borderColor = '#e0e0e0';
-                nameField.style.backgroundColor = '#fff';
-            }
-        });
-
         function handleBooking(e) { 
             e.preventDefault(); 
             const form = e.target;
@@ -416,14 +359,15 @@
             
             let waMessage = `*NEW BOOKING REQUEST - HKJ LOGISTICS*\n\n`; 
             waMessage += `*Reference Code:* ${refCode}\n`;
-            waMessage += `*Name:* ${name}\n*Phone:* ${phone}\n*Email:* ${email}\n*Pickup:* ${pickup}\n*Drop-off:* ${dropoff}\n*Date:* ${date}\n*Time:* ${time}\n*Service:* ${service}\n*Waiting:* ${waitTime}\n`; 
+            waMessage += `*Name:* ${name}\n*Phone:* ${phone}\n`;
+            if(email) waMessage += `*Email:* ${email}\n`;
+            waMessage += `*Pickup:* ${pickup}\n*Drop-off:* ${dropoff}\n*Date:* ${date}\n*Time:* ${time}\n*Service:* ${service}\n*Waiting:* ${waitTime}\n`; 
             if(notes) waMessage += `*Notes:* ${notes}\n`; 
-            if(isCarnival) { waMessage += `\n🎉 *CARNIVAL EVENT BOOKING - $400.00 MINIMUM RATE APPLIES*\n`; }
+            if(isCarnival) { waMessage += `\n *CARNIVAL EVENT BOOKING - $400.00 MINIMUM RATE APPLIES*\n`; }
             waMessage += `\n*Website Estimate:* $${currentEstimate} TTD`; 
             
             const waUrl = `https://wa.me/18687800300?text=${encodeURIComponent(waMessage)}`; 
             
-            // SEND TO GOOGLE SHEETS AUTOMATICALLY
             const scriptURL = 'https://script.google.com/macros/s/AKfycbx6xDIYPUdE0Vxl3ndy1axkjX0Y6MWYYNRJ7tla1o-nUUPEMpcssfucjxL3qZIXnHdj/exec';
             const submitBtn = document.getElementById('submitBtn');
             const originalBtnText = submitBtn.innerHTML;
@@ -449,29 +393,6 @@
                 submitBtn.disabled = false;
             });
             
-            return false; 
-        }
-
-        function lockInBooking(e) {
-            e.preventDefault(); 
-            const form = e.target;
-            const formData = new FormData(form);
-            const code = formData.get('refCode');
-            const name = document.getElementById('lockInName').value;
-            const paymentMethod = formData.get('confirmPayment');
-
-            if (!code) { alert("Please enter your Reference Code."); return false; }
-            if (!name) { alert("Please enter your Name."); return false; }
-
-            let waMessage = `*🔒 FAST LOCK-IN CONFIRMATION*\n\n`;
-            waMessage += `*Client Name:* ${name}\n`;
-            waMessage += `*Reference Code:* ${code}\n\n`;
-            waMessage += `*Preferred Payment Method:*\n${paymentMethod}\n\n`;
-            waMessage += `Please confirm the price we discussed and lock this in!`;
-
-            const waUrl = `https://wa.me/18687800300?text=${encodeURIComponent(waMessage)}`;
-            window.open(waUrl, '_blank');
-            alert("✅ Code sent! WhatsApp is opening...");
             return false; 
         }
     </script>
