@@ -81,7 +81,7 @@
 
                     <div class="form-group">
                         <label style="font-size: 1.3rem; color: #000;">Enter Reference Code *</label>
-                        <input type="text" name="refCode" id="lockInCode" placeholder="e.g. HKJ-1234" style="font-size: 1.5rem; font-weight: 900; text-align: center; letter-spacing: 2px; border: 2px solid #25D366; text-transform: uppercase;" required>
+                        <input type="text" name="refCode" id="lockInCode" placeholder="e.g. HKJ-1234 or HKJ1234" style="font-size: 1.5rem; font-weight: 900; text-align: center; letter-spacing: 2px; border: 2px solid #25D366; text-transform: uppercase;" required>
                         <p style="font-size: 0.9rem; color: #666; margin-top: 5px;">Found in your booking confirmation popup or WhatsApp message.</p>
                     </div>
 
@@ -111,13 +111,19 @@
     <script>
         function toggleMenu() { document.getElementById('navMenu').classList.toggle('active'); }
         
-        // AUTO-FILL NAME LOGIC - CASE INSENSITIVE
+        // AUTO-FILL NAME LOGIC - CASE INSENSITIVE & HYPHEN INSENSITIVE
         document.getElementById('lockInCode').addEventListener('input', function() {
-            const code = this.value.trim().toUpperCase(); // Convert to uppercase
-            const nameField = document.getElementById('lockInName');
+            let rawCode = this.value.trim().toUpperCase();
+            // Remove any existing hyphens to normalize
+            let cleanCode = rawCode.replace(/-/g, '');
             
-            // Try to find the booking with uppercase code
-            const storedName = localStorage.getItem('hkj_booking_' + code);
+            // If it starts with HKJ and has numbers, format it strictly as HKJ-XXXX
+            if (cleanCode.startsWith('HKJ') && cleanCode.length > 3) {
+                rawCode = 'HKJ-' + cleanCode.substring(3);
+            }
+
+            const nameField = document.getElementById('lockInName');
+            const storedName = localStorage.getItem('hkj_booking_' + rawCode);
             
             if (storedName) {
                 nameField.value = storedName;
@@ -133,7 +139,11 @@
             e.preventDefault(); 
             const form = e.target;
             const formData = new FormData(form);
-            const code = formData.get('refCode').toUpperCase(); // Convert to uppercase
+            
+            // Normalize code again for submission
+            let rawCode = formData.get('refCode').trim().toUpperCase().replace(/-/g, '');
+            let code = rawCode.startsWith('HKJ') && rawCode.length > 3 ? 'HKJ-' + rawCode.substring(3) : rawCode;
+            
             const name = document.getElementById('lockInName').value;
             const paymentMethod = formData.get('confirmPayment');
 
