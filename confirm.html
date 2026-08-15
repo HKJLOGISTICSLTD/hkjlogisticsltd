@@ -111,20 +111,26 @@
     <script>
         function toggleMenu() { document.getElementById('navMenu').classList.toggle('active'); }
         
-        // AUTO-FILL NAME LOGIC - CASE INSENSITIVE & HYPHEN INSENSITIVE
+        // FIXED AUTO-FILL LOGIC
         document.getElementById('lockInCode').addEventListener('input', function() {
             let rawCode = this.value.trim().toUpperCase();
-            // Remove any existing hyphens to normalize
+            // Remove hyphens to get clean code (e.g. HKJ9969)
             let cleanCode = rawCode.replace(/-/g, '');
             
-            // If it starts with HKJ and has numbers, format it strictly as HKJ-XXXX
+            const nameField = document.getElementById('lockInName');
+            let storedName = null;
+
+            // Try finding it with the hyphen (HKJ-9969)
             if (cleanCode.startsWith('HKJ') && cleanCode.length > 3) {
-                rawCode = 'HKJ-' + cleanCode.substring(3);
+                let codeWithHyphen = 'HKJ-' + cleanCode.substring(3);
+                storedName = localStorage.getItem('hkj_booking_' + codeWithHyphen);
+            }
+            
+            // If not found, try without hyphen (HKJ9969)
+            if (!storedName) {
+                storedName = localStorage.getItem('hkj_booking_' + cleanCode);
             }
 
-            const nameField = document.getElementById('lockInName');
-            const storedName = localStorage.getItem('hkj_booking_' + rawCode);
-            
             if (storedName) {
                 nameField.value = storedName;
                 nameField.style.borderColor = '#25D366';
@@ -140,7 +146,6 @@
             const form = e.target;
             const formData = new FormData(form);
             
-            // Normalize code again for submission
             let rawCode = formData.get('refCode').trim().toUpperCase().replace(/-/g, '');
             let code = rawCode.startsWith('HKJ') && rawCode.length > 3 ? 'HKJ-' + rawCode.substring(3) : rawCode;
             
@@ -150,7 +155,7 @@
             if (!code) { alert("Please enter your Reference Code."); return false; }
             if (!name) { alert("Please enter your Name."); return false; }
 
-            let waMessage = `* FAST LOCK-IN CONFIRMATION*\n\n`;
+            let waMessage = `*🔒 FAST LOCK-IN CONFIRMATION*\n\n`;
             waMessage += `*Client Name:* ${name}\n`;
             waMessage += `*Reference Code:* ${code}\n\n`;
             waMessage += `*Preferred Payment Method:*\n${paymentMethod}\n\n`;
