@@ -216,7 +216,6 @@
                     <div class="fare-estimate" style="display: none;" id="fareContainer"><div id="fareDisplay"></div></div>
                     <div class="form-group"><label>Service Type *</label><select name="serviceType" id="serviceType" required><option value="private">Private Taxi</option><option value="airport">Airport Transfer</option><option value="corporate">Corporate Travel</option><option value="tour">Island Tour</option></select></div>
                     
-                    <!-- NEW VEHICLE TYPE DROPDOWN -->
                     <div class="form-group">
                         <label>Vehicle Type / Group Size *</label>
                         <select name="vehicleType" id="vehicleType" required>
@@ -330,6 +329,16 @@
             document.getElementById('fareDisplay').innerHTML = html; 
         }
         
+        // NEW FUNCTION: Convert 24h time to 12h AM/PM
+        function formatTimeAMPM(time24) {
+            if (!time24) return '';
+            let [hours, minutes] = time24.split(':');
+            let ampm = hours >= 12 ? 'PM' : 'AM';
+            hours = hours % 12;
+            hours = hours ? hours : 12; 
+            return hours + ':' + minutes + ' ' + ampm;
+        }
+
         function generateReferenceCode() { return 'HKJ-' + Math.floor(1000 + Math.random() * 9000); }
 
         function generateCalendarLink(name, phone, pickup, dropoff, date, time, price) {
@@ -355,13 +364,12 @@
             const name = formData.get('clientName');
             const phone = formData.get('clientPhone');
             const email = formData.get('clientEmail');
-            const vehicleType = formData.get('vehicleType'); // NEW FIELD
+            const vehicleType = formData.get('vehicleType'); 
             const pickup = getActiveLocation('pickup');
             const dropoff = getActiveLocation('dropoff');
             const date = formData.get('bookDate');
             const time = formData.get('bookTime');
             const service = formData.get('serviceType');
-            const notes = formData.get('additionalNotes');
             const waitTime = formData.get('waitingTime');
             const isCarnival = document.getElementById('isCarnival').checked;
             
@@ -372,9 +380,14 @@
             document.getElementById('hiddenRefCode').value = refCode;
             document.getElementById('calendarLink').value = generateCalendarLink(name, phone, pickup, dropoff, date, time, currentEstimate);
             
-            // Append vehicle type to notes so it shows up in Google Sheets automatically
-            const currentNotes = formData.get('additionalNotes') || "";
-            formData.set('additionalNotes', currentNotes + "\nVehicle Requested: " + vehicleType);
+            // Format time for AM/PM
+            const formattedTime = formatTimeAMPM(time);
+            const priceDisplay = currentEstimate > 0 ? '$' + currentEstimate + ' TTD' : 'To be determined by Admin';
+            
+            // Append vehicle and price to notes so it goes to Google Sheets automatically
+            let notes = formData.get('additionalNotes') || "";
+            notes += `\nVehicle Requested: ${vehicleType}\nWebsite Estimate: ${priceDisplay}`;
+            formData.set('additionalNotes', notes);
             
             localStorage.setItem('hkj_booking_' + refCode, name);
             
@@ -382,11 +395,11 @@
             waMessage += `*Reference Code:* ${refCode}\n`;
             waMessage += `*Name:* ${name}\n*Phone:* ${phone}\n`;
             if(email) waMessage += `*Email:* ${email}\n`;
-            waMessage += `*Vehicle:* ${vehicleType}\n`; // ADDED TO WHATSAPP
-            waMessage += `*Pickup:* ${pickup}\n*Drop-off:* ${dropoff}\n*Date:* ${date}\n*Time:* ${time}\n*Service:* ${service}\n*Waiting:* ${waitTime}\n`; 
+            waMessage += `*Vehicle:* ${vehicleType}\n`; 
+            waMessage += `*Pickup:* ${pickup}\n*Drop-off:* ${dropoff}\n*Date:* ${date}\n*Time:* ${formattedTime}\n*Service:* ${service}\n*Waiting:* ${waitTime}\n`; 
             if(notes) waMessage += `*Notes:* ${notes}\n`; 
             if(isCarnival) { waMessage += `\n *CARNIVAL EVENT BOOKING - $400.00 MINIMUM RATE APPLIES*\n`; }
-            waMessage += `\n*Website Estimate:* $${currentEstimate} TTD`; 
+            waMessage += `\n*Website Estimate:* ${priceDisplay}`; 
             
             const waUrl = `https://wa.me/18687800300?text=${encodeURIComponent(waMessage)}`; 
             
