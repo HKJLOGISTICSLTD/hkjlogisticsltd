@@ -246,11 +246,16 @@ function renderBookings() {
   }).join('');
 }
 
-// UPDATED: Send WhatsApp with Personalized Link
+// FIXED: Send WhatsApp with Bulletproof Encoding
 function sendWhatsApp(phone, name, refCode, price) {
-  const personalLink = `https://hkjlogisticsltdtt.vercel.app/confirm.html?name=${encodeURIComponent(name)}&code=${encodeURIComponent(refCode)}`;
-  const msg = encodeURIComponent(`Hello ${name}, your final price for booking ${refCode} is ${price}. Please click this link to confirm your booking: ${personalLink}`);
-  window.open(`https://wa.me/1${phone}?text=${msg}`, '_blank');
+  const encodedName = encodeURIComponent(name);
+  const encodedCode = encodeURIComponent(refCode);
+  const personalLink = `https://hkjlogisticsltdtt.vercel.app/confirm.html?name=${encodedName}&code=${encodedCode}`;
+  
+  const msg = `Hello ${name}, your final price for booking ${refCode} is ${price}. Please click this link to confirm your booking: ${personalLink}`;
+  const encodedMsg = encodeURIComponent(msg);
+  
+  window.open(`https://wa.me/1${phone}?text=${encodedMsg}`, '_blank');
 }
 
 function openCalcModal(rowNum) {
@@ -280,7 +285,7 @@ async function applyPriceOnly(rowNum) {
   setTimeout(() => loadBookings(), 1000);
 }
 
-// UPDATED: Apply and Send with Personalized Link
+// FIXED: Apply and Send with Bulletproof Encoding
 async function applyAndSend(rowNum) {
   const price = document.getElementById('calcPrice').value;
   if (!price) { alert('Please enter a price'); return; }
@@ -292,9 +297,14 @@ async function applyAndSend(rowNum) {
   const refCode = getVal(booking, ['REF CODE']);
   
   if (phone) {
-    const personalLink = `https://hkjlogisticsltdtt.vercel.app/confirm.html?name=${encodeURIComponent(name)}&code=${encodeURIComponent(refCode)}`;
-    const waMessage = encodeURIComponent(`Hello ${name}, your final price for booking ${refCode} is $${price} TTD. Please click this link to confirm: ${personalLink}`);
-    window.open(`https://wa.me/1${phone}?text=${waMessage}`, '_blank');
+    const encodedName = encodeURIComponent(name);
+    const encodedCode = encodeURIComponent(refCode);
+    const personalLink = `https://hkjlogisticsltdtt.vercel.app/confirm.html?name=${encodedName}&code=${encodedCode}`;
+    
+    const msg = `Hello ${name}, your final price for booking ${refCode} is $${price} TTD. Please click this link to confirm: ${personalLink}`;
+    const encodedMsg = encodeURIComponent(msg);
+    
+    window.open(`https://wa.me/1${phone}?text=${encodedMsg}`, '_blank');
   }
   setTimeout(() => loadBookings(), 1000);
 }
