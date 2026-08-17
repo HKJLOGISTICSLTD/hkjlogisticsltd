@@ -83,7 +83,6 @@
         @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.7); } 70% { box-shadow: 0 0 0 10px rgba(220, 38, 38, 0); } 100% { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0); } }
         select { cursor: pointer; }
         
-        /* UPDATED POPUP STYLES */
         .popup-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 9999; justify-content: center; align-items: center; padding: 1rem; }
         .popup-box { background: #fff; padding: 2.5rem; border-radius: 16px; max-width: 550px; width: 100%; text-align: center; border-top: 10px solid #25D366; box-shadow: 0 15px 50px rgba(0,0,0,0.5); animation: slideIn 0.4s ease-out; }
         @keyframes slideIn { from { transform: translateY(-50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
@@ -229,7 +228,6 @@
 
     <footer class="footer-contact" id="contact"><div class="footer-container"><div class="footer-item"><div class="footer-icon"><i class="fas fa-map-marker-alt"></i></div><div class="footer-details"><h4>OUR LOCATION</h4><p>Chaguanas, Trinidad</p><div class="sub">Proudly serving all areas</div></div></div><div class="footer-item"><div class="footer-icon"><i class="fas fa-phone"></i></div><div class="footer-details"><h4>CALL US</h4><p>+1 (868) 780-0300</p><div class="sub">24/7 Service</div></div></div><div class="footer-item"><div class="footer-icon"><i class="fab fa-whatsapp"></i></div><div class="footer-details"><h4>WHATSAPP</h4><p>+1 (868) 780-0300</p><div class="sub">Chat with us anytime</div></div></div><div class="footer-item"><div class="footer-icon"><i class="fas fa-envelope"></i></div><div class="footer-details"><h4>EMAIL US</h4><p>hkjlogisticsltd@gmail.com</p><div class="sub">We'll respond quickly</div></div></div><div class="footer-item"><div class="footer-icon"><i class="fas fa-shield-alt"></i></div><div class="footer-details"><h4>SAFE & SECURE</h4><p>Your safety is</p><div class="sub">our top priority</div></div></div></div></footer>
 
-    <!-- NEW BIG THANK YOU POPUP -->
     <div id="successPopup" class="popup-overlay">
         <div class="popup-box">
             <div style="font-size: 4rem; color: #25D366; margin-bottom: 0.5rem;"><i class="fas fa-check-circle"></i></div>
@@ -313,7 +311,11 @@
             notes += `\nVehicle Requested: ${vehicleType}`;
             formData.set('additionalNotes', notes);
             
+            // Save to localStorage for fallback auto-fill
             localStorage.setItem('hkj_booking_' + refCode, name);
+            
+            // Create personalized link for the client
+            const personalLink = `https://hkjlogisticsltdtt.vercel.app/confirm.html?name=${encodeURIComponent(name)}&code=${encodeURIComponent(refCode)}`;
             
             let waMessage = `*NEW BOOKING REQUEST - HKJ LOGISTICS*\n\n`; 
             waMessage += `*Reference Code:* ${refCode}\n`;
@@ -322,7 +324,8 @@
             waMessage += `*Vehicle:* ${vehicleType}\n`; 
             waMessage += `*Pickup:* ${pickup}\n*Drop-off:* ${dropoff}\n*Date:* ${date}\n*Time:* ${formattedTime}\n*Service:* ${service}\n*Waiting:* ${waitTime}\n`; 
             if(notes) waMessage += `*Notes:* ${notes}\n`; 
-            if(isCarnival) { waMessage += `\n *CARNIVAL EVENT BOOKING - $400.00 MINIMUM RATE APPLIES*\n`; }
+            if(isCarnival) { waMessage += `\n*CARNIVAL EVENT BOOKING - $400.00 MINIMUM RATE APPLIES*\n`; }
+            waMessage += `\n*Client Confirmation Link:* ${personalLink}`;
             
             const waUrl = `https://wa.me/18687800300?text=${encodeURIComponent(waMessage)}`; 
             
