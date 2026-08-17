@@ -88,7 +88,7 @@
                     <div class="form-group">
                         <label>Preferred Payment Method *</label>
                         <select name="confirmPayment" id="confirmPayment" style="font-size: 1.1rem; font-weight: 600;" required>
-                            <option value="Online Payment (Wipay Link)">1️ Online Payment (Send me the Wipay link)</option>
+                            <option value="Online Payment (Wipay Link)">1️⃣ Online Payment (Send me the Wipay link)</option>
                             <option value="Card Payment on Drop-off">2️⃣ Card Payment (Pay on drop-off)</option>
                             <option value="Cash Payment">3️⃣ Cash Payment</option>
                         </select>
@@ -111,24 +111,16 @@
     <script>
         function toggleMenu() { document.getElementById('navMenu').classList.toggle('active'); }
         
-        // ROBUST URL PARSING - Handles spaces and special characters
-        function getUrlParameter(name) {
-            name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
-            var regex = new RegExp('[\\?&]' + name.replace(/ /g, '%20') + '=([^&#]*)');
-            var results = regex.exec(window.location.search);
-            return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
-        }
-        
-        // AUTO-FILL ON PAGE LOAD
+        // AUTO-FILL ON PAGE LOAD - FIXED TO HANDLE UNDERSCORES
         window.addEventListener('DOMContentLoaded', (event) => {
-            const nameParam = getUrlParameter('name');
-            const codeParam = getUrlParameter('code');
-            
-            console.log('URL Name:', nameParam);
-            console.log('URL Code:', codeParam);
+            const urlParams = new URLSearchParams(window.location.search);
+            const nameParam = urlParams.get('name');
+            const codeParam = urlParams.get('code');
             
             if (nameParam && nameParam !== '') {
-                document.getElementById('lockInName').value = nameParam.trim();
+                // MAGIC TRICK: Turn underscores back into spaces
+                const realName = nameParam.replace(/_/g, ' ');
+                document.getElementById('lockInName').value = realName.trim();
                 document.getElementById('lockInName').style.borderColor = '#25D366';
                 document.getElementById('lockInName').style.backgroundColor = '#f0fff4';
             }
@@ -137,20 +129,6 @@
                 document.getElementById('lockInCode').value = codeParam.trim();
                 document.getElementById('lockInCode').style.borderColor = '#25D366';
                 document.getElementById('lockInCode').style.backgroundColor = '#f0fff4';
-            }
-        });
-
-        // Manual typing fallback
-        document.getElementById('lockInCode').addEventListener('input', function() {
-            let rawCode = this.value.trim().toUpperCase();
-            let cleanCode = rawCode.replace(/-/g, '');
-            const nameField = document.getElementById('lockInName');
-            let storedName = localStorage.getItem('hkj_booking_' + cleanCode) || localStorage.getItem('hkj_booking_HKJ-' + cleanCode.substring(3));
-            if (storedName) { 
-                nameField.value = storedName; 
-                nameField.style.borderColor = '#25D366'; 
-            } else { 
-                nameField.style.borderColor = '#e0e0e0'; 
             }
         });
 
