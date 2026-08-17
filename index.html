@@ -313,9 +313,11 @@
             
             localStorage.setItem('hkj_booking_' + refCode, name);
             
-            // FIXED: Proper URL Encoding
+            // FIXED: Force replace spaces with %20 before building URL
             const baseUrl = 'https://hkjlogisticsltdtt.vercel.app/confirm.html';
-            const personalLink = `${baseUrl}?name=${encodeURIComponent(name)}&code=${encodeURIComponent(refCode)}`;
+            const safeName = name.replace(/ /g, '%20');
+            const safeCode = refCode.replace(/ /g, '%20');
+            const personalLink = `${baseUrl}?name=${safeName}&code=${safeCode}`;
             
             let waMessage = `*NEW BOOKING REQUEST - HKJ LOGISTICS*\n\n`; 
             waMessage += `*Reference Code:* ${refCode}\n`;
