@@ -75,7 +75,7 @@ body { font-family: 'Open Sans', sans-serif; background: #f5f5f5; color: #333; }
 <body>
 
 <div id="loginScreen" class="login-container">
-  <h2>🔒 HKJ ADMIN LOGIN</h2>
+  <h2> HKJ ADMIN LOGIN</h2>
   <input type="password" id="adminPassword" placeholder="Enter admin password" onkeypress="if(event.key==='Enter')checkLogin()">
   <button onclick="checkLogin()">LOGIN</button>
 </div>
@@ -246,12 +246,13 @@ function renderBookings() {
   }).join('');
 }
 
+// UPDATED: Send WhatsApp with Personalized Link
 function sendWhatsApp(phone, name, refCode, price) {
-  const msg = encodeURIComponent(`Hello ${name}, your final price for booking ${refCode} is ${price}. Please return to our website and confirm your booking using your code: https://hkjlogisticsltdtt.vercel.app/confirm.html`);
+  const personalLink = `https://hkjlogisticsltdtt.vercel.app/confirm.html?name=${encodeURIComponent(name)}&code=${encodeURIComponent(refCode)}`;
+  const msg = encodeURIComponent(`Hello ${name}, your final price for booking ${refCode} is ${price}. Please click this link to confirm your booking: ${personalLink}`);
   window.open(`https://wa.me/1${phone}?text=${msg}`, '_blank');
 }
 
-// UPDATED CALC MODAL WITH TWO BUTTONS
 function openCalcModal(rowNum) {
   const booking = allBookings.find(b => b._rowNumber === rowNum);
   document.getElementById('modalContent').innerHTML = `
@@ -279,23 +280,25 @@ async function applyPriceOnly(rowNum) {
   setTimeout(() => loadBookings(), 1000);
 }
 
+// UPDATED: Apply and Send with Personalized Link
 async function applyAndSend(rowNum) {
   const price = document.getElementById('calcPrice').value;
   if (!price) { alert('Please enter a price'); return; }
   await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body: `action=updatePrice&row=${rowNum}&price=${price}` });
-  closeModal();
+  
   const booking = allBookings.find(b => b._rowNumber === rowNum);
   const phone = String(getVal(booking, ['PHONE'])).replace(/[^0-9]/g, '');
   const name = getVal(booking, ['NAME']);
   const refCode = getVal(booking, ['REF CODE']);
+  
   if (phone) {
-    const waMessage = encodeURIComponent(`Hello ${name}, your final price for booking ${refCode} is $${price} TTD. Please return to our website and confirm your booking using your code: https://hkjlogisticsltdtt.vercel.app/confirm.html`);
+    const personalLink = `https://hkjlogisticsltdtt.vercel.app/confirm.html?name=${encodeURIComponent(name)}&code=${encodeURIComponent(refCode)}`;
+    const waMessage = encodeURIComponent(`Hello ${name}, your final price for booking ${refCode} is $${price} TTD. Please click this link to confirm: ${personalLink}`);
     window.open(`https://wa.me/1${phone}?text=${waMessage}`, '_blank');
   }
   setTimeout(() => loadBookings(), 1000);
 }
 
-// UPDATED EMAIL MODAL WITH BOLD RED PRICE
 function openEmailModal(rowNum) {
   const booking = allBookings.find(b => b._rowNumber === rowNum);
   const price = getVal(booking, ['FINAL PRICE']) || 'TBD';
