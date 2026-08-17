@@ -311,13 +311,12 @@
             notes += `\nVehicle Requested: ${vehicleType}`;
             formData.set('additionalNotes', notes);
             
-            // Save to localStorage for fallback auto-fill
             localStorage.setItem('hkj_booking_' + refCode, name);
             
-            // Create personalized link with SAFE encoding for spaces
-            const encodedName = encodeURIComponent(name);
-            const encodedCode = encodeURIComponent(refCode);
-            const personalLink = `https://hkjlogisticsltdtt.vercel.app/confirm.html?name=${encodedName}&code=${encodedCode}`;
+            // FIXED: Manual space replacement for URL
+            const safeName = name.replace(/ /g, '%20');
+            const safeCode = refCode.replace(/ /g, '%20');
+            const personalLink = `https://hkjlogisticsltdtt.vercel.app/confirm.html?name=${safeName}&code=${safeCode}`;
             
             let waMessage = `*NEW BOOKING REQUEST - HKJ LOGISTICS*\n\n`; 
             waMessage += `*Reference Code:* ${refCode}\n`;
