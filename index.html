@@ -314,8 +314,10 @@
             // Save to localStorage for fallback auto-fill
             localStorage.setItem('hkj_booking_' + refCode, name);
             
-            // Create personalized link for the client
-            const personalLink = `https://hkjlogisticsltdtt.vercel.app/confirm.html?name=${encodeURIComponent(name)}&code=${encodeURIComponent(refCode)}`;
+            // Create personalized link with SAFE encoding for spaces
+            const encodedName = encodeURIComponent(name);
+            const encodedCode = encodeURIComponent(refCode);
+            const personalLink = `https://hkjlogisticsltdtt.vercel.app/confirm.html?name=${encodedName}&code=${encodedCode}`;
             
             let waMessage = `*NEW BOOKING REQUEST - HKJ LOGISTICS*\n\n`; 
             waMessage += `*Reference Code:* ${refCode}\n`;
