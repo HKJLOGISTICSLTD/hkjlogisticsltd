@@ -246,11 +246,15 @@ function renderBookings() {
   }).join('');
 }
 
-// FIXED: Proper URL Encoding
+// FIXED: Force replace spaces with %20 before building URL
 function sendWhatsApp(phone, name, refCode, price) {
   const baseUrl = 'https://hkjlogisticsltdtt.vercel.app/confirm.html';
-  const personalLink = `${baseUrl}?name=${encodeURIComponent(name)}&code=${encodeURIComponent(refCode)}`;
+  const safeName = name.replace(/ /g, '%20');
+  const safeCode = refCode.replace(/ /g, '%20');
+  const personalLink = `${baseUrl}?name=${safeName}&code=${safeCode}`;
+  
   const msg = `Hello ${name}, your final price for booking ${refCode} is ${price}. Please click this link to confirm your booking: ${personalLink}`;
+  
   window.open(`https://wa.me/1${phone}?text=${encodeURIComponent(msg)}`, '_blank');
 }
 
@@ -281,7 +285,7 @@ async function applyPriceOnly(rowNum) {
   setTimeout(() => loadBookings(), 1000);
 }
 
-// FIXED: Proper URL Encoding
+// FIXED: Force replace spaces with %20 before building URL
 async function applyAndSend(rowNum) {
   const price = document.getElementById('calcPrice').value;
   if (!price) { alert('Please enter a price'); return; }
@@ -294,8 +298,12 @@ async function applyAndSend(rowNum) {
   
   if (phone) {
     const baseUrl = 'https://hkjlogisticsltdtt.vercel.app/confirm.html';
-    const personalLink = `${baseUrl}?name=${encodeURIComponent(name)}&code=${encodeURIComponent(refCode)}`;
+    const safeName = name.replace(/ /g, '%20');
+    const safeCode = refCode.replace(/ /g, '%20');
+    const personalLink = `${baseUrl}?name=${safeName}&code=${safeCode}`;
+    
     const msg = `Hello ${name}, your final price for booking ${refCode} is $${price} TTD. Please click this link to confirm: ${personalLink}`;
+    
     window.open(`https://wa.me/1${phone}?text=${encodeURIComponent(msg)}`, '_blank');
   }
   setTimeout(() => loadBookings(), 1000);
