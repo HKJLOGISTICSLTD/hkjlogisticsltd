@@ -92,7 +92,7 @@ body { font-family: 'Open Sans', sans-serif; background: #f5f5f5; color: #333; }
   <div class="container">
     <div class="stats">
       <div class="stat-card"><h3>Total Trips</h3><div class="value" id="statTrips">0</div></div>
-      <div class="stat-card revenue"><h3>Total Revenue</h3><div class="value" id="statRevenue">$0.00</div></div>
+      <div class="stat-card revenue"><h3>Total Revenue (Completed)</h3><div class="value" id="statRevenue">$0.00</div></div>
       <div class="stat-card pending"><h3>Pending Bookings</h3><div class="value" id="statPending">0</div></div>
     </div>
 
@@ -168,6 +168,78 @@ function formatTime(timeString) {
   } catch (e) { return timeString; }
 }
 
+// --- FARE CALCULATION LOGIC (Mirrored from Apps Script) ---
+function detectLocationHub(address) {
+  if (!address) return null;
+  const lower = address.toLowerCase();
+  const hubs = {
+    'POS': ['port of spain', 'pos', 'woodbrook', 'belmont', 'st. clair', 'st. james', 'diego martin', 'petit valley', 'four roads', 'carenage', 'chaguaramas'],
+    'EAST': ['san juan', 'barataria', 'curepe', 'st. augustine', 'tunapuna', 'el dorado', 'arima', 'sangre grande'],
+    'CENTRAL': ['chaguanas', 'couva', 'point lisas', 'california', 'caroni'],
+    'SOUTH': ['san fernando', 'marabella', 'gasparillo', 'princes town', 'debe', 'penal', 'siparia', 'fyzabad', 'point fortin'],
+    'PIARCO': ['piarco', 'airport']
+  };
+  for (const [hub, keywords] of Object.entries(hubs)) {
+    for (const keyword of keywords) {
+      if (lower.includes(keyword)) return hub;
+    }
+  }
+  return null;
+}
+
+function calculateDistance(pickupHub, dropoffHub) {
+  const distances = {
+    'POS': { 'POS': 0, 'EAST': 15, 'CENTRAL': 25, 'SOUTH': 55, 'PIARCO': 28 },
+    'EAST': { 'POS': 15, 'EAST': 0, 'CENTRAL': 30, 'SOUTH': 50, 'PIARCO': 15 },
+    'CENTRAL': { 'POS': 25, 'EAST': 30, 'CENTRAL': 0, 'SOUTH': 20, 'PIARCO': 38 },
+    'SOUTH': { 'POS': 55, 'EAST': 50, 'CENTRAL': 20, 'SOUTH': 0, 'PIARCO': 60 },
+    'PIARCO': { 'POS': 28, 'EAST': 15, 'CENTRAL': 38, 'SOUTH': 60, 'PIARCO': 0 }
+  };
+  if (!pickupHub || !dropoffHub) return 15; 
+  if (pickupHub === dropoffHub) return 5; 
+  return distances[pickupHub][dropoffHub] || 15;
+}
+
+function getBaseFareForTime(timeValue) {
+  if (!timeValue) return 30;
+  let hours = 12; 
+  try {
+     if (typeof timeValue === 'string') {
+        const d = new Date(timeValue);
+        if (!isNaN(d.getTime())) hours = d.getUTCHours(); 
+        else {
+           const parts = timeValue.split(':');
+           hours = parseInt(parts[0]);
+        }
+     } else if (typeof timeValue.getHours === 'function') {
+        hours = timeValue.getUTCHours();
+     }
+  } catch(e) {}
+  
+  if (hours >= 22 || hours < 6) return 50; 
+  if ((hours >= 7 && hours < 9) || (hours >= 16 && hours < 19)) return 40; 
+  return 30; 
+}
+
+function calculateEstimatedFare(pickup, dropoff, timeStr) {
+   const pickupHub = detectLocationHub(pickup);
+   const dropoffHub = detectLocationHub(dropoff);
+   const distanceKm = calculateDistance(pickupHub, dropoffHub);
+   const baseFare = getBaseFareForTime(timeStr);
+   
+   let total = 0;
+   const waitingCost = 0; // Default 0 for auto-estimate, admin can adjust
+   
+   if (pickup.toLowerCase().includes('caroni') || dropoff.toLowerCase().includes('caroni')) {
+     total = 300 + waitingCost;
+   } else {
+     const distanceCost = distanceKm * 5;
+     total = baseFare + distanceCost + waitingCost;
+   }
+   return total.toFixed(2);
+}
+// ----------------------------------------------------------
+
 async function loadBookings() {
   const list = document.getElementById('bookingsList');
   list.innerHTML = '<div class="loading"><i class="fas fa-spinner fa-spin"></i> Loading bookings...</div>';
@@ -182,13 +254,18 @@ async function loadBookings() {
   } catch (error) { list.innerHTML = '<div class="empty">Failed to connect.</div>'; }
 }
 
+// FIXED: Only count Completed jobs for Revenue
 function updateStats() {
   const total = allBookings.length;
   const pending = allBookings.filter(b => getVal(b, ['STATUS']) === 'Pending').length;
-  const revenue = allBookings.reduce((sum, b) => {
-    const price = parseFloat(String(getVal(b, ['FINAL PRICE']) || '0').replace(/[^0-9.]/g, ''));
-    return sum + (isNaN(price) ? 0 : price);
-  }, 0);
+  
+  const revenue = allBookings
+    .filter(b => getVal(b, ['STATUS']) === 'Completed') // Only Completed jobs
+    .reduce((sum, b) => {
+      const price = parseFloat(String(getVal(b, ['FINAL PRICE']) || '0').replace(/[^0-9.]/g, ''));
+      return sum + (isNaN(price) ? 0 : price);
+    }, 0);
+    
   document.getElementById('statTrips').textContent = total;
   document.getElementById('statRevenue').textContent = '$' + revenue.toFixed(2);
   document.getElementById('statPending').textContent = pending;
@@ -246,7 +323,6 @@ function renderBookings() {
   }).join('');
 }
 
-// FIXED: Use underscores instead of %20
 function sendWhatsApp(phone, name, refCode, price) {
   const baseUrl = 'https://hkjlogisticsltdtt.vercel.app/confirm.html';
   const safeName = name.replace(/ /g, '_');
@@ -257,15 +333,27 @@ function sendWhatsApp(phone, name, refCode, price) {
   window.open(`https://wa.me/1${phone}?text=${encodeURIComponent(msg)}`, '_blank');
 }
 
+// FIXED: Modal now shows Estimated Fare automatically
 function openCalcModal(rowNum) {
   const booking = allBookings.find(b => b._rowNumber === rowNum);
+  const pickup = getVal(booking, ['PICK UP']);
+  const dropoff = getVal(booking, ['DROP OFF']);
+  const timeStr = getVal(booking, ['TIME']);
+  
+  // Calculate estimate using the website formula
+  const estimatedPrice = calculateEstimatedFare(pickup, dropoff, timeStr);
+  
   document.getElementById('modalContent').innerHTML = `
     <h3><i class="fas fa-calculator"></i> Calculate Fare</h3>
-    <p><strong>Pickup:</strong> ${getVal(booking, ['PICK UP'])}</p>
-    <p><strong>Drop-off:</strong> ${getVal(booking, ['DROP OFF'])}</p>
+    <p><strong>Pickup:</strong> ${pickup}</p>
+    <p><strong>Drop-off:</strong> ${dropoff}</p>
     <hr style="margin:1rem 0;">
+    <div style="background:#f0f9ff; padding:1rem; border-radius:8px; margin-bottom:1rem; border:1px solid #bae6fd;">
+        <p style="font-size:0.9rem; color:#0369a1; margin:0;"><strong>System Estimate:</strong> $${estimatedPrice} TTD</p>
+        <p style="font-size:0.8rem; color:#666; margin:5px 0 0 0;">Based on distance, time of day, and standard rates.</p>
+    </div>
     <label><strong>Enter Final Price (TTD):</strong></label>
-    <input type="number" id="calcPrice" placeholder="e.g. 250" step="0.01">
+    <input type="number" id="calcPrice" value="${estimatedPrice}" placeholder="e.g. 250" step="0.01">
     <div class="modal-buttons">
       <button class="modal-btn secondary" onclick="closeModal()">Cancel</button>
       <button class="modal-btn primary" onclick="applyPriceOnly(${rowNum})">Apply Price Only</button>
@@ -284,7 +372,6 @@ async function applyPriceOnly(rowNum) {
   setTimeout(() => loadBookings(), 1000);
 }
 
-// FIXED: Use underscores instead of %20
 async function applyAndSend(rowNum) {
   const price = document.getElementById('calcPrice').value;
   if (!price) { alert('Please enter a price'); return; }
