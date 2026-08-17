@@ -29,6 +29,8 @@
         .btn-whatsapp-header { background: #FFD700; color: #000; padding: 0.75rem 1.5rem; border-radius: 6px; font-family: 'Montserrat', sans-serif; font-weight: 700; text-decoration: none; display: flex; align-items: center; gap: 0.5rem; transition: all 0.3s; }
         .btn-whatsapp-header:hover { background: #FFC107; transform: translateY(-2px); }
         .mobile-menu-btn { display: none; background: #FFD700; border: none; color: #000; width: 44px; height: 44px; border-radius: 8px; font-size: 1.2rem; cursor: pointer; }
+        .lang-toggle { background: transparent; border: 2px solid #FFD700; color: #FFD700; padding: 0.5rem 1rem; border-radius: 20px; font-weight: 700; cursor: pointer; font-size: 0.9rem; display: flex; align-items: center; gap: 0.5rem; }
+        .lang-toggle:hover { background: #FFD700; color: #000; }
         .booking { background: #f0fff4; padding: 4rem 2rem; min-height: 80vh; }
         .booking-container { max-width: 900px; margin: 0 auto; }
         .booking-widget { background: #fff; padding: 2.5rem; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); border-top: 5px solid #25D366; }
@@ -45,21 +47,46 @@
         .footer-icon { width: 50px; height: 50px; background: #FFD700; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; color: #000; flex-shrink: 0; }
         .footer-details h4 { font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: 0.85rem; color: #FFD700; margin-bottom: 0.25rem; }
         .footer-details p { font-size: 0.9rem; color: #fff; }
+        
+        /* LANGUAGE SPLASH SCREEN */
+        #langSplash { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 10000; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 2rem; }
+        .splash-logo { font-family: 'Montserrat', sans-serif; font-weight: 900; font-size: 3rem; color: #fff; margin-bottom: 1rem; }
+        .splash-logo span { color: #FFD700; }
+        .splash-sub { color: #ccc; font-size: 1.2rem; margin-bottom: 3rem; }
+        .lang-btns { display: flex; gap: 2rem; flex-wrap: wrap; justify-content: center; }
+        .lang-btn { padding: 1.5rem 3rem; border: 2px solid #FFD700; background: transparent; color: #FFD700; font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: 1.5rem; border-radius: 12px; cursor: pointer; transition: all 0.3s; min-width: 200px; }
+        .lang-btn:hover { background: #FFD700; color: #000; transform: scale(1.05); }
+
         @media (max-width: 968px) { .nav-menu { display: none; position: fixed; top: 80px; left: 0; right: 0; background: #000; flex-direction: column; padding: 2rem; border-top: 2px solid #FFD700; } .nav-menu.active { display: flex; } .mobile-menu-btn { display: block; } .header-contact { display: none; } }
     </style>
 </head>
 <body>
+
+    <!-- LANGUAGE SELECTION SPLASH SCREEN -->
+    <div id="langSplash">
+        <div class="splash-logo">H.K.J <span>LOGISTICS LTD</span></div>
+        <div class="splash-sub" data-en="Select Your Language" data-es="Selecciona Tu Idioma">Select Your Language</div>
+        <div class="lang-btns">
+            <button class="lang-btn" onclick="setLanguage('en')"> English</button>
+            <button class="lang-btn" onclick="setLanguage('es')">🇸 Español</button>
+        </div>
+    </div>
+
     <header class="header">
         <div class="header-container">
-            <div class="logo"><div class="logo-icon">H.K.J</div><div class="logo-text"><div class="company">LOGISTICS <span>LTD</span></div><div class="tagline">solving all your problems</div></div></div>
+            <div class="logo"><div class="logo-icon">H.K.J</div><div class="logo-text"><div class="company">LOGISTICS <span>LTD</span></div><div class="tagline" data-en="solving all your problems" data-es="resolviendo todos tus problemas">solving all your problems</div></div></div>
             <ul class="nav-menu" id="navMenu">
-                <li><a href="index.html">HOME</a></li>
-                <li><a href="index.html#services">SERVICES</a></li>
-                <li><a href="index.html#book">BOOK A RIDE</a></li>
-                <li><a href="confirm.html" class="active" style="color: #25D366; font-weight: 800;">CONFIRM BOOKING</a></li>
-                <li><a href="index.html#contact">CONTACT US</a></li>
+                <li><a href="index.html" data-en="HOME" data-es="INICIO">HOME</a></li>
+                <li><a href="index.html#services" data-en="SERVICES" data-es="SERVICIOS">SERVICES</a></li>
+                <li><a href="index.html#book" data-en="BOOK A RIDE" data-es="RESERVAR VIAJE">BOOK A RIDE</a></li>
+                <li><a href="confirm.html" class="active" style="color: #25D366; font-weight: 800;" data-en="CONFIRM BOOKING" data-es="CONFIRMAR RESERVA">CONFIRM BOOKING</a></li>
+                <li><a href="index.html#contact" data-en="CONTACT US" data-es="CONTÁCTENOS">CONTACT US</a></li>
             </ul>
-            <div class="header-contact"><div class="phone-info"><div class="phone-icon"><i class="fas fa-phone"></i></div><div class="phone-details"><div class="phone-number">+1 (868) 780-0300</div><div class="phone-label">24/7 SERVICE</div></div></div><a href="https://wa.me/18687800300" class="btn-whatsapp-header" target="_blank"><i class="fab fa-whatsapp"></i> WHATSAPP US</a></div>
+            <div class="header-contact">
+                <div class="phone-info"><div class="phone-icon"><i class="fas fa-phone"></i></div><div class="phone-details"><div class="phone-number">+1 (868) 780-0300</div><div class="phone-label" data-en="24/7 SERVICE" data-es="SERVICIO 24/7">24/7 SERVICE</div></div></div>
+                <a href="https://wa.me/18687800300" class="btn-whatsapp-header" target="_blank"><i class="fab fa-whatsapp"></i> WHATSAPP US</a>
+                <button class="lang-toggle" onclick="toggleLanguage()"><i class="fas fa-globe"></i> <span id="currentLangDisplay">EN/ES</span></button>
+            </div>
             <button class="mobile-menu-btn" onclick="toggleMenu()"><i class="fas fa-bars"></i></button>
         </div>
     </header>
@@ -67,58 +94,92 @@
     <section class="booking">
         <div class="booking-container">
             <div class="booking-widget">
-                <h2><i class="fas fa-lock"></i> FAST LOCK-IN</h2>
-                <p style="text-align: center; color: #555; margin-bottom: 2rem;">Have your Reference Code? Enter it below to lock in your booking instantly.</p>
+                <h2><i class="fas fa-lock"></i> <span data-en="FAST LOCK-IN" data-es="CONFIRMACIÓN RÁPIDA">FAST LOCK-IN</span></h2>
+                <p style="text-align: center; color: #555; margin-bottom: 2rem;" data-en="Have your Reference Code? Enter it below to lock in your booking instantly." data-es="¿Tienes tu Código de Referencia? Ingrésalo abajo para asegurar tu reserva al instante.">Have your Reference Code? Enter it below to lock in your booking instantly.</p>
                 
                 <form name="hkj-confirm" method="POST" onsubmit="return lockInBooking(event)">
                     <input type="hidden" name="form-name" value="hkj-confirm">
                     
                     <div class="form-group">
-                        <label style="font-size: 1.3rem; color: #000;">Client Name *</label>
-                        <input type="text" name="clientNameLock" id="lockInName" placeholder="Type your code below to auto-fill" style="font-weight: 700;" required>
-                        <p style="font-size: 0.85rem; color: #25D366; margin-top: 5px; font-weight: 600;"><i class="fas fa-magic"></i> Name will appear automatically when you enter your code!</p>
+                        <label style="font-size: 1.3rem; color: #000;" data-en="Client Name *" data-es="Nombre del Cliente *">Client Name *</label>
+                        <input type="text" name="clientNameLock" id="lockInName" placeholder="Type your code below to auto-fill" style="font-weight: 700;" data-placeholder-en="Type your code below to auto-fill" data-placeholder-es="Escribe tu código abajo para autocompletar" required>
+                        <p style="font-size: 0.85rem; color: #25D366; margin-top: 5px; font-weight: 600;" data-en="Name will appear automatically when you enter your code!" data-es="¡El nombre aparecerá automáticamente cuando ingreses tu código!"><i class="fas fa-magic"></i> Name will appear automatically when you enter your code!</p>
                     </div>
 
                     <div class="form-group">
-                        <label style="font-size: 1.3rem; color: #000;">Enter Reference Code *</label>
-                        <input type="text" name="refCode" id="lockInCode" placeholder="e.g. HKJ-1234 or HKJ1234" style="font-size: 1.5rem; font-weight: 900; text-align: center; letter-spacing: 2px; border: 2px solid #25D366; text-transform: uppercase;" required>
-                        <p style="font-size: 0.9rem; color: #666; margin-top: 5px;">Found in your booking confirmation popup or WhatsApp message.</p>
+                        <label style="font-size: 1.3rem; color: #000;" data-en="Enter Reference Code *" data-es="Ingrese Código de Referencia *">Enter Reference Code *</label>
+                        <input type="text" name="refCode" id="lockInCode" placeholder="e.g. HKJ-1234 or HKJ1234" style="font-size: 1.5rem; font-weight: 900; text-align: center; letter-spacing: 2px; border: 2px solid #25D366; text-transform: uppercase;" data-placeholder-en="e.g. HKJ-1234 or HKJ1234" data-placeholder-es="ej. HKJ-1234 o HKJ1234" required>
+                        <p style="font-size: 0.9rem; color: #666; margin-top: 5px;" data-en="Found in your booking confirmation popup or WhatsApp message." data-es="Encontrado en el popup de confirmación de reserva o mensaje de WhatsApp.">Found in your booking confirmation popup or WhatsApp message.</p>
                     </div>
 
                     <div class="form-group">
-                        <label>Preferred Payment Method *</label>
+                        <label data-en="Preferred Payment Method *" data-es="Método de Pago Preferido *">Preferred Payment Method *</label>
                         <select name="confirmPayment" id="confirmPayment" style="font-size: 1.1rem; font-weight: 600;" required>
-                            <option value="Online Payment (Wipay Link)">1️⃣ Online Payment (Send me the Wipay link)</option>
-                            <option value="Card Payment on Drop-off">2️⃣ Card Payment (Pay on drop-off)</option>
-                            <option value="Cash Payment">3️⃣ Cash Payment</option>
+                            <option value="Online Payment (Wipay Link)" data-en="1️⃣ Online Payment (Send me the Wipay link)" data-es="1️⃣ Pago en Línea (Envíenme el link de Wipay)">1️⃣ Online Payment (Send me the Wipay link)</option>
+                            <option value="Card Payment on Drop-off" data-en="2️⃣ Card Payment (Pay on drop-off)" data-es="2️⃣ Pago con Tarjeta (Pagar al llegar al destino)">2️⃣ Card Payment (Pay on drop-off)</option>
+                            <option value="Cash Payment" data-en="3️⃣ Cash Payment" data-es="3️⃣ Pago en Efectivo">3️⃣ Cash Payment</option>
                         </select>
                     </div>
 
-                    <button type="submit" class="btn-submit">
+                    <button type="submit" class="btn-submit" data-en="LOCK IN BOOKING" data-es="ASEGURAR RESERVA">
                         <i class="fas fa-lock"></i> LOCK IN BOOKING
                     </button>
                     
                     <div style="background: #e6fffa; border: 1px solid #25D366; border-radius: 8px; padding: 1rem; margin-top: 1.5rem; text-align: center;">
-                        <p style="color: #065f46; font-size: 0.9rem; margin: 0;"><i class="fas fa-info-circle"></i> This will open WhatsApp to confirm your code with Admin.</p>
+                        <p style="color: #065f46; font-size: 0.9rem; margin: 0;" data-en="This will open WhatsApp to confirm your code with Admin." data-es="Esto abrirá WhatsApp para confirmar su código con el Administrador."><i class="fas fa-info-circle"></i> This will open WhatsApp to confirm your code with Admin.</p>
                     </div>
                 </form>
             </div>
         </div>
     </section>
 
-    <footer class="footer-contact" id="contact"><div class="footer-container"><div class="footer-item"><div class="footer-icon"><i class="fas fa-map-marker-alt"></i></div><div class="footer-details"><h4>OUR LOCATION</h4><p>Chaguanas, Trinidad</p></div></div><div class="footer-item"><div class="footer-icon"><i class="fas fa-phone"></i></div><div class="footer-details"><h4>CALL US</h4><p>+1 (868) 780-0300</p></div></div><div class="footer-item"><div class="footer-icon"><i class="fab fa-whatsapp"></i></div><div class="footer-details"><h4>WHATSAPP</h4><p>+1 (868) 780-0300</p></div></div><div class="footer-item"><div class="footer-icon"><i class="fas fa-envelope"></i></div><div class="footer-details"><h4>EMAIL US</h4><p>hkjlogisticsltd@gmail.com</p></div></div></div></footer>
+    <footer class="footer-contact" id="contact"><div class="footer-container">
+        <div class="footer-item"><div class="footer-icon"><i class="fas fa-map-marker-alt"></i></div><div class="footer-details"><h4 data-en="OUR LOCATION" data-es="NUESTRA UBICACIÓN">OUR LOCATION</h4><p>Chaguanas, Trinidad</p></div></div>
+        <div class="footer-item"><div class="footer-icon"><i class="fas fa-phone"></i></div><div class="footer-details"><h4 data-en="CALL US" data-es="LLÁMENOS">CALL US</h4><p>+1 (868) 780-0300</p></div></div>
+        <div class="footer-item"><div class="footer-icon"><i class="fab fa-whatsapp"></i></div><div class="footer-details"><h4>WHATSAPP</h4><p>+1 (868) 780-0300</p></div></div>
+        <div class="footer-item"><div class="footer-icon"><i class="fas fa-envelope"></i></div><div class="footer-details"><h4 data-en="EMAIL US" data-es="ENVÍENOS UN CORREO">EMAIL US</h4><p>hkjlogisticsltd@gmail.com</p></div></div>
+    </div></footer>
 
     <script>
-        function toggleMenu() { document.getElementById('navMenu').classList.toggle('active'); }
-        
-        // AUTO-FILL ON PAGE LOAD - FIXED TO HANDLE UNDERSCORES
-        window.addEventListener('DOMContentLoaded', (event) => {
+        // --- LANGUAGE SYSTEM ---
+        let currentLang = 'en';
+
+        function setLanguage(lang) {
+            currentLang = lang;
+            localStorage.setItem('hkj_lang', lang);
+            document.getElementById('langSplash').style.display = 'none';
+            applyTranslations();
+        }
+
+        function toggleLanguage() {
+            currentLang = currentLang === 'en' ? 'es' : 'en';
+            localStorage.setItem('hkj_lang', currentLang);
+            applyTranslations();
+        }
+
+        function applyTranslations() {
+            document.querySelectorAll('[data-en]').forEach(el => {
+                el.innerText = el.getAttribute(`data-${currentLang}`);
+            });
+            document.querySelectorAll('[data-placeholder-en]').forEach(el => {
+                el.placeholder = el.getAttribute(`data-placeholder-${currentLang}`);
+            });
+            document.getElementById('currentLangDisplay').innerText = currentLang.toUpperCase();
+        }
+
+        // Check for saved language on load
+        window.addEventListener('DOMContentLoaded', () => {
+            const savedLang = localStorage.getItem('hkj_lang');
+            if (savedLang) {
+                setLanguage(savedLang);
+            }
+            
+            // --- AUTO-FILL FROM URL (Underscore Trick) ---
             const urlParams = new URLSearchParams(window.location.search);
             const nameParam = urlParams.get('name');
             const codeParam = urlParams.get('code');
             
             if (nameParam && nameParam !== '') {
-                // MAGIC TRICK: Turn underscores back into spaces
                 const realName = nameParam.replace(/_/g, ' ');
                 document.getElementById('lockInName').value = realName.trim();
                 document.getElementById('lockInName').style.borderColor = '#25D366';
@@ -132,6 +193,9 @@
             }
         });
 
+        // --- EXISTING FUNCTIONS ---
+        function toggleMenu() { document.getElementById('navMenu').classList.toggle('active'); }
+
         function lockInBooking(e) {
             e.preventDefault(); 
             const form = e.target;
@@ -141,7 +205,10 @@
             const name = document.getElementById('lockInName').value;
             const paymentMethod = formData.get('confirmPayment');
 
-            if (!code || !name) { alert("Please ensure Name and Code are filled."); return false; }
+            if (!code || !name) { 
+                alert(currentLang === 'en' ? "Please ensure Name and Code are filled." : "Por favor asegúrese de que el Nombre y el Código estén completos."); 
+                return false; 
+            }
 
             let waMessage = `*🔒 FAST LOCK-IN CONFIRMATION*\n\n*Client Name:* ${name}\n*Reference Code:* ${code}\n\n*Preferred Payment Method:*\n${paymentMethod}\n\nPlease confirm the price we discussed and lock this in!`;
             window.open(`https://wa.me/18687800300?text=${encodeURIComponent(waMessage)}`, '_blank');
