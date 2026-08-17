@@ -313,7 +313,7 @@
             
             localStorage.setItem('hkj_booking_' + refCode, name);
             
-            // FIXED: Proper URL Encoding for the personal link
+            // FIXED: Proper URL Encoding
             const baseUrl = 'https://hkjlogisticsltdtt.vercel.app/confirm.html';
             const personalLink = `${baseUrl}?name=${encodeURIComponent(name)}&code=${encodeURIComponent(refCode)}`;
             
