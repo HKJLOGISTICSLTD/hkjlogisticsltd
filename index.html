@@ -197,7 +197,7 @@
                     <div class="form-group" style="background: #fff0f0; padding: 1rem; border-radius: 8px; border: 2px solid #DC2626;">
                         <label style="display: flex; align-items: center; gap: 10px; cursor: pointer; margin: 0; font-weight: 700; color: #DC2626;">
                             <input type="checkbox" id="isCarnival" style="width: 20px; height: 20px;">
-                            <span>🎉 Is this for a Carnival Event? (J'ouvert, Parade, Fete)</span>
+                            <span> Is this for a Carnival Event? (J'ouvert, Parade, Fete)</span>
                         </label>
                         <p style="font-size: 0.85rem; color: #555; margin-top: 5px; margin-left: 30px;">Special event rates apply. Minimum starting price: $400.00 TTD.</p>
                     </div>
@@ -313,10 +313,10 @@
             
             localStorage.setItem('hkj_booking_' + refCode, name);
             
-            // FIXED: Force replace spaces with %20 before building URL
+            // FIXED: Use underscores instead of %20
             const baseUrl = 'https://hkjlogisticsltdtt.vercel.app/confirm.html';
-            const safeName = name.replace(/ /g, '%20');
-            const safeCode = refCode.replace(/ /g, '%20');
+            const safeName = name.replace(/ /g, '_');
+            const safeCode = refCode.replace(/ /g, '_');
             const personalLink = `${baseUrl}?name=${safeName}&code=${safeCode}`;
             
             let waMessage = `*NEW BOOKING REQUEST - HKJ LOGISTICS*\n\n`; 
