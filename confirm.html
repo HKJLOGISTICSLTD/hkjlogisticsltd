@@ -111,63 +111,43 @@
     <script>
         function toggleMenu() { document.getElementById('navMenu').classList.toggle('active'); }
         
-        // AUTO-FILL LOGIC
+        // AUTO-FILL FROM URL PARAMETERS
+        window.addEventListener('DOMContentLoaded', (event) => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const nameParam = urlParams.get('name');
+            const codeParam = urlParams.get('code');
+
+            if (nameParam) {
+                document.getElementById('lockInName').value = decodeURIComponent(nameParam);
+            }
+            if (codeParam) {
+                document.getElementById('lockInCode').value = decodeURIComponent(codeParam);
+            }
+        });
+
+        // Manual typing fallback
         document.getElementById('lockInCode').addEventListener('input', function() {
             let rawCode = this.value.trim().toUpperCase();
-            // Remove hyphens to get clean code (e.g. HKJ9969)
             let cleanCode = rawCode.replace(/-/g, '');
-            
             const nameField = document.getElementById('lockInName');
-            let storedName = null;
-
-            console.log("Searching for code:", cleanCode);
-
-            // Try finding it with the hyphen (HKJ-9969)
-            if (cleanCode.startsWith('HKJ') && cleanCode.length > 3) {
-                let codeWithHyphen = 'HKJ-' + cleanCode.substring(3);
-                storedName = localStorage.getItem('hkj_booking_' + codeWithHyphen);
-                console.log("Tried with hyphen (" + codeWithHyphen + "):", storedName);
-            }
-            
-            // If not found, try without hyphen (HKJ9969)
-            if (!storedName) {
-                storedName = localStorage.getItem('hkj_booking_' + cleanCode);
-                console.log("Tried without hyphen (" + cleanCode + "):", storedName);
-            }
-
-            if (storedName) {
-                nameField.value = storedName;
-                nameField.style.borderColor = '#25D366';
-                nameField.style.backgroundColor = '#f0fff4';
-            } else {
-                nameField.style.borderColor = '#e0e0e0';
-                nameField.style.backgroundColor = '#fff';
-            }
+            let storedName = localStorage.getItem('hkj_booking_' + cleanCode) || localStorage.getItem('hkj_booking_HKJ-' + cleanCode.substring(3));
+            if (storedName) { nameField.value = storedName; nameField.style.borderColor = '#25D366'; } 
+            else { nameField.style.borderColor = '#e0e0e0'; }
         });
 
         function lockInBooking(e) {
             e.preventDefault(); 
             const form = e.target;
             const formData = new FormData(form);
-            
             let rawCode = formData.get('refCode').trim().toUpperCase().replace(/-/g, '');
             let code = rawCode.startsWith('HKJ') && rawCode.length > 3 ? 'HKJ-' + rawCode.substring(3) : rawCode;
-            
             const name = document.getElementById('lockInName').value;
             const paymentMethod = formData.get('confirmPayment');
 
-            if (!code) { alert("Please enter your Reference Code."); return false; }
-            if (!name) { alert("Please enter your Name."); return false; }
+            if (!code || !name) { alert("Please ensure Name and Code are filled."); return false; }
 
-            let waMessage = `* FAST LOCK-IN CONFIRMATION*\n\n`;
-            waMessage += `*Client Name:* ${name}\n`;
-            waMessage += `*Reference Code:* ${code}\n\n`;
-            waMessage += `*Preferred Payment Method:*\n${paymentMethod}\n\n`;
-            waMessage += `Please confirm the price we discussed and lock this in!`;
-
-            const waUrl = `https://wa.me/18687800300?text=${encodeURIComponent(waMessage)}`;
-            window.open(waUrl, '_blank');
-            alert("✅ Code sent! WhatsApp is opening...");
+            let waMessage = `*🔒 FAST LOCK-IN CONFIRMATION*\n\n*Client Name:* ${name}\n*Reference Code:* ${code}\n\n*Preferred Payment Method:*\n${paymentMethod}\n\nPlease confirm the price we discussed and lock this in!`;
+            window.open(`https://wa.me/18687800300?text=${encodeURIComponent(waMessage)}`, '_blank');
             return false; 
         }
     </script>
