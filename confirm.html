@@ -1,219 +1,296 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Confirm Booking - HKJ Logistics Ltd</title>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Open Sans', sans-serif; background: #000; color: #fff; overflow-x: hidden; }
-        .header { background: #000; padding: 1rem 2rem; position: sticky; top: 0; z-index: 1000; border-bottom: 2px solid #FFD700; }
-        .header-container { max-width: 1400px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; }
-        .logo { display: flex; align-items: center; gap: 0.5rem; }
-        .logo-icon { width: 60px; height: 60px; background: #000; border: 3px solid #FFD700; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: 'Montserrat', sans-serif; font-weight: 900; font-size: 1.2rem; color: #fff; }
-        .logo-text { display: flex; flex-direction: column; }
-        .logo-text .company { font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: 1.2rem; color: #fff; }
-        .logo-text .company span { color: #FFD700; }
-        .logo-text .tagline { font-size: 0.7rem; color: #4A90E2; font-style: italic; }
-        .nav-menu { display: flex; gap: 2rem; list-style: none; }
-        .nav-menu a { color: #fff; text-decoration: none; font-family: 'Montserrat', sans-serif; font-weight: 600; font-size: 0.9rem; transition: color 0.3s; }
-        .nav-menu a:hover, .nav-menu a.active { color: #FFD700; }
-        .header-contact { display: flex; align-items: center; gap: 1.5rem; }
-        .phone-info { display: flex; align-items: center; gap: 0.75rem; }
-        .phone-icon { width: 50px; height: 50px; background: #FFD700; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; color: #000; }
-        .phone-details { display: flex; flex-direction: column; }
-        .phone-number { font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: 1.1rem; color: #fff; }
-        .phone-label { font-size: 0.75rem; color: #FFD700; font-weight: 600; }
-        .btn-whatsapp-header { background: #FFD700; color: #000; padding: 0.75rem 1.5rem; border-radius: 6px; font-family: 'Montserrat', sans-serif; font-weight: 700; text-decoration: none; display: flex; align-items: center; gap: 0.5rem; transition: all 0.3s; }
-        .btn-whatsapp-header:hover { background: #FFC107; transform: translateY(-2px); }
-        .mobile-menu-btn { display: none; background: #FFD700; border: none; color: #000; width: 44px; height: 44px; border-radius: 8px; font-size: 1.2rem; cursor: pointer; }
-        .lang-toggle { background: transparent; border: 2px solid #FFD700; color: #FFD700; padding: 0.5rem 1rem; border-radius: 20px; font-weight: 700; cursor: pointer; font-size: 0.9rem; display: flex; align-items: center; gap: 0.5rem; }
-        .lang-toggle:hover { background: #FFD700; color: #000; }
-        .booking { background: #f0fff4; padding: 4rem 2rem; min-height: 80vh; }
-        .booking-container { max-width: 900px; margin: 0 auto; }
-        .booking-widget { background: #fff; padding: 2.5rem; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); border-top: 5px solid #25D366; }
-        .booking-widget h2 { font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: 2rem; margin-bottom: 1.5rem; color: #25D366; text-align: center; }
-        .form-group { margin-bottom: 1.5rem; }
-        .form-group label { display: block; margin-bottom: 0.75rem; font-weight: 700; color: #333; font-size: 1.15rem; }
-        .form-group input, .form-group select { width: 100%; padding: 1.25rem; border: 2px solid #e0e0e0; border-radius: 10px; font-family: inherit; font-size: 1.2rem; transition: border-color 0.3s; background: #fff; color: #000; box-sizing: border-box; }
-        .form-group input:focus, .form-group select:focus { outline: none; border-color: #25D366; }
-        .btn-submit { width: 100%; padding: 1.5rem; background: #25D366; color: #fff; border: none; border-radius: 8px; font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: 1.3rem; cursor: pointer; transition: all 0.3s; display: flex; align-items: center; justify-content: center; gap: 0.5rem; text-transform: uppercase; }
-        .btn-submit:hover { background: #128C7E; transform: translateY(-2px); }
-        .footer-contact { background: #000; padding: 2rem; border-top: 3px solid #FFD700; }
-        .footer-container { max-width: 1400px; margin: 0 auto; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 2rem; }
-        .footer-item { display: flex; align-items: center; gap: 1rem; }
-        .footer-icon { width: 50px; height: 50px; background: #FFD700; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; color: #000; flex-shrink: 0; }
-        .footer-details h4 { font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: 0.85rem; color: #FFD700; margin-bottom: 0.25rem; }
-        .footer-details p { font-size: 0.9rem; color: #fff; }
-        
-        /* LANGUAGE SPLASH SCREEN */
-        #langSplash { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 10000; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 2rem; }
-        .splash-logo { font-family: 'Montserrat', sans-serif; font-weight: 900; font-size: 3rem; color: #fff; margin-bottom: 1rem; }
-        .splash-logo span { color: #FFD700; }
-        .splash-sub { color: #ccc; font-size: 1.2rem; margin-bottom: 3rem; }
-        .lang-btns { display: flex; gap: 2rem; flex-wrap: wrap; justify-content: center; }
-        .lang-btn { padding: 1.5rem 3rem; border: 2px solid #FFD700; background: transparent; color: #FFD700; font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: 1.5rem; border-radius: 12px; cursor: pointer; transition: all 0.3s; min-width: 200px; }
-        .lang-btn:hover { background: #FFD700; color: #000; transform: scale(1.05); }
-
-        @media (max-width: 968px) { .nav-menu { display: none; position: fixed; top: 80px; left: 0; right: 0; background: #000; flex-direction: column; padding: 2rem; border-top: 2px solid #FFD700; } .nav-menu.active { display: flex; } .mobile-menu-btn { display: block; } .header-contact { display: none; } }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Confirm Booking - HKJ Logistics</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    body {
+      background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), 
+                  url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e?ixlib=rb-4.0.3&auto=format&fit=crop&w=2073&q=80');
+      background-size: cover;
+      background-position: center;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .glass-card {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+    }
+  </style>
 </head>
-<body>
+<body class="p-4">
 
-    <!-- LANGUAGE SELECTION SPLASH SCREEN -->
-    <div id="langSplash">
-        <div class="splash-logo">H.K.J <span>LOGISTICS LTD</span></div>
-        <div class="splash-sub" data-en="Select Your Language" data-es="Selecciona Tu Idioma">Select Your Language</div>
-        <div class="lang-btns">
-            <button class="lang-btn" onclick="setLanguage('en')"> English</button>
-            <button class="lang-btn" onclick="setLanguage('es')">🇸 Español</button>
-        </div>
+  <div class="glass-card rounded-2xl shadow-2xl p-6 max-w-lg w-full mx-4">
+    <!-- Loading State -->
+    <div id="loading" class="text-center py-8">
+      <i class="fas fa-spinner fa-spin text-4xl text-blue-600 mb-4"></i>
+      <p class="text-gray-700">Loading your booking details...</p>
     </div>
 
-    <header class="header">
-        <div class="header-container">
-            <div class="logo"><div class="logo-icon">H.K.J</div><div class="logo-text"><div class="company">LOGISTICS <span>LTD</span></div><div class="tagline" data-en="solving all your problems" data-es="resolviendo todos tus problemas">solving all your problems</div></div></div>
-            <ul class="nav-menu" id="navMenu">
-                <li><a href="index.html" data-en="HOME" data-es="INICIO">HOME</a></li>
-                <li><a href="index.html#services" data-en="SERVICES" data-es="SERVICIOS">SERVICES</a></li>
-                <li><a href="index.html#book" data-en="BOOK A RIDE" data-es="RESERVAR VIAJE">BOOK A RIDE</a></li>
-                <li><a href="confirm.html" class="active" style="color: #25D366; font-weight: 800;" data-en="CONFIRM BOOKING" data-es="CONFIRMAR RESERVA">CONFIRM BOOKING</a></li>
-                <li><a href="index.html#contact" data-en="CONTACT US" data-es="CONTÁCTENOS">CONTACT US</a></li>
-            </ul>
-            <div class="header-contact">
-                <div class="phone-info"><div class="phone-icon"><i class="fas fa-phone"></i></div><div class="phone-details"><div class="phone-number">+1 (868) 780-0300</div><div class="phone-label" data-en="24/7 SERVICE" data-es="SERVICIO 24/7">24/7 SERVICE</div></div></div>
-                <a href="https://wa.me/18687800300" class="btn-whatsapp-header" target="_blank"><i class="fab fa-whatsapp"></i> WHATSAPP US</a>
-                <button class="lang-toggle" onclick="toggleLanguage()"><i class="fas fa-globe"></i> <span id="currentLangDisplay">EN/ES</span></button>
-            </div>
-            <button class="mobile-menu-btn" onclick="toggleMenu()"><i class="fas fa-bars"></i></button>
+    <!-- Error State -->
+    <div id="error" class="hidden text-center py-8">
+      <i class="fas fa-exclamation-triangle text-4xl text-red-600 mb-4"></i>
+      <p class="text-gray-700 mb-4" id="error-message">Booking not found</p>
+      <a href="/" class="inline-block bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg">
+        <i class="fas fa-home mr-2"></i>Back to Home
+      </a>
+    </div>
+
+    <!-- Booking Details -->
+    <div id="booking-details" class="hidden">
+      <div class="text-center mb-6">
+        <div class="text-5xl mb-3">🚗</div>
+        <h1 class="text-2xl font-bold text-gray-800 mb-2">Confirm Your Booking</h1>
+        <p class="text-gray-600">HKJ Logistics Ltd</p>
+      </div>
+
+      <div class="bg-blue-50 border-l-4 border-blue-500 p-4 mb-6 rounded-lg">
+        <p class="text-sm text-blue-800">
+          <i class="fas fa-info-circle mr-2"></i>
+          Please review your booking details below and click "Confirm Booking" to lock in your rate.
+        </p>
+      </div>
+
+      <div class="space-y-3 mb-6">
+        <div class="flex items-start">
+          <i class="fas fa-user w-6 text-blue-600 mt-1"></i>
+          <div class="ml-3">
+            <p class="text-xs text-gray-500 uppercase">Client Name</p>
+            <p class="font-semibold text-gray-800" id="client-name">-</p>
+          </div>
         </div>
-    </header>
 
-    <section class="booking">
-        <div class="booking-container">
-            <div class="booking-widget">
-                <h2><i class="fas fa-lock"></i> <span data-en="FAST LOCK-IN" data-es="CONFIRMACIÓN RÁPIDA">FAST LOCK-IN</span></h2>
-                <p style="text-align: center; color: #555; margin-bottom: 2rem;" data-en="Have your Reference Code? Enter it below to lock in your booking instantly." data-es="¿Tienes tu Código de Referencia? Ingrésalo abajo para asegurar tu reserva al instante.">Have your Reference Code? Enter it below to lock in your booking instantly.</p>
-                
-                <form name="hkj-confirm" method="POST" onsubmit="return lockInBooking(event)">
-                    <input type="hidden" name="form-name" value="hkj-confirm">
-                    
-                    <div class="form-group">
-                        <label style="font-size: 1.3rem; color: #000;" data-en="Client Name *" data-es="Nombre del Cliente *">Client Name *</label>
-                        <input type="text" name="clientNameLock" id="lockInName" placeholder="Type your code below to auto-fill" style="font-weight: 700;" data-placeholder-en="Type your code below to auto-fill" data-placeholder-es="Escribe tu código abajo para autocompletar" required>
-                        <p style="font-size: 0.85rem; color: #25D366; margin-top: 5px; font-weight: 600;" data-en="Name will appear automatically when you enter your code!" data-es="¡El nombre aparecerá automáticamente cuando ingreses tu código!"><i class="fas fa-magic"></i> Name will appear automatically when you enter your code!</p>
-                    </div>
-
-                    <div class="form-group">
-                        <label style="font-size: 1.3rem; color: #000;" data-en="Enter Reference Code *" data-es="Ingrese Código de Referencia *">Enter Reference Code *</label>
-                        <input type="text" name="refCode" id="lockInCode" placeholder="e.g. HKJ-1234 or HKJ1234" style="font-size: 1.5rem; font-weight: 900; text-align: center; letter-spacing: 2px; border: 2px solid #25D366; text-transform: uppercase;" data-placeholder-en="e.g. HKJ-1234 or HKJ1234" data-placeholder-es="ej. HKJ-1234 o HKJ1234" required>
-                        <p style="font-size: 0.9rem; color: #666; margin-top: 5px;" data-en="Found in your booking confirmation popup or WhatsApp message." data-es="Encontrado en el popup de confirmación de reserva o mensaje de WhatsApp.">Found in your booking confirmation popup or WhatsApp message.</p>
-                    </div>
-
-                    <div class="form-group">
-                        <label data-en="Preferred Payment Method *" data-es="Método de Pago Preferido *">Preferred Payment Method *</label>
-                        <select name="confirmPayment" id="confirmPayment" style="font-size: 1.1rem; font-weight: 600;" required>
-                            <option value="Online Payment (Wipay Link)" data-en="1️⃣ Online Payment (Send me the Wipay link)" data-es="1️⃣ Pago en Línea (Envíenme el link de Wipay)">1️⃣ Online Payment (Send me the Wipay link)</option>
-                            <option value="Card Payment on Drop-off" data-en="2️⃣ Card Payment (Pay on drop-off)" data-es="2️⃣ Pago con Tarjeta (Pagar al llegar al destino)">2️⃣ Card Payment (Pay on drop-off)</option>
-                            <option value="Cash Payment" data-en="3️⃣ Cash Payment" data-es="3️⃣ Pago en Efectivo">3️⃣ Cash Payment</option>
-                        </select>
-                    </div>
-
-                    <button type="submit" class="btn-submit" data-en="LOCK IN BOOKING" data-es="ASEGURAR RESERVA">
-                        <i class="fas fa-lock"></i> LOCK IN BOOKING
-                    </button>
-                    
-                    <div style="background: #e6fffa; border: 1px solid #25D366; border-radius: 8px; padding: 1rem; margin-top: 1.5rem; text-align: center;">
-                        <p style="color: #065f46; font-size: 0.9rem; margin: 0;" data-en="This will open WhatsApp to confirm your code with Admin." data-es="Esto abrirá WhatsApp para confirmar su código con el Administrador."><i class="fas fa-info-circle"></i> This will open WhatsApp to confirm your code with Admin.</p>
-                    </div>
-                </form>
-            </div>
+        <div class="flex items-start">
+          <i class="fas fa-hashtag w-6 text-purple-600 mt-1"></i>
+          <div class="ml-3">
+            <p class="text-xs text-gray-500 uppercase">Reference Code</p>
+            <p class="font-mono font-semibold text-gray-800" id="ref-code">-</p>
+          </div>
         </div>
-    </section>
 
-    <footer class="footer-contact" id="contact"><div class="footer-container">
-        <div class="footer-item"><div class="footer-icon"><i class="fas fa-map-marker-alt"></i></div><div class="footer-details"><h4 data-en="OUR LOCATION" data-es="NUESTRA UBICACIÓN">OUR LOCATION</h4><p>Chaguanas, Trinidad</p></div></div>
-        <div class="footer-item"><div class="footer-icon"><i class="fas fa-phone"></i></div><div class="footer-details"><h4 data-en="CALL US" data-es="LLÁMENOS">CALL US</h4><p>+1 (868) 780-0300</p></div></div>
-        <div class="footer-item"><div class="footer-icon"><i class="fab fa-whatsapp"></i></div><div class="footer-details"><h4>WHATSAPP</h4><p>+1 (868) 780-0300</p></div></div>
-        <div class="footer-item"><div class="footer-icon"><i class="fas fa-envelope"></i></div><div class="footer-details"><h4 data-en="EMAIL US" data-es="ENVÍENOS UN CORREO">EMAIL US</h4><p>hkjlogisticsltd@gmail.com</p></div></div>
-    </div></footer>
+        <div class="flex items-start">
+          <i class="fas fa-calendar w-6 text-green-600 mt-1"></i>
+          <div class="ml-3">
+            <p class="text-xs text-gray-500 uppercase">Date</p>
+            <p class="font-semibold text-gray-800" id="book-date">-</p>
+          </div>
+        </div>
 
-    <script>
-        // --- LANGUAGE SYSTEM ---
-        let currentLang = 'en';
+        <div class="flex items-start">
+          <i class="fas fa-clock w-6 text-orange-600 mt-1"></i>
+          <div class="ml-3">
+            <p class="text-xs text-gray-500 uppercase">Time</p>
+            <p class="font-semibold text-gray-800" id="book-time">-</p>
+          </div>
+        </div>
 
-        function setLanguage(lang) {
-            currentLang = lang;
-            localStorage.setItem('hkj_lang', lang);
-            document.getElementById('langSplash').style.display = 'none';
-            applyTranslations();
-        }
+        <div class="flex items-start">
+          <i class="fas fa-map-marker-alt w-6 text-red-600 mt-1"></i>
+          <div class="ml-3">
+            <p class="text-xs text-gray-500 uppercase">Pickup Location</p>
+            <p class="font-semibold text-gray-800" id="pickup">-</p>
+          </div>
+        </div>
 
-        function toggleLanguage() {
-            currentLang = currentLang === 'en' ? 'es' : 'en';
-            localStorage.setItem('hkj_lang', currentLang);
-            applyTranslations();
-        }
+        <div class="flex items-start">
+          <i class="fas fa-flag-checkered w-6 text-teal-600 mt-1"></i>
+          <div class="ml-3">
+            <p class="text-xs text-gray-500 uppercase">Drop-off Location</p>
+            <p class="font-semibold text-gray-800" id="dropoff">-</p>
+          </div>
+        </div>
 
-        function applyTranslations() {
-            document.querySelectorAll('[data-en]').forEach(el => {
-                el.innerText = el.getAttribute(`data-${currentLang}`);
-            });
-            document.querySelectorAll('[data-placeholder-en]').forEach(el => {
-                el.placeholder = el.getAttribute(`data-placeholder-${currentLang}`);
-            });
-            document.getElementById('currentLangDisplay').innerText = currentLang.toUpperCase();
-        }
+        <div class="flex items-start">
+          <i class="fas fa-phone w-6 text-purple-600 mt-1"></i>
+          <div class="ml-3">
+            <p class="text-xs text-gray-500 uppercase">Phone</p>
+            <p class="font-semibold text-gray-800" id="phone">-</p>
+          </div>
+        </div>
 
-        // Check for saved language on load
-        window.addEventListener('DOMContentLoaded', () => {
-            const savedLang = localStorage.getItem('hkj_lang');
-            if (savedLang) {
-                setLanguage(savedLang);
-            }
-            
-            // --- AUTO-FILL FROM URL (Underscore Trick) ---
-            const urlParams = new URLSearchParams(window.location.search);
-            const nameParam = urlParams.get('name');
-            const codeParam = urlParams.get('code');
-            
-            if (nameParam && nameParam !== '') {
-                const realName = nameParam.replace(/_/g, ' ');
-                document.getElementById('lockInName').value = realName.trim();
-                document.getElementById('lockInName').style.borderColor = '#25D366';
-                document.getElementById('lockInName').style.backgroundColor = '#f0fff4';
-            }
-            
-            if (codeParam && codeParam !== '') {
-                document.getElementById('lockInCode').value = codeParam.trim();
-                document.getElementById('lockInCode').style.borderColor = '#25D366';
-                document.getElementById('lockInCode').style.backgroundColor = '#f0fff4';
-            }
+        <div class="border-t-2 border-gray-200 my-4"></div>
+
+        <div class="bg-gradient-to-r from-red-500 to-red-600 text-white p-4 rounded-lg text-center">
+          <p class="text-sm mb-1">Final Price</p>
+          <p class="text-3xl font-bold" id="final-price">$0.00 TTD</p>
+        </div>
+      </div>
+
+      <div class="space-y-3">
+        <button onclick="confirmBooking()" class="w-full bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white font-bold py-4 px-6 rounded-lg transition transform hover:scale-105 shadow-lg">
+          <i class="fas fa-check-circle mr-2"></i>Confirm Booking
+        </button>
+        
+        <button onclick="cancelBooking()" class="w-full bg-gray-500 hover:bg-gray-600 text-white font-semibold py-3 px-6 rounded-lg transition">
+          <i class="fas fa-times-circle mr-2"></i>Cancel
+        </button>
+      </div>
+
+      <p class="text-center text-xs text-gray-500 mt-6">
+        <i class="fas fa-shield-alt mr-1"></i>
+        Your booking is secure with HKJ Logistics
+      </p>
+    </div>
+  </div>
+
+  <script>
+    // ==========================================
+    // ⚠️ REPLACE WITH YOUR APPS SCRIPT URL
+    // ==========================================
+    const APPS_SCRIPT_URL = 'YOUR_APPS_SCRIPT_WEB_APP_URL_HERE';
+
+    let bookingRowNumber = null;
+
+    // Load booking when page loads
+    window.addEventListener('DOMContentLoaded', loadBookingDetails);
+
+    function loadBookingDetails() {
+      // Get URL parameters
+      const urlParams = new URLSearchParams(window.location.search);
+      const code = urlParams.get('code');
+      const nameFromUrl = urlParams.get('name');
+
+      if (!code) {
+        showError('No booking code provided');
+        return;
+      }
+
+      // Fetch all bookings and find the matching one
+      fetch(APPS_SCRIPT_URL)
+        .then(response => response.json())
+        .then(data => {
+          if (!data.success) {
+            showError('Error fetching bookings');
+            return;
+          }
+
+          // Find booking by reference code
+          const booking = data.bookings.find(b => b['REF CODE'] === code);
+
+          if (!booking) {
+            showError(`Booking ${code} not found`);
+            return;
+          }
+
+          // Store row number for confirmation
+          bookingRowNumber = booking._rowNumber;
+
+          // Display booking details
+          displayBookingDetails(booking, nameFromUrl);
+        })
+        .catch(error => {
+          console.error('Error:', error);
+          showError('Network error. Please try again.');
         });
+    }
 
-        // --- EXISTING FUNCTIONS ---
-        function toggleMenu() { document.getElementById('navMenu').classList.toggle('active'); }
+    function displayBookingDetails(booking, nameFromUrl) {
+      // Use name from URL if available, otherwise from booking data
+      const clientName = nameFromUrl ? decodeURIComponent(nameFromUrl).replace(/_/g, ' ') : (booking.NAME || 'Unknown');
 
-        function lockInBooking(e) {
-            e.preventDefault(); 
-            const form = e.target;
-            const formData = new FormData(form);
-            let rawCode = formData.get('refCode').trim().toUpperCase().replace(/-/g, '');
-            let code = rawCode.startsWith('HKJ') && rawCode.length > 3 ? 'HKJ-' + rawCode.substring(3) : rawCode;
-            const name = document.getElementById('lockInName').value;
-            const paymentMethod = formData.get('confirmPayment');
+      document.getElementById('client-name').textContent = clientName;
+      document.getElementById('ref-code').textContent = booking['REF CODE'] || 'N/A';
+      
+      // Format date
+      const bookDate = booking.DATE ? new Date(booking.DATE).toLocaleDateString('en-US', {
+        weekday: 'long',
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+      }) : 'N/A';
+      document.getElementById('book-date').textContent = bookDate;
 
-            if (!code || !name) { 
-                alert(currentLang === 'en' ? "Please ensure Name and Code are filled." : "Por favor asegúrese de que el Nombre y el Código estén completos."); 
-                return false; 
-            }
+      // Format time
+      let bookTime = booking.TIME || 'N/A';
+      if (booking.TIME && typeof booking.TIME === 'string' && booking.TIME.includes('T')) {
+        const timeObj = new Date(booking.TIME);
+        bookTime = timeObj.toLocaleTimeString('en-US', { 
+          hour: '2-digit', 
+          minute: '2-digit' 
+        });
+      }
+      document.getElementById('book-time').textContent = bookTime;
 
-            let waMessage = `*🔒 FAST LOCK-IN CONFIRMATION*\n\n*Client Name:* ${name}\n*Reference Code:* ${code}\n\n*Preferred Payment Method:*\n${paymentMethod}\n\nPlease confirm the price we discussed and lock this in!`;
-            window.open(`https://wa.me/18687800300?text=${encodeURIComponent(waMessage)}`, '_blank');
-            return false; 
+      document.getElementById('pickup').textContent = booking['PICK UP'] || 'N/A';
+      document.getElementById('dropoff').textContent = booking['DROP OFF'] || 'N/A';
+      document.getElementById('phone').textContent = booking.PHONE || 'N/A';
+      
+      const price = parseFloat(booking['FINAL PRICE']) || 0;
+      document.getElementById('final-price').textContent = `$${price.toFixed(2)} TTD`;
+
+      // Show booking details, hide loading
+      document.getElementById('loading').classList.add('hidden');
+      document.getElementById('booking-details').classList.remove('hidden');
+    }
+
+    function showError(message) {
+      document.getElementById('loading').classList.add('hidden');
+      document.getElementById('error-message').textContent = message;
+      document.getElementById('error').classList.remove('hidden');
+    }
+
+    function confirmBooking() {
+      if (!bookingRowNumber) {
+        alert('Error: Booking information not loaded');
+        return;
+      }
+
+      if (!confirm('Are you sure you want to confirm this booking?')) {
+        return;
+      }
+
+      // Update status to Confirmed via Apps Script
+      fetch(APPS_SCRIPT_URL, {
+        method: 'POST',
+        body: new URLSearchParams({
+          action: 'updateStatus',
+          row: bookingRowNumber,
+          status: 'Confirmed'
+        })
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          // Show success message
+          document.getElementById('booking-details').innerHTML = `
+            <div class="text-center py-8">
+              <div class="text-6xl mb-4">✅</div>
+              <h2 class="text-2xl font-bold text-green-600 mb-4">Booking Confirmed!</h2>
+              <p class="text-gray-700 mb-6">
+                Thank you for confirming your booking with HKJ Logistics.<br>
+                We look forward to serving you!
+              </p>
+              <div class="bg-blue-50 p-4 rounded-lg mb-6">
+                <p class="text-sm text-blue-800">
+                  <i class="fas fa-check-circle mr-2"></i>
+                  A confirmation email/SMS will be sent to you shortly.
+                </p>
+              </div>
+              <a href="/" class="inline-block bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg">
+                <i class="fas fa-home mr-2"></i>Back to Home
+              </a>
+            </div>
+          `;
+        } else {
+          alert('Error confirming booking. Please try again.');
         }
-    </script>
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        alert('Network error. Please try again.');
+      });
+    }
+
+    function cancelBooking() {
+      if (confirm('Are you sure you want to cancel this booking?')) {
+        window.location.href = '/';
+      }
+    }
+  </script>
 </body>
 </html>
