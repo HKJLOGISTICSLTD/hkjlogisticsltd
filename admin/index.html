@@ -18,14 +18,14 @@
     }
     .status-pending { @apply bg-yellow-100 text-yellow-800; }
     .status-pricesent { @apply bg-orange-100 text-orange-800; }
-    .status-confirmed { @apply bg-green-100 text-green-800; }
-    .status-completed { @apply bg-blue-100 text-blue-800; }
+    .status-confirmed { @apply bg-blue-600 text-white; }
+    .status-completed { @apply bg-green-500 text-white; }
+    .status-cancelled { @apply bg-red-600 text-white; }
     .glass-card {
       background: rgba(255, 255, 255, 0.95);
       backdrop-filter: blur(10px);
       -webkit-backdrop-filter: blur(10px);
     }
-    /* Login & Modal Styles */
     .modal-overlay {
       position: fixed; top: 0; left: 0; width: 100%; height: 100%;
       background: rgba(0,0,0,0.7); z-index: 50;
@@ -34,6 +34,9 @@
     #login-screen {
       position: fixed; top: 0; left: 0; width: 100%; height: 100%;
       display: flex; align-items: center; justify-content: center; z-index: 100;
+    }
+    .status-dropdown select {
+      @apply cursor-pointer font-semibold py-2 px-4 rounded-lg border-0 text-sm transition;
     }
   </style>
 </head>
@@ -62,7 +65,7 @@
     </div>
   </div>
 
-  <!-- ADMIN CONTENT (Hidden until login) -->
+  <!-- ADMIN CONTENT -->
   <div id="admin-content" style="display: none;">
     
     <!-- EDIT MODAL -->
@@ -83,7 +86,6 @@
     </div>
 
     <div class="max-w-7xl mx-auto">
-      <!-- Header -->
       <div class="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
         <div>
           <h1 class="text-4xl font-bold text-white mb-2 drop-shadow-lg">🚗 HKJ Logistics Admin</h1>
@@ -111,13 +113,10 @@
   </div>
 
   <script>
-    // ==========================================
-    // ⚠️ REPLACE WITH YOUR APPS SCRIPT URL
-    // ==========================================
     const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbx6xDIYPUdE0Vxl3ndy1axkjX0Y6MWYYNRJ7tla1o-nUUPEMpcssfucjxL3qZIXnHdj/exec';
     const ADMIN_PASSWORD = 'hkj5762';
+    let allBookings = [];
 
-    // Check login on load
     window.addEventListener('DOMContentLoaded', function() {
       if (sessionStorage.getItem('hkj_admin_auth') === 'true') {
         showAdminContent();
@@ -163,8 +162,8 @@
         .then(data => {
           loading.classList.add('hidden');
           if (data.success && data.bookings.length > 0) {
-            const sortedBookings = data.bookings.sort((a, b) => new Date(b.DATE) - new Date(a.DATE));
-            sortedBookings.forEach(booking => renderBookingCard(booking));
+            allBookings = data.bookings.sort((a, b) => new Date(b.DATE) - new Date(a.DATE));
+            allBookings.forEach(booking => renderBookingCard(booking));
           } else {
             container.innerHTML = '<div class="glass-card col-span-full text-center p-8 rounded-xl shadow-xl"><p class="text-gray-700 text-lg">No bookings found.</p></div>';
           }
@@ -176,12 +175,19 @@
         });
     }
 
+    function getBookingByRow(rowNumber) {
+      return allBookings.find(b => b._rowNumber === rowNumber);
+    }
+
     function renderBookingCard(booking) {
       const container = document.getElementById('bookings-container');
       const statusClass = {
-        'Pending': 'status-pending', 'Price Sent': 'status-pricesent',
-        'Confirmed': 'status-confirmed', 'Completed': 'status-completed'
-      }[booking.STATUS] || 'bg-gray-100 text-gray-800';
+        'Pending': 'status-pending',
+        'Price Sent': 'status-pricesent',
+        'Confirmed': 'status-confirmed',
+        'Completed': 'status-completed',
+        'Cancelled': 'status-cancelled'
+      }[booking.STATUS] || 'status-pending';
 
       let displayDate = booking.DATE;
       let displayTime = booking.TIME;
@@ -193,7 +199,15 @@
       
       card.innerHTML = `
         <div class="flex justify-between items-start mb-4">
-          <span class="px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide ${statusClass}">${booking.STATUS || 'Pending'}</span>
+          <div class="status-dropdown">
+            <select onchange="updateStatus(${booking._rowNumber}, this.value)" class="${statusClass}">
+              <option value="Pending" ${booking.STATUS === 'Pending' ? 'selected' : ''}>Pending</option>
+              <option value="Price Sent" ${booking.STATUS === 'Price Sent' ? 'selected' : ''}>Price Sent</option>
+              <option value="Confirmed" ${booking.STATUS === 'Confirmed' ? 'selected' : ''}>Confirmed</option>
+              <option value="Completed" ${booking.STATUS === 'Completed' ? 'selected' : ''}>Completed</option>
+              <option value="Cancelled" ${booking.STATUS === 'Cancelled' ? 'selected' : ''}>Cancelled</option>
+            </select>
+          </div>
           <span class="text-sm text-gray-500 font-mono bg-gray-100 px-2 py-1 rounded">${booking['REF CODE'] || 'N/A'}</span>
         </div>
         <h3 class="text-2xl font-bold text-gray-800 mb-3">${booking.NAME || 'Unknown Client'}</h3>
@@ -203,12 +217,12 @@
           <p class="flex items-start mt-3">
             <i class="fas fa-map-marker-alt w-6 text-red-600 mt-1"></i> 
             <span class="ml-2 flex-grow"><strong>Pickup:</strong> ${booking['PICK UP'] || 'N/A'}</span>
-            <button onclick="copyText('${booking['PICK UP']}')" class="ml-2 text-gray-400 hover:text-blue-600" title="Copy Address"><i class="fas fa-copy"></i></button>
+            <button onclick="copyAddress('pickup', ${booking._rowNumber})" class="ml-2 text-gray-400 hover:text-blue-600" title="Copy Address"><i class="fas fa-copy"></i></button>
           </p>
           <p class="flex items-start">
             <i class="fas fa-flag-checkered w-6 text-green-600 mt-1"></i> 
             <span class="ml-2 flex-grow"><strong>Drop-off:</strong> ${booking['DROP OFF'] || 'N/A'}</span>
-            <button onclick="copyText('${booking['DROP OFF']}')" class="ml-2 text-gray-400 hover:text-blue-600" title="Copy Address"><i class="fas fa-copy"></i></button>
+            <button onclick="copyAddress('dropoff', ${booking._rowNumber})" class="ml-2 text-gray-400 hover:text-blue-600" title="Copy Address"><i class="fas fa-copy"></i></button>
           </p>
           <p class="flex items-center mt-3">
             <i class="fas fa-phone w-6 text-purple-600"></i> 
@@ -221,53 +235,111 @@
           </p>
         </div>
         <div class="grid grid-cols-2 gap-2 mt-4">
-          <button onclick="openEditModal(${booking._rowNumber}, '${booking.DATE}', '${booking.TIME}', '${booking.PHONE}', '${booking['PICK UP']}', '${booking['DROP OFF']}')" class="bg-gray-600 hover:bg-gray-700 text-white px-3 py-2 rounded text-sm font-semibold transition"><i class="fas fa-edit mr-1"></i> Edit</button>
-          <button onclick="sendWhatsApp('${booking.PHONE}', '${booking.NAME}', '${booking['REF CODE']}', '${booking['FINAL PRICE']}')" class="bg-green-500 hover:bg-green-600 text-white px-3 py-2 rounded text-sm font-semibold transition"><i class="fab fa-whatsapp mr-1"></i> WhatsApp</button>
-          <button onclick="sendEmailFromAdmin(${booking._rowNumber}, '${booking.EMAIL}', '${booking.NAME}', '${booking['REF CODE']}', '${booking['FINAL PRICE']}', '${booking['PICK UP']}', '${booking['DROP OFF']}', '${booking.DATE}')" class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-2 rounded text-sm font-semibold transition col-span-2"><i class="fas fa-envelope mr-1"></i> Send Confirmation Email</button>
+          <button onclick="openEditModal(${booking._rowNumber})" class="bg-gray-600 hover:bg-gray-700 text-white px-3 py-2 rounded text-sm font-semibold transition"><i class="fas fa-edit mr-1"></i> Edit</button>
+          <button onclick="sendWhatsApp(${booking._rowNumber})" class="bg-green-500 hover:bg-green-600 text-white px-3 py-2 rounded text-sm font-semibold transition"><i class="fab fa-whatsapp mr-1"></i> WhatsApp</button>
+          <button onclick="sendEmailFromAdmin(${booking._rowNumber})" class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-2 rounded text-sm font-semibold transition col-span-2"><i class="fas fa-envelope mr-1"></i> Send Confirmation Email</button>
           <button onclick="updatePrice(${booking._rowNumber})" class="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-2 rounded text-sm font-semibold transition"><i class="fas fa-calculator mr-1"></i> Price</button>
-          <button onclick="confirmBooking(${booking._rowNumber})" class="bg-green-600 hover:bg-green-700 text-white px-3 py-2 rounded text-sm font-semibold transition"><i class="fas fa-check mr-1"></i> Confirm</button>
-          <button onclick="markAsCompleted(${booking._rowNumber})" class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded text-sm font-semibold transition col-span-2"><i class="fas fa-check-circle mr-1"></i> Mark Completed</button>
-          <button onclick="resetStatus(${booking._rowNumber})" class="bg-gray-500 hover:bg-gray-600 text-white px-3 py-2 rounded text-sm font-semibold transition col-span-2"><i class="fas fa-undo mr-1"></i> Reset</button>
+          <button onclick="markAsCompleted(${booking._rowNumber})" class="bg-green-600 hover:bg-green-700 text-white px-3 py-2 rounded text-sm font-semibold transition"><i class="fas fa-check-circle mr-1"></i> Completed</button>
+          <button onclick="resetStatus(${booking._rowNumber})" class="bg-gray-500 hover:bg-gray-600 text-white px-3 py-2 rounded text-sm font-semibold transition col-span-2"><i class="fas fa-undo mr-1"></i> Reset to Pending</button>
         </div>
       `;
       container.appendChild(card);
     }
 
-    // --- NEW FUNCTIONS ---
-    function copyText(text) {
+    function copyAddress(type, rowNumber) {
+      const booking = getBookingByRow(rowNumber);
+      const text = type === 'pickup' ? booking['PICK UP'] : booking['DROP OFF'];
       navigator.clipboard.writeText(text).then(() => alert('Address copied to clipboard!'));
     }
 
-    function sendWhatsApp(phone, name, code, price) {
-      if(!phone) { alert('No phone number'); return; }
-      const cleanPhone = phone.replace(/[^0-9]/g, '');
-      const msg = `Hello ${name}, your final price for booking ${code} is $${price} TTD. Please click this link to confirm: https://hkjlogisticsltdtt.vercel.app/confirm.html?code=${code}`;
+    function sendWhatsApp(rowNumber) {
+      const booking = getBookingByRow(rowNumber);
+      if(!booking.PHONE) { alert('No phone number'); return; }
+      const cleanPhone = booking.PHONE.replace(/[^0-9]/g, '');
+      const msg = `Hello ${booking.NAME}, your final price for booking ${booking['REF CODE']} is $${booking['FINAL PRICE']} TTD. Please click this link to confirm: https://hkjlogisticsltdtt.vercel.app/confirm.html?code=${booking['REF CODE']}`;
       window.open(`https://wa.me/1${cleanPhone}?text=${encodeURIComponent(msg)}`, '_blank');
     }
 
-    function sendEmailFromAdmin(row, email, name, code, price, pickup, dropoff, date) {
-      if(!email || !email.includes('@')) { alert('No valid email address'); return; }
-      if(!confirm(`Send confirmation email to ${name}?`)) return;
+    function sendEmailFromAdmin(rowNumber) {
+      const booking = getBookingByRow(rowNumber);
+      if(!booking.EMAIL || !booking.EMAIL.includes('@')) { alert('No valid email address'); return; }
+      if(!confirm(`Send confirmation email to ${booking.NAME}?`)) return;
+      
       fetch(APPS_SCRIPT_URL, {
         method: 'POST',
         body: new URLSearchParams({
-          action: 'sendEmail', row: row, email: email, name: name, refCode: code,
-          price: price, pickup: pickup, dropoff: dropoff, date: date
+          action: 'sendEmail',
+          row: rowNumber,
+          email: booking.EMAIL,
+          name: booking.NAME,
+          refCode: booking['REF CODE'],
+          price: booking['FINAL PRICE'],
+          pickup: booking['PICK UP'],
+          dropoff: booking['DROP OFF'],
+          date: booking.DATE
         })
       })
-      .then(res => res.json()).then(data => { if (data.success) alert('✅ Email sent successfully!'); else alert(' Error sending email.'); })
-      .catch(err => alert('Network error.'));
+      .then(res => res.json())
+      .then(data => { 
+        if (data.success) alert('✅ Email sent successfully!'); 
+        else alert('❌ Error sending email: ' + (data.message || 'Unknown error')); 
+      })
+      .catch(err => alert('Network error: ' + err));
     }
 
-    function openEditModal(row, date, time, phone, pickup, dropoff) {
-      document.getElementById('edit-row').value = row;
-      let dateVal = date; if(date && date.includes('T')) dateVal = date.split('T')[0];
-      let timeVal = time; if(time && time.includes('T')) { const d = new Date(time); timeVal = `${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`; }
+    function updateStatus(rowNumber, newStatus) {
+      fetch(APPS_SCRIPT_URL, {
+        method: 'POST',
+        body: new URLSearchParams({
+          action: 'updateStatus',
+          row: rowNumber,
+          status: newStatus
+        })
+      })
+      .then(res => res.json())
+      .then(data => {
+        if(data.success) {
+          // Update the booking in local array
+          const booking = getBookingByRow(rowNumber);
+          if(booking) booking.STATUS = newStatus;
+          // Re-render to update the dropdown color
+          renderAllBookings();
+        } else {
+          alert('❌ Error updating status');
+          loadBookings(); // Reload to reset the dropdown
+        }
+      })
+      .catch(err => {
+        alert('Network error');
+        loadBookings();
+      });
+    }
+
+    function renderAllBookings() {
+      const container = document.getElementById('bookings-container');
+      container.innerHTML = '';
+      allBookings.forEach(booking => renderBookingCard(booking));
+    }
+
+    function openEditModal(rowNumber) {
+      const booking = getBookingByRow(rowNumber);
+      document.getElementById('edit-row').value = rowNumber;
+      
+      let dateVal = booking.DATE;
+      if(dateVal && dateVal.includes('T')) dateVal = dateVal.split('T')[0];
+      
+      let timeVal = booking.TIME;
+      if(timeVal && timeVal.includes('T')) {
+        const d = new Date(timeVal);
+        timeVal = `${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
+      }
+
       document.getElementById('edit-date').value = dateVal || '';
       document.getElementById('edit-time').value = timeVal || '';
-      document.getElementById('edit-phone').value = phone || '';
-      document.getElementById('edit-pickup').value = pickup || '';
-      document.getElementById('edit-dropoff').value = dropoff || '';
+      document.getElementById('edit-phone').value = booking.PHONE || '';
+      document.getElementById('edit-pickup').value = booking['PICK UP'] || '';
+      document.getElementById('edit-dropoff').value = booking['DROP OFF'] || '';
+      
       document.getElementById('edit-modal').style.display = 'flex';
     }
 
@@ -280,38 +352,51 @@
       const phone = document.getElementById('edit-phone').value;
       const pickup = document.getElementById('edit-pickup').value;
       const dropoff = document.getElementById('edit-dropoff').value;
+      
       fetch(APPS_SCRIPT_URL, {
         method: 'POST',
-        body: new URLSearchParams({ action: 'updateBooking', row: row, date: date, time: time, phone: phone, pickup: pickup, dropoff: dropoff })
+        body: new URLSearchParams({ 
+          action: 'updateBooking', 
+          row: row, 
+          date: date, 
+          time: time, 
+          phone: phone, 
+          pickup: pickup, 
+          dropoff: dropoff 
+        })
       })
-      .then(res => res.json()).then(data => { if (data.success) { alert('✅ Booking updated!'); closeEditModal(); loadBookings(); } else alert('❌ Error updating.'); })
-      .catch(err => alert('Network error.'));
+      .then(res => res.json())
+      .then(data => { 
+        if (data.success) { 
+          alert('✅ Booking updated!'); 
+          closeEditModal(); 
+          loadBookings(); 
+        } else alert('❌ Error updating: ' + (data.message || 'Unknown error')); 
+      })
+      .catch(err => alert('Network error: ' + err));
     }
 
-    // --- EXISTING FUNCTIONS ---
     function updatePrice(rowNumber) {
       const newPrice = prompt('Enter the new final price:');
       if (!newPrice) return;
-      fetch(APPS_SCRIPT_URL, { method: 'POST', body: new URLSearchParams({ action: 'updatePrice', row: rowNumber, price: newPrice }) })
-      .then(res => res.json()).then(data => { if(data.success) { alert('✅ Price updated!'); loadBookings(); } });
-    }
-
-    function confirmBooking(rowNumber) {
-      if (!confirm('Mark as Confirmed?')) return;
-      fetch(APPS_SCRIPT_URL, { method: 'POST', body: new URLSearchParams({ action: 'updateStatus', row: rowNumber, status: 'Confirmed' }) })
-      .then(res => res.json()).then(data => { if(data.success) { alert('✅ Confirmed!'); loadBookings(); } });
+      fetch(APPS_SCRIPT_URL, { 
+        method: 'POST', 
+        body: new URLSearchParams({ action: 'updatePrice', row: rowNumber, price: newPrice }) 
+      })
+      .then(res => res.json())
+      .then(data => { 
+        if(data.success) { alert('✅ Price updated!'); loadBookings(); } 
+        else alert('❌ Error: ' + (data.message || 'Unknown error'));
+      })
+      .catch(err => alert('Network error: ' + err));
     }
 
     function markAsCompleted(rowNumber) {
-      if (!confirm('Mark as Completed?')) return;
-      fetch(APPS_SCRIPT_URL, { method: 'POST', body: new URLSearchParams({ action: 'updateStatus', row: rowNumber, status: 'Completed' }) })
-      .then(res => res.json()).then(data => { if(data.success) { alert('✅ Completed!'); loadBookings(); } });
+      updateStatus(rowNumber, 'Completed');
     }
 
     function resetStatus(rowNumber) {
-      if (!confirm('Reset to Pending?')) return;
-      fetch(APPS_SCRIPT_URL, { method: 'POST', body: new URLSearchParams({ action: 'updateStatus', row: rowNumber, status: 'Pending' }) })
-      .then(res => res.json()).then(data => { if(data.success) { alert('🔄 Reset!'); loadBookings(); } });
+      updateStatus(rowNumber, 'Pending');
     }
   </script>
 </body>
