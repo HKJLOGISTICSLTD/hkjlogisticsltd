@@ -14,19 +14,12 @@
       background-position: center;
       background-attachment: fixed;
       min-height: 100vh;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    }
-    .glass-form {
-      background: rgba(255, 255, 255, 0.95);
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
     }
   </style>
 </head>
-<body class="flex items-center justify-center p-4 min-h-screen">
+<body class="flex items-center justify-center p-4">
 
-  <!-- BOOKING FORM -->
-  <div id="form-container" class="glass-form rounded-2xl shadow-2xl p-8 max-w-lg w-full">
+  <div class="bg-white/95 backdrop-blur-lg rounded-2xl shadow-2xl p-8 max-w-lg w-full">
     <div class="text-center mb-6">
       <div class="text-5xl mb-3">🚗</div>
       <h1 class="text-4xl font-bold text-gray-800">HKJ Logistics</h1>
@@ -36,46 +29,46 @@
     <form id="bookingForm" class="space-y-4">
       <div>
         <label class="block text-sm font-bold text-gray-700 mb-1">Full Name</label>
-        <input type="text" name="clientName" required class="w-full p-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-blue-500 transition">
+        <input type="text" name="clientName" required class="w-full p-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-blue-500">
       </div>
       
       <div class="grid grid-cols-2 gap-4">
         <div>
           <label class="block text-sm font-bold text-gray-700 mb-1">Phone</label>
-          <input type="tel" name="clientPhone" required class="w-full p-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-blue-500 transition">
+          <input type="tel" name="clientPhone" required class="w-full p-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-blue-500">
         </div>
         <div>
           <label class="block text-sm font-bold text-gray-700 mb-1">Email</label>
-          <input type="email" name="clientEmail" required class="w-full p-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-blue-500 transition">
+          <input type="email" name="clientEmail" required class="w-full p-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-blue-500">
         </div>
       </div>
 
       <div class="grid grid-cols-2 gap-4">
         <div>
           <label class="block text-sm font-bold text-gray-700 mb-1">Date</label>
-          <input type="date" name="bookDate" required class="w-full p-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-blue-500 transition">
+          <input type="date" name="bookDate" required class="w-full p-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-blue-500">
         </div>
         <div>
           <label class="block text-sm font-bold text-gray-700 mb-1">Time</label>
-          <input type="time" name="bookTime" required class="w-full p-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-blue-500 transition">
+          <input type="time" name="bookTime" required class="w-full p-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-blue-500">
         </div>
       </div>
 
       <div>
         <label class="block text-sm font-bold text-gray-700 mb-1">Pickup Address</label>
-        <input type="text" name="pickupAddressText" required class="w-full p-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-blue-500 transition">
+        <input type="text" name="pickupAddressText" required class="w-full p-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-blue-500">
         <input type="hidden" name="pickupCity" value="Trinidad">
       </div>
 
       <div>
         <label class="block text-sm font-bold text-gray-700 mb-1">Drop-off Address</label>
-        <input type="text" name="dropoffAddressText" required class="w-full p-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-blue-500 transition">
+        <input type="text" name="dropoffAddressText" required class="w-full p-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-blue-500">
         <input type="hidden" name="dropoffCity" value="Trinidad">
       </div>
 
       <div>
         <label class="block text-sm font-bold text-gray-700 mb-1">Vehicle Type</label>
-        <select name="vehicleType" class="w-full p-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-blue-500 transition">
+        <select name="vehicleType" class="w-full p-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-blue-500">
           <option value="Sedan (1-4 Passengers)">Sedan (1-4 Passengers)</option>
           <option value="Minivan (5-7 Passengers)">Minivan (5-7 Passengers)</option>
           <option value="Minibus (8-14 Passengers)">Minibus (8-14 Passengers)</option>
@@ -84,74 +77,53 @@
 
       <div>
         <label class="block text-sm font-bold text-gray-700 mb-1">Additional Notes</label>
-        <textarea name="additionalNotes" rows="3" class="w-full p-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-blue-500 transition"></textarea>
+        <textarea name="additionalNotes" rows="3" class="w-full p-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-blue-500"></textarea>
       </div>
 
-      <button type="submit" id="submitBtn" class="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-bold py-4 rounded-lg transition transform hover:scale-105 shadow-lg">
+      <button type="submit" id="submitBtn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 rounded-lg transition">
         <i class="fas fa-paper-plane mr-2"></i> Submit Booking
       </button>
     </form>
   </div>
 
-  <!-- SUCCESS MESSAGE (Hidden by default) -->
-  <div id="success-container" class="hidden glass-form rounded-2xl shadow-2xl p-8 max-w-lg w-full text-center">
-    <div class="text-green-500 text-8xl mb-4">
-      <i class="fas fa-check-circle"></i>
-    </div>
+  <div id="success-container" class="hidden bg-white/95 backdrop-blur-lg rounded-2xl shadow-2xl p-8 max-w-lg w-full text-center">
+    <div class="text-green-500 text-8xl mb-4"><i class="fas fa-check-circle"></i></div>
     <h1 class="text-4xl font-bold text-green-500 mb-4">THANK YOU!</h1>
     <p class="text-gray-600 mb-6 text-lg">Thank you for choosing HKJ Logistics. Your booking request has been successfully received!</p>
-    
     <p class="text-gray-800 font-semibold mb-2">Your Reference Code is:</p>
-    <div class="bg-black text-yellow-400 text-4xl font-bold py-4 px-6 rounded-xl mb-6 tracking-wider" id="displayCode">
-      HKJ-0000
-    </div>
-    
-    <p class="text-gray-500 mb-8">An Admin will contact you shortly with the final price. Once confirmed, please click CONFIRM BOOKING to lock it in!</p>
-    
-    <button onclick="window.location.href='/'" class="bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-8 rounded-full transition transform hover:scale-105 shadow-lg text-xl">
-      GOT IT!
-    </button>
+    <div class="bg-black text-yellow-400 text-4xl font-bold py-4 px-6 rounded-xl mb-6 tracking-wider" id="displayCode">HKJ-0000</div>
+    <p class="text-gray-500 mb-8">An Admin will contact you shortly with the final price.</p>
+    <button onclick="window.location.href='/'" class="bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-8 rounded-full">GOT IT!</button>
   </div>
 
   <script>
-    // ==========================================
-    // ⚠️ REPLACE THIS WITH YOUR ACTUAL APPS SCRIPT URL
-    // ==========================================
     const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbx6xDIYPUdE0Vxl3ndy1axkjX0Y6MWYYNRJ7tla1o-nUUPEMpcssfucjxL3qZIXnHdj/exec';
 
     document.getElementById('bookingForm').addEventListener('submit', function(e) {
       e.preventDefault();
-      
       const submitBtn = document.getElementById('submitBtn');
       submitBtn.disabled = true;
       submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Sending...';
-
-      // Generate reference code
+      
       const refCode = 'HKJ-' + Math.floor(1000 + Math.random() * 9000);
-
-      // Build form data
       const formData = new FormData(this);
       formData.append('referenceCode', refCode);
 
-      // Send to Apps Script
-      fetch(APPS_SCRIPT_URL, {
-        method: 'POST',
-        body: formData
-      })
-      .then(response => response.json())
-      .then(data => {
-        if (data.result === 'success') {
+      fetch(APPS_SCRIPT_URL, { method: 'POST', body: formData })
+      .then(r => r.json())
+      .then(d => {
+        if (d.result === 'success') {
           document.getElementById('form-container').classList.add('hidden');
           document.getElementById('success-container').classList.remove('hidden');
           document.getElementById('displayCode').innerText = refCode;
         } else {
-          alert('Error: ' + data.message);
+          alert('Error: ' + d.message);
           submitBtn.disabled = false;
           submitBtn.innerHTML = '<i class="fas fa-paper-plane mr-2"></i> Submit Booking';
         }
       })
-      .catch(error => {
-        alert('Network error. Please try again.');
+      .catch(() => {
+        alert('Network error');
         submitBtn.disabled = false;
         submitBtn.innerHTML = '<i class="fas fa-paper-plane mr-2"></i> Submit Booking';
       });
