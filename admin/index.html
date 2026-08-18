@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+ <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -67,7 +67,7 @@
         </div>
 
         <div class="bg-gray-100 p-3 rounded-lg mb-4 text-sm font-mono whitespace-pre-line" id="fare-breakdown">
-          Calculating...
+          Ready to calculate...
         </div>
 
         <div class="flex gap-2 mb-4">
@@ -103,8 +103,8 @@
     <div class="max-w-7xl mx-auto">
       <div class="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
         <div>
-          <h1 class="text-4xl font-bold text-white mb-2 drop-shadow-lg"> HKJ Logistics Admin</h1>
-          <p class="text-blue-100 text-sm drop-shadow">Managing bookings from beautiful Trinidad & Tobago </p>
+          <h1 class="text-4xl font-bold text-white mb-2 drop-shadow-lg">🚗 HKJ Logistics Admin</h1>
+          <p class="text-blue-100 text-sm drop-shadow">Managing bookings from beautiful Trinidad & Tobago 🌴</p>
         </div>
         <div class="flex gap-4">
           <button onclick="loadBookings()" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg shadow-lg transition flex items-center"><i class="fas fa-sync-alt mr-2"></i> Refresh</button>
@@ -120,6 +120,9 @@
   </div>
 
   <script>
+    // ==========================================
+    // ⚠️ REPLACE THIS WITH YOUR ACTUAL APPS SCRIPT URL
+    // ==========================================
     const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbx6xDIYPUdE0Vxl3ndy1axkjX0Y6MWYYNRJ7tla1o-nUUPEMpcssfucjxL3qZIXnHdj/exec';
     const ADMIN_PASSWORD = 'hkj5762';
     let allBookings = [];
@@ -202,12 +205,23 @@
 
     function copyText(text) { navigator.clipboard.writeText(text).then(() => alert('Copied!')); }
 
+    // --- WHATSAPP FIXED ---
     function sendWhatsApp(rowNumber) {
       const b = getBookingByRow(rowNumber);
-      if(!b.PHONE) { alert('No phone number'); return; }
-      const cleanPhone = b.PHONE.replace(/[^0-9]/g, '');
-      const msg = `Hello ${b.NAME}, your final price for booking ${b['REF CODE']} is $${b['FINAL PRICE']} TTD. Please click this link to confirm: https://hkjlogisticsltdtt.vercel.app/confirm.html?code=${b['REF CODE']}`;
-      window.open(`https://wa.me/1${cleanPhone}?text=${encodeURIComponent(msg)}`, '_blank');
+      if (!b || !b.PHONE) { alert('No phone number found for this booking!'); return; }
+      
+      let cleanPhone = String(b.PHONE).replace(/[^0-9]/g, '');
+      // Ensure it has country code for Trinidad (1868)
+      if (cleanPhone.length === 7) cleanPhone = '1868' + cleanPhone;
+      if (!cleanPhone.startsWith('1')) cleanPhone = '1' + cleanPhone;
+
+      const refCode = b['REF CODE'] || 'UNKNOWN';
+      const price = b['FINAL PRICE'] || '0.00';
+      const name = b.NAME || 'Client';
+      
+      const msg = `Hello ${name}, your final price for booking ${refCode} is $${price} TTD. Please click this link to confirm: https://hkjlogisticsltdtt.vercel.app/confirm.html?code=${refCode}`;
+      
+      window.open(`https://wa.me/${cleanPhone}?text=${encodeURIComponent(msg)}`, '_blank');
     }
 
     function sendEmailFromAdmin(rowNumber) {
@@ -243,18 +257,20 @@
       .then(r => r.json()).then(d => { if(d.success) { alert('✅ Updated!'); closeEditModal(); loadBookings(); } }).catch(e => alert('Error'));
     }
 
-    // --- FARE CALCULATOR ---
+    // --- FARE CALCULATOR FIXED ---
     function openFareModal(rowNumber) {
       const b = getBookingByRow(rowNumber);
+      if (!b) { alert('Booking not found!'); return; }
+      
       document.getElementById('fare-row').value = rowNumber;
       document.getElementById('fare-carnival').checked = (b.NOTES || '').toUpperCase().includes('CARNIVAL');
       document.getElementById('fare-waiting').value = 0;
       document.getElementById('fare-final').value = b['FINAL PRICE'] || '';
-      document.getElementById('fare-breakdown').innerText = 'Calculating...';
+      document.getElementById('fare-breakdown').innerText = 'Ready to calculate...';
       document.getElementById('fare-modal').style.display = 'flex';
       
-      // AUTO-CALCULATE IMMEDIATELY
-      setTimeout(() => calculateFare(), 100);
+      // Auto-calculate immediately
+      calculateFare();
     }
     function closeFareModal() { document.getElementById('fare-modal').style.display = 'none'; }
 
@@ -288,51 +304,64 @@
     function getBaseFareForTime(timeValue) {
       if (!timeValue) return 30;
       let hours = 12;
-      if (typeof timeValue === 'string') {
-        if (timeValue.includes('T')) hours = new Date(timeValue).getHours();
-        else hours = parseInt(timeValue.split(':')[0]);
-      } else if (timeValue instanceof Date) hours = timeValue.getHours();
+      try {
+        if (typeof timeValue === 'string') {
+          if (timeValue.includes('T')) {
+            hours = new Date(timeValue).getHours();
+          } else {
+            hours = parseInt(timeValue.split(':')[0]) || 12;
+          }
+        } else if (timeValue instanceof Date) {
+          hours = timeValue.getHours();
+        }
+      } catch(e) { hours = 12; }
+      
       if (hours >= 22 || hours < 6) return 50;
       if ((hours >= 7 && hours < 9) || (hours >= 16 && hours < 19)) return 40;
       return 30;
     }
 
     function calculateFare() {
-      const row = document.getElementById('fare-row').value;
-      const b = getBookingByRow(row);
-      if (!b) return;
+      try {
+        const row = document.getElementById('fare-row').value;
+        const b = getBookingByRow(row);
+        if (!b) { document.getElementById('fare-breakdown').innerText = 'Error: Booking not found'; return; }
 
-      const pickup = b['PICK UP'] || '';
-      const dropoff = b['DROP OFF'] || '';
-      const time = b.TIME;
-      const waitingTime = parseFloat(document.getElementById('fare-waiting').value) || 0;
-      const isCarnival = document.getElementById('fare-carnival').checked;
+        const pickup = b['PICK UP'] || '';
+        const dropoff = b['DROP OFF'] || '';
+        const time = b.TIME;
+        const waitingTime = parseFloat(document.getElementById('fare-waiting').value) || 0;
+        const isCarnival = document.getElementById('fare-carnival').checked;
 
-      const pickupHub = detectLocationHub(pickup);
-      const dropoffHub = detectLocationHub(dropoff);
-      const distanceKm = calculateDistance(pickupHub, dropoffHub);
-      const baseFare = getBaseFareForTime(time);
-      const waitingCost = waitingTime * 100;
-      const distanceCost = distanceKm * 5;
+        const pickupHub = detectLocationHub(pickup);
+        const dropoffHub = detectLocationHub(dropoff);
+        const distanceKm = calculateDistance(pickupHub, dropoffHub);
+        const baseFare = getBaseFareForTime(time);
+        const waitingCost = waitingTime * 100;
+        const distanceCost = distanceKm * 5;
 
-      let total = 0;
-      let note = '';
+        let total = 0;
+        let note = '';
 
-      if (pickup.toLowerCase().includes('caroni') || dropoff.toLowerCase().includes('caroni')) {
-        total = 300 + waitingCost;
-        note = 'Caroni Flat Rate applied';
-      } else {
-        total = baseFare + distanceCost + waitingCost;
-        note = `Base: $${baseFare} + Dist: ${distanceKm}km * $5 + Wait: $${waitingCost}`;
+        if (pickup.toLowerCase().includes('caroni') || dropoff.toLowerCase().includes('caroni')) {
+          total = 300 + waitingCost;
+          note = 'Caroni Flat Rate applied';
+        } else {
+          total = baseFare + distanceCost + waitingCost;
+          note = `Base: $${baseFare} + Dist: ${distanceKm}km * $5 + Wait: $${waitingCost}`;
+        }
+
+        if (isCarnival && total < 400) {
+          total = 400;
+          note += '\nCarnival Minimum applied ($400)';
+        }
+
+        document.getElementById('fare-breakdown').innerText = `Hub: ${pickupHub || 'Unknown'} -> ${dropoffHub || 'Unknown'}\nDist: ~${distanceKm} km\n${note}\n-------------------\nCALCULATED: $${total.toFixed(2)}`;
+        document.getElementById('fare-final').value = total.toFixed(2);
+      } catch (error) {
+        console.error('Calculation error:', error);
+        document.getElementById('fare-breakdown').innerText = 'Error calculating fare. Check console (F12).';
       }
-
-      if (isCarnival && total < 400) {
-        total = 400;
-        note += '\nCarnival Minimum applied ($400)';
-      }
-
-      document.getElementById('fare-breakdown').innerText = `Hub: ${pickupHub || 'Unknown'} -> ${dropoffHub || 'Unknown'}\nDist: ~${distanceKm} km\n${note}\n-------------------\nCALCULATED: $${total.toFixed(2)}`;
-      document.getElementById('fare-final').value = total.toFixed(2);
     }
 
     function saveFare() {
