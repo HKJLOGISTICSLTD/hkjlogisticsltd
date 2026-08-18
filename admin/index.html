@@ -67,7 +67,7 @@
         </div>
 
         <div class="bg-gray-100 p-3 rounded-lg mb-4 text-sm font-mono whitespace-pre-line" id="fare-breakdown">
-          Click "Calculate" to see breakdown...
+          Calculating...
         </div>
 
         <div class="flex gap-2 mb-4">
@@ -79,7 +79,7 @@
           <input type="number" id="fare-final" class="w-full p-2 border-2 border-blue-500 rounded text-lg font-bold focus:outline-none">
         </div>
 
-        <button onclick="saveFare()" class="w-full mt-4 bg-green-600 hover:bg-green-700 text-white font-bold py-3 rounded-lg transition">Save Price & Mark as Price Sent</button>
+        <button onclick="saveFare()" class="w-full mt-4 bg-green-600 hover:bg-green-700 text-white font-bold py-3 rounded-lg transition">Save Price</button>
       </div>
     </div>
 
@@ -103,8 +103,8 @@
     <div class="max-w-7xl mx-auto">
       <div class="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
         <div>
-          <h1 class="text-4xl font-bold text-white mb-2 drop-shadow-lg">🚗 HKJ Logistics Admin</h1>
-          <p class="text-blue-100 text-sm drop-shadow">Managing bookings from beautiful Trinidad & Tobago 🌴</p>
+          <h1 class="text-4xl font-bold text-white mb-2 drop-shadow-lg"> HKJ Logistics Admin</h1>
+          <p class="text-blue-100 text-sm drop-shadow">Managing bookings from beautiful Trinidad & Tobago </p>
         </div>
         <div class="flex gap-4">
           <button onclick="loadBookings()" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg shadow-lg transition flex items-center"><i class="fas fa-sync-alt mr-2"></i> Refresh</button>
@@ -205,8 +205,9 @@
     function sendWhatsApp(rowNumber) {
       const b = getBookingByRow(rowNumber);
       if(!b.PHONE) { alert('No phone number'); return; }
+      const cleanPhone = b.PHONE.replace(/[^0-9]/g, '');
       const msg = `Hello ${b.NAME}, your final price for booking ${b['REF CODE']} is $${b['FINAL PRICE']} TTD. Please click this link to confirm: https://hkjlogisticsltdtt.vercel.app/confirm.html?code=${b['REF CODE']}`;
-      window.open(`https://wa.me/1${b.PHONE.replace(/[^0-9]/g, '')}?text=${encodeURIComponent(msg)}`, '_blank');
+      window.open(`https://wa.me/1${cleanPhone}?text=${encodeURIComponent(msg)}`, '_blank');
     }
 
     function sendEmailFromAdmin(rowNumber) {
@@ -218,6 +219,7 @@
     }
 
     function updateStatus(rowNumber, newStatus) {
+      if(!confirm(`Change status to ${newStatus}?`)) { loadBookings(); return; }
       fetch(APPS_SCRIPT_URL, { method: 'POST', body: new URLSearchParams({ action: 'updateStatus', row: rowNumber, status: newStatus }) })
       .then(r => r.json()).then(d => { if(d.success) { const b = getBookingByRow(rowNumber); if(b) b.STATUS = newStatus; renderAllBookings(); } else loadBookings(); }).catch(e => loadBookings());
     }
@@ -241,15 +243,18 @@
       .then(r => r.json()).then(d => { if(d.success) { alert('✅ Updated!'); closeEditModal(); loadBookings(); } }).catch(e => alert('Error'));
     }
 
-    // --- FARE CALCULATOR LOGIC ---
+    // --- FARE CALCULATOR ---
     function openFareModal(rowNumber) {
       const b = getBookingByRow(rowNumber);
       document.getElementById('fare-row').value = rowNumber;
       document.getElementById('fare-carnival').checked = (b.NOTES || '').toUpperCase().includes('CARNIVAL');
       document.getElementById('fare-waiting').value = 0;
       document.getElementById('fare-final').value = b['FINAL PRICE'] || '';
-      document.getElementById('fare-breakdown').innerText = 'Click "Calculate" to see breakdown...';
+      document.getElementById('fare-breakdown').innerText = 'Calculating...';
       document.getElementById('fare-modal').style.display = 'flex';
+      
+      // AUTO-CALCULATE IMMEDIATELY
+      setTimeout(() => calculateFare(), 100);
     }
     function closeFareModal() { document.getElementById('fare-modal').style.display = 'none'; }
 
@@ -338,8 +343,8 @@
       fetch(APPS_SCRIPT_URL, { method: 'POST', body: new URLSearchParams({ action: 'updatePrice', row: row, price: price }) })
       .then(r => r.json()).then(d => { 
         if(d.success) { alert('✅ Price saved!'); closeFareModal(); loadBookings(); } 
-        else alert('❌ Error'); 
-      }).catch(e => alert('Network error'));
+        else alert('❌ Error: ' + (d.message || 'Unknown error')); 
+      }).catch(e => alert('Network error: ' + e));
     }
 
     function markAsCompleted(rowNumber) { updateStatus(rowNumber, 'Completed'); }
