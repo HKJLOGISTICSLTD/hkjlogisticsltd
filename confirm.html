@@ -16,10 +16,12 @@
       display: flex;
       align-items: center;
       justify-content: center;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     }
     .glass-card {
       background: rgba(255, 255, 255, 0.95);
       backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
     }
   </style>
 </head>
@@ -37,12 +39,12 @@
         <input 
           type="text" 
           id="manual-code" 
-          placeholder="e.g., HKJ-9307"
+          placeholder="e.g., HKJ-9307 or HKJ9307"
           class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 text-center font-mono text-lg uppercase"
         >
       </div>
       
-      <button onclick="loadBookingFromCode()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg transition">
+      <button onclick="loadBookingFromCode()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg transition transform hover:scale-105 shadow-lg">
         <i class="fas fa-search mr-2"></i>Find Booking
       </button>
       
@@ -61,7 +63,7 @@
     <div id="error" class="hidden text-center py-8">
       <i class="fas fa-exclamation-triangle text-4xl text-red-600 mb-4"></i>
       <p class="text-gray-700 mb-4" id="error-message">Booking not found</p>
-      <button onclick="resetSearch()" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg">
+      <button onclick="resetSearch()" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg transition">
         <i class="fas fa-arrow-left mr-2"></i>Try Again
       </button>
     </div>
@@ -84,7 +86,7 @@
       <div class="space-y-3 mb-6">
         <div class="flex items-start">
           <i class="fas fa-user w-6 text-blue-600 mt-1"></i>
-          <div class="ml-3">
+          <div class="ml-3 text-left">
             <p class="text-xs text-gray-500 uppercase">Client Name</p>
             <p class="font-semibold text-gray-800" id="client-name">-</p>
           </div>
@@ -92,7 +94,7 @@
 
         <div class="flex items-start">
           <i class="fas fa-hashtag w-6 text-purple-600 mt-1"></i>
-          <div class="ml-3">
+          <div class="ml-3 text-left">
             <p class="text-xs text-gray-500 uppercase">Reference Code</p>
             <p class="font-mono font-semibold text-gray-800" id="ref-code">-</p>
           </div>
@@ -100,7 +102,7 @@
 
         <div class="flex items-start">
           <i class="fas fa-calendar w-6 text-green-600 mt-1"></i>
-          <div class="ml-3">
+          <div class="ml-3 text-left">
             <p class="text-xs text-gray-500 uppercase">Date</p>
             <p class="font-semibold text-gray-800" id="book-date">-</p>
           </div>
@@ -108,7 +110,7 @@
 
         <div class="flex items-start">
           <i class="fas fa-clock w-6 text-orange-600 mt-1"></i>
-          <div class="ml-3">
+          <div class="ml-3 text-left">
             <p class="text-xs text-gray-500 uppercase">Time</p>
             <p class="font-semibold text-gray-800" id="book-time">-</p>
           </div>
@@ -116,7 +118,7 @@
 
         <div class="flex items-start">
           <i class="fas fa-map-marker-alt w-6 text-red-600 mt-1"></i>
-          <div class="ml-3">
+          <div class="ml-3 text-left">
             <p class="text-xs text-gray-500 uppercase">Pickup Location</p>
             <p class="font-semibold text-gray-800" id="pickup">-</p>
           </div>
@@ -124,7 +126,7 @@
 
         <div class="flex items-start">
           <i class="fas fa-flag-checkered w-6 text-teal-600 mt-1"></i>
-          <div class="ml-3">
+          <div class="ml-3 text-left">
             <p class="text-xs text-gray-500 uppercase">Drop-off Location</p>
             <p class="font-semibold text-gray-800" id="dropoff">-</p>
           </div>
@@ -132,7 +134,7 @@
 
         <div class="flex items-start">
           <i class="fas fa-phone w-6 text-purple-600 mt-1"></i>
-          <div class="ml-3">
+          <div class="ml-3 text-left">
             <p class="text-xs text-gray-500 uppercase">Phone</p>
             <p class="font-semibold text-gray-800" id="phone">-</p>
           </div>
@@ -140,7 +142,7 @@
 
         <div class="border-t-2 border-gray-200 my-4"></div>
 
-        <div class="bg-gradient-to-r from-red-500 to-red-600 text-white p-4 rounded-lg text-center">
+        <div class="bg-gradient-to-r from-red-500 to-red-600 text-white p-4 rounded-lg text-center shadow-md">
           <p class="text-sm mb-1">Final Price</p>
           <p class="text-3xl font-bold" id="final-price">$0.00 TTD</p>
         </div>
@@ -172,7 +174,7 @@
     let bookingRowNumber = null;
     let currentBookingCode = null;
 
-    // Check if code is in URL when page loads
+    // Check if code is in URL when page loads (from WhatsApp link)
     window.addEventListener('DOMContentLoaded', function() {
       const urlParams = new URLSearchParams(window.location.search);
       const code = urlParams.get('code');
@@ -182,20 +184,22 @@
       }
     });
 
+    // SMART SEARCH FUNCTION (Ignores hyphens)
     function loadBookingFromCode() {
-      const codeInput = document.getElementById('manual-code').value.trim().toUpperCase();
+      // Get input, make uppercase, and remove hyphens for matching
+      const rawInput = document.getElementById('manual-code').value.trim().toUpperCase();
+      const codeInput = rawInput.replace(/-/g, ''); 
       
       if (!codeInput) {
         alert('Please enter a reference code');
         return;
       }
 
-      currentBookingCode = codeInput;
+      currentBookingCode = rawInput; // Keep original for display
       
       document.getElementById('code-entry').classList.add('hidden');
       document.getElementById('loading').classList.remove('hidden');
 
-      // Fetch all bookings and find the matching one
       fetch(APPS_SCRIPT_URL)
         .then(response => response.json())
         .then(data => {
@@ -204,18 +208,18 @@
             return;
           }
 
-          // Find booking by reference code
-          const booking = data.bookings.find(b => b['REF CODE'] === codeInput);
+          // Find booking by comparing codes WITHOUT hyphens
+          const booking = data.bookings.find(b => {
+            const sheetCode = (b['REF CODE'] || '').toString().replace(/-/g, '');
+            return sheetCode === codeInput;
+          });
 
           if (!booking) {
-            showError(`Booking ${codeInput} not found. Please check the code and try again.`);
+            showError(`Booking ${rawInput} not found. Please check the code and try again.`);
             return;
           }
 
-          // Store row number for confirmation
           bookingRowNumber = booking._rowNumber;
-
-          // Display booking details
           displayBookingDetails(booking);
         })
         .catch(error => {
@@ -228,23 +232,17 @@
       document.getElementById('client-name').textContent = booking.NAME || 'Unknown Client';
       document.getElementById('ref-code').textContent = booking['REF CODE'] || 'N/A';
       
-      // Format date
+      // Format date nicely
       const bookDate = booking.DATE ? new Date(booking.DATE).toLocaleDateString('en-US', {
-        weekday: 'long',
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric'
+        weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
       }) : 'N/A';
       document.getElementById('book-date').textContent = bookDate;
 
-      // Format time
+      // Format time nicely
       let bookTime = booking.TIME || 'N/A';
       if (booking.TIME && typeof booking.TIME === 'string' && booking.TIME.includes('T')) {
         const timeObj = new Date(booking.TIME);
-        bookTime = timeObj.toLocaleTimeString('en-US', { 
-          hour: '2-digit', 
-          minute: '2-digit' 
-        });
+        bookTime = timeObj.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
       }
       document.getElementById('book-time').textContent = bookTime;
 
@@ -255,7 +253,6 @@
       const price = parseFloat(booking['FINAL PRICE']) || 0;
       document.getElementById('final-price').textContent = `$${price.toFixed(2)} TTD`;
 
-      // Show booking details, hide loading
       document.getElementById('loading').classList.add('hidden');
       document.getElementById('booking-details').classList.remove('hidden');
     }
@@ -285,7 +282,6 @@
         return;
       }
 
-      // Update status to Confirmed via Apps Script
       fetch(APPS_SCRIPT_URL, {
         method: 'POST',
         body: new URLSearchParams({
@@ -297,7 +293,6 @@
       .then(response => response.json())
       .then(data => {
         if (data.success) {
-          // Show success message
           document.getElementById('booking-details').innerHTML = `
             <div class="text-center py-8">
               <div class="text-6xl mb-4">✅</div>
@@ -312,7 +307,7 @@
                   A confirmation email/SMS will be sent to you shortly.
                 </p>
               </div>
-              <button onclick="resetSearch()" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg">
+              <button onclick="window.location.href='/'" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg transition">
                 <i class="fas fa-home mr-2"></i>Back to Home
               </button>
             </div>
