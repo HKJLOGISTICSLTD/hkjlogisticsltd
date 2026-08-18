@@ -26,8 +26,33 @@
 <body class="p-4">
 
   <div class="glass-card rounded-2xl shadow-2xl p-6 max-w-lg w-full mx-4">
+    
+    <!-- Manual Code Entry Form -->
+    <div id="code-entry" class="text-center py-8">
+      <div class="text-5xl mb-4">🔍</div>
+      <h1 class="text-2xl font-bold text-gray-800 mb-2">Find Your Booking</h1>
+      <p class="text-gray-600 mb-6">Enter your reference code to view your booking</p>
+      
+      <div class="max-w-xs mx-auto mb-4">
+        <input 
+          type="text" 
+          id="manual-code" 
+          placeholder="e.g., HKJ-9307"
+          class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 text-center font-mono text-lg uppercase"
+        >
+      </div>
+      
+      <button onclick="loadBookingFromCode()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg transition">
+        <i class="fas fa-search mr-2"></i>Find Booking
+      </button>
+      
+      <p class="text-xs text-gray-500 mt-4">
+        Check your WhatsApp or email for your reference code
+      </p>
+    </div>
+
     <!-- Loading State -->
-    <div id="loading" class="text-center py-8">
+    <div id="loading" class="hidden text-center py-8">
       <i class="fas fa-spinner fa-spin text-4xl text-blue-600 mb-4"></i>
       <p class="text-gray-700">Loading your booking details...</p>
     </div>
@@ -36,9 +61,9 @@
     <div id="error" class="hidden text-center py-8">
       <i class="fas fa-exclamation-triangle text-4xl text-red-600 mb-4"></i>
       <p class="text-gray-700 mb-4" id="error-message">Booking not found</p>
-      <a href="/" class="inline-block bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg">
-        <i class="fas fa-home mr-2"></i>Back to Home
-      </a>
+      <button onclick="resetSearch()" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg">
+        <i class="fas fa-arrow-left mr-2"></i>Try Again
+      </button>
     </div>
 
     <!-- Booking Details -->
@@ -126,7 +151,7 @@
           <i class="fas fa-check-circle mr-2"></i>Confirm Booking
         </button>
         
-        <button onclick="cancelBooking()" class="w-full bg-gray-500 hover:bg-gray-600 text-white font-semibold py-3 px-6 rounded-lg transition">
+        <button onclick="resetSearch()" class="w-full bg-gray-500 hover:bg-gray-600 text-white font-semibold py-3 px-6 rounded-lg transition">
           <i class="fas fa-times-circle mr-2"></i>Cancel
         </button>
       </div>
@@ -145,20 +170,30 @@
     const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbx6xDIYPUdE0Vxl3ndy1axkjX0Y6MWYYNRJ7tla1o-nUUPEMpcssfucjxL3qZIXnHdj/exec';
 
     let bookingRowNumber = null;
+    let currentBookingCode = null;
 
-    // Load booking when page loads
-    window.addEventListener('DOMContentLoaded', loadBookingDetails);
-
-    function loadBookingDetails() {
-      // Get URL parameters
+    // Check if code is in URL when page loads
+    window.addEventListener('DOMContentLoaded', function() {
       const urlParams = new URLSearchParams(window.location.search);
       const code = urlParams.get('code');
-      const nameFromUrl = urlParams.get('name');
+      if (code) {
+        document.getElementById('manual-code').value = code;
+        loadBookingFromCode();
+      }
+    });
 
-      if (!code) {
-        showError('No booking code provided');
+    function loadBookingFromCode() {
+      const codeInput = document.getElementById('manual-code').value.trim().toUpperCase();
+      
+      if (!codeInput) {
+        alert('Please enter a reference code');
         return;
       }
+
+      currentBookingCode = codeInput;
+      
+      document.getElementById('code-entry').classList.add('hidden');
+      document.getElementById('loading').classList.remove('hidden');
 
       // Fetch all bookings and find the matching one
       fetch(APPS_SCRIPT_URL)
@@ -170,10 +205,10 @@
           }
 
           // Find booking by reference code
-          const booking = data.bookings.find(b => b['REF CODE'] === code);
+          const booking = data.bookings.find(b => b['REF CODE'] === codeInput);
 
           if (!booking) {
-            showError(`Booking ${code} not found`);
+            showError(`Booking ${codeInput} not found. Please check the code and try again.`);
             return;
           }
 
@@ -181,7 +216,7 @@
           bookingRowNumber = booking._rowNumber;
 
           // Display booking details
-          displayBookingDetails(booking, nameFromUrl);
+          displayBookingDetails(booking);
         })
         .catch(error => {
           console.error('Error:', error);
@@ -189,11 +224,8 @@
         });
     }
 
-    function displayBookingDetails(booking, nameFromUrl) {
-      // Use name from URL if available, otherwise from booking data
-      const clientName = nameFromUrl ? decodeURIComponent(nameFromUrl).replace(/_/g, ' ') : (booking.NAME || 'Unknown');
-
-      document.getElementById('client-name').textContent = clientName;
+    function displayBookingDetails(booking) {
+      document.getElementById('client-name').textContent = booking.NAME || 'Unknown Client';
       document.getElementById('ref-code').textContent = booking['REF CODE'] || 'N/A';
       
       // Format date
@@ -234,13 +266,22 @@
       document.getElementById('error').classList.remove('hidden');
     }
 
+    function resetSearch() {
+      document.getElementById('code-entry').classList.remove('hidden');
+      document.getElementById('error').classList.add('hidden');
+      document.getElementById('booking-details').classList.add('hidden');
+      document.getElementById('manual-code').value = '';
+      bookingRowNumber = null;
+      currentBookingCode = null;
+    }
+
     function confirmBooking() {
       if (!bookingRowNumber) {
         alert('Error: Booking information not loaded');
         return;
       }
 
-      if (!confirm('Are you sure you want to confirm this booking?')) {
+      if (!confirm(`Confirm booking ${currentBookingCode} for ${document.getElementById('client-name').textContent}?`)) {
         return;
       }
 
@@ -271,9 +312,9 @@
                   A confirmation email/SMS will be sent to you shortly.
                 </p>
               </div>
-              <a href="/" class="inline-block bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg">
+              <button onclick="resetSearch()" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg">
                 <i class="fas fa-home mr-2"></i>Back to Home
-              </a>
+              </button>
             </div>
           `;
         } else {
@@ -284,12 +325,6 @@
         console.error('Error:', error);
         alert('Network error. Please try again.');
       });
-    }
-
-    function cancelBooking() {
-      if (confirm('Are you sure you want to cancel this booking?')) {
-        window.location.href = '/';
-      }
     }
   </script>
 </body>
