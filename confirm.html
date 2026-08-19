@@ -107,9 +107,6 @@
   </div>
 
   <script>
-    // ==========================================
-    // ⚠️ REPLACE THIS WITH YOUR ACTUAL APPS SCRIPT URL
-    // ==========================================
     const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwNo3KIAixrT9WUVQV1FAzvKbq7ev88R9I4b8RA-KNffMlNHzryLLzLelPi0bpbqMoc/exec';
     
     let bookingData = null;
@@ -173,7 +170,6 @@
     }
 
     function populateBookingDetails(booking) {
-      // Format dates
       let displayDate = booking.DATE;
       let displayTime = booking.TIME;
       
@@ -184,7 +180,6 @@
         displayTime = new Date(booking.TIME).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
       }
 
-      // Fill in fields
       document.getElementById('clientName').value = booking.NAME || '';
       document.getElementById('clientPhone').value = booking.PHONE || '';
       document.getElementById('bookDate').value = displayDate;
@@ -193,7 +188,6 @@
       document.getElementById('dropoffAddress').value = booking['DROP OFF'] || '';
       document.getElementById('finalPrice').textContent = '$' + (booking['FINAL PRICE'] || '0.00') + ' TTD';
 
-      // Show sections
       document.getElementById('bookingDetails').classList.remove('hidden');
       document.getElementById('paymentSection').classList.remove('hidden');
       document.getElementById('confirmBtn').disabled = false;
@@ -214,7 +208,6 @@
       }, 5000);
     }
 
-    // Form submission
     document.getElementById('confirmForm').addEventListener('submit', async function(e) {
       e.preventDefault();
       
@@ -246,7 +239,6 @@
         const result = await response.json();
         
         if (result.success) {
-          // Show success message
           document.getElementById('confirmForm').innerHTML = `
             <div class="text-center py-8">
               <div class="text-green-500 text-6xl mb-4"><i class="fas fa-check-circle"></i></div>
