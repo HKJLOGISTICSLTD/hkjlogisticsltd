@@ -30,7 +30,7 @@
       <!-- Reference Code Field -->
       <div>
         <label class="block text-sm font-bold text-gray-700 mb-2">Enter Reference Code *</label>
-        <input type="text" id="refCode" placeholder="e.g., HKJ-7921" required 
+        <input type="text" id="refCode" placeholder="e.g., HKJ-7921 or hkj7921" required 
           class="w-full p-4 text-center text-2xl font-bold border-2 border-gray-300 rounded-lg focus:outline-none focus:border-green-500 transition"
           oninput="fetchBookingData()">
         <p class="text-sm text-gray-500 mt-2">Found in your booking confirmation popup or WhatsApp message.</p>
@@ -110,7 +110,7 @@
     // ==========================================
     // ⚠️ REPLACE THIS WITH YOUR ACTUAL APPS SCRIPT URL
     // ==========================================
-    const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbx6xDIYPUdE0Vxl3ndy1axkjX0Y6MWYYNRJ7tla1o-nUUPEMpcssfucjxL3qZIXnHdj/exec';
+    const APPS_SCRIPT_URL = 'https://script.google.com/macros/library/d/1gsUp4QZ1QSnQbraEs3Fj3aZaHXHFc_A9sBe_S2IUYx5PwMUAEgrejHe2/27';
     
     let bookingData = null;
 
@@ -124,8 +124,13 @@
       }
     });
 
+    // Normalize code: uppercase, remove dashes and spaces
+    function normalizeCode(code) {
+      return code.toUpperCase().replace(/[-\s]/g, '');
+    }
+
     async function fetchBookingData() {
-      const refCode = document.getElementById('refCode').value.trim().toUpperCase();
+      const refCode = document.getElementById('refCode').value.trim();
       
       if (refCode.length < 5) {
         hideBookingDetails();
@@ -140,7 +145,14 @@
         const data = await response.json();
         
         if (data.success) {
-          const booking = data.bookings.find(b => b['REF CODE'] === refCode);
+          // Normalize the search code
+          const searchCode = normalizeCode(refCode);
+          
+          // Find booking with normalized comparison
+          const booking = data.bookings.find(b => {
+            const bookingCode = normalizeCode(b['REF CODE'] || '');
+            return bookingCode === searchCode;
+          });
           
           if (booking) {
             bookingData = booking;
