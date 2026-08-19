@@ -8,319 +8,253 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
     body {
-      background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), 
-                  url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e?ixlib=rb-4.0.3&auto=format&fit=crop&w=2073&q=80');
+      background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), 
+                  url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=2070&q=80');
       background-size: cover;
       background-position: center;
+      background-attachment: fixed;
       min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    }
-    .glass-card {
-      background: rgba(255, 255, 255, 0.95);
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
     }
   </style>
 </head>
-<body class="p-4">
+<body class="flex items-center justify-center p-4">
 
-  <div class="glass-card rounded-2xl shadow-2xl p-6 max-w-lg w-full mx-4">
-    
-    <!-- Manual Code Entry Form -->
-    <div id="code-entry" class="text-center py-8">
-      <div class="text-5xl mb-4">🔍</div>
-      <h1 class="text-2xl font-bold text-gray-800 mb-2">Find Your Booking</h1>
-      <p class="text-gray-600 mb-6">Enter your reference code to view your booking</p>
-      
-      <div class="max-w-xs mx-auto mb-4">
-        <input 
-          type="text" 
-          id="manual-code" 
-          placeholder="e.g., HKJ-9307 or HKJ9307"
-          class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 text-center font-mono text-lg uppercase"
-        >
-      </div>
-      
-      <button onclick="loadBookingFromCode()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg transition transform hover:scale-105 shadow-lg">
-        <i class="fas fa-search mr-2"></i>Find Booking
-      </button>
-      
-      <p class="text-xs text-gray-500 mt-4">
-        Check your WhatsApp or email for your reference code
-      </p>
+  <div class="bg-white rounded-2xl shadow-2xl p-8 max-w-2xl w-full">
+    <div class="text-center mb-8">
+      <div class="text-5xl mb-3">✅</div>
+      <h1 class="text-3xl font-bold text-gray-800">Confirm Your Booking</h1>
+      <p class="text-gray-600 mt-2">HKJ Logistics - Please confirm your reservation</p>
     </div>
+
+    <form id="confirmForm" class="space-y-6">
+      <!-- Reference Code Field -->
+      <div>
+        <label class="block text-sm font-bold text-gray-700 mb-2">Enter Reference Code *</label>
+        <input type="text" id="refCode" placeholder="e.g., HKJ-7921" required 
+          class="w-full p-4 text-center text-2xl font-bold border-2 border-gray-300 rounded-lg focus:outline-none focus:border-green-500 transition"
+          oninput="fetchBookingData()">
+        <p class="text-sm text-gray-500 mt-2">Found in your booking confirmation popup or WhatsApp message.</p>
+      </div>
+
+      <!-- Auto-filled Booking Details -->
+      <div id="bookingDetails" class="hidden bg-green-50 border-2 border-green-500 rounded-lg p-6">
+        <h3 class="text-lg font-bold text-green-800 mb-4"><i class="fas fa-check-circle mr-2"></i>Booking Found!</h3>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+          <div>
+            <label class="block text-sm font-bold text-gray-700 mb-1">Client Name</label>
+            <input type="text" id="clientName" readonly class="w-full p-3 bg-white border border-gray-300 rounded-lg">
+          </div>
+          <div>
+            <label class="block text-sm font-bold text-gray-700 mb-1">Phone</label>
+            <input type="text" id="clientPhone" readonly class="w-full p-3 bg-white border border-gray-300 rounded-lg">
+          </div>
+          <div>
+            <label class="block text-sm font-bold text-gray-700 mb-1">Date</label>
+            <input type="text" id="bookDate" readonly class="w-full p-3 bg-white border border-gray-300 rounded-lg">
+          </div>
+          <div>
+            <label class="block text-sm font-bold text-gray-700 mb-1">Time</label>
+            <input type="text" id="bookTime" readonly class="w-full p-3 bg-white border border-gray-300 rounded-lg">
+          </div>
+        </div>
+
+        <div class="mb-4">
+          <label class="block text-sm font-bold text-gray-700 mb-1">Pickup Address</label>
+          <input type="text" id="pickupAddress" readonly class="w-full p-3 bg-white border border-gray-300 rounded-lg">
+        </div>
+
+        <div class="mb-4">
+          <label class="block text-sm font-bold text-gray-700 mb-1">Drop-off Address</label>
+          <input type="text" id="dropoffAddress" readonly class="w-full p-3 bg-white border border-gray-300 rounded-lg">
+        </div>
+
+        <div class="bg-yellow-100 border border-yellow-500 rounded-lg p-4">
+          <p class="text-sm font-bold text-yellow-800 mb-2">Final Price:</p>
+          <p class="text-3xl font-bold text-yellow-700" id="finalPrice">$0.00 TTD</p>
+        </div>
+      </div>
+
+      <!-- Payment Method -->
+      <div id="paymentSection" class="hidden">
+        <label class="block text-sm font-bold text-gray-700 mb-2">Preferred Payment Method *</label>
+        <select id="paymentMethod" required class="w-full p-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-green-500">
+          <option value="">Select payment method...</option>
+          <option value="Cash">Cash</option>
+          <option value="Bank Transfer">Bank Transfer</option>
+          <option value="Credit Card">Credit Card</option>
+        </select>
+      </div>
+
+      <!-- Confirm Button -->
+      <button type="submit" id="confirmBtn" disabled
+        class="w-full bg-green-600 hover:bg-green-700 disabled:bg-gray-400 disabled:cursor-not-allowed text-white font-bold py-4 rounded-lg transition transform hover:scale-105 shadow-lg">
+        <i class="fas fa-check-circle mr-2"></i> Confirm Booking
+      </button>
+    </form>
 
     <!-- Loading State -->
     <div id="loading" class="hidden text-center py-8">
-      <i class="fas fa-spinner fa-spin text-4xl text-blue-600 mb-4"></i>
-      <p class="text-gray-700">Loading your booking details...</p>
+      <i class="fas fa-spinner fa-spin text-4xl text-blue-600"></i>
+      <p class="mt-4 text-gray-700">Searching for booking...</p>
     </div>
 
     <!-- Error State -->
-    <div id="error" class="hidden text-center py-8">
-      <i class="fas fa-exclamation-triangle text-4xl text-red-600 mb-4"></i>
-      <p class="text-gray-700 mb-4" id="error-message">Booking not found</p>
-      <button onclick="resetSearch()" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg transition">
-        <i class="fas fa-arrow-left mr-2"></i>Try Again
-      </button>
-    </div>
-
-    <!-- Booking Details -->
-    <div id="booking-details" class="hidden">
-      <div class="text-center mb-6">
-        <div class="text-5xl mb-3">🚗</div>
-        <h1 class="text-2xl font-bold text-gray-800 mb-2">Confirm Your Booking</h1>
-        <p class="text-gray-600">HKJ Logistics Ltd</p>
-      </div>
-
-      <div class="bg-blue-50 border-l-4 border-blue-500 p-4 mb-6 rounded-lg">
-        <p class="text-sm text-blue-800">
-          <i class="fas fa-info-circle mr-2"></i>
-          Please review your booking details below and click "Confirm Booking" to lock in your rate.
-        </p>
-      </div>
-
-      <div class="space-y-3 mb-6">
-        <div class="flex items-start">
-          <i class="fas fa-user w-6 text-blue-600 mt-1"></i>
-          <div class="ml-3 text-left">
-            <p class="text-xs text-gray-500 uppercase">Client Name</p>
-            <p class="font-semibold text-gray-800" id="client-name">-</p>
-          </div>
-        </div>
-
-        <div class="flex items-start">
-          <i class="fas fa-hashtag w-6 text-purple-600 mt-1"></i>
-          <div class="ml-3 text-left">
-            <p class="text-xs text-gray-500 uppercase">Reference Code</p>
-            <p class="font-mono font-semibold text-gray-800" id="ref-code">-</p>
-          </div>
-        </div>
-
-        <div class="flex items-start">
-          <i class="fas fa-calendar w-6 text-green-600 mt-1"></i>
-          <div class="ml-3 text-left">
-            <p class="text-xs text-gray-500 uppercase">Date</p>
-            <p class="font-semibold text-gray-800" id="book-date">-</p>
-          </div>
-        </div>
-
-        <div class="flex items-start">
-          <i class="fas fa-clock w-6 text-orange-600 mt-1"></i>
-          <div class="ml-3 text-left">
-            <p class="text-xs text-gray-500 uppercase">Time</p>
-            <p class="font-semibold text-gray-800" id="book-time">-</p>
-          </div>
-        </div>
-
-        <div class="flex items-start">
-          <i class="fas fa-map-marker-alt w-6 text-red-600 mt-1"></i>
-          <div class="ml-3 text-left">
-            <p class="text-xs text-gray-500 uppercase">Pickup Location</p>
-            <p class="font-semibold text-gray-800" id="pickup">-</p>
-          </div>
-        </div>
-
-        <div class="flex items-start">
-          <i class="fas fa-flag-checkered w-6 text-teal-600 mt-1"></i>
-          <div class="ml-3 text-left">
-            <p class="text-xs text-gray-500 uppercase">Drop-off Location</p>
-            <p class="font-semibold text-gray-800" id="dropoff">-</p>
-          </div>
-        </div>
-
-        <div class="flex items-start">
-          <i class="fas fa-phone w-6 text-purple-600 mt-1"></i>
-          <div class="ml-3 text-left">
-            <p class="text-xs text-gray-500 uppercase">Phone</p>
-            <p class="font-semibold text-gray-800" id="phone">-</p>
-          </div>
-        </div>
-
-        <div class="border-t-2 border-gray-200 my-4"></div>
-
-        <div class="bg-gradient-to-r from-red-500 to-red-600 text-white p-4 rounded-lg text-center shadow-md">
-          <p class="text-sm mb-1">Final Price</p>
-          <p class="text-3xl font-bold" id="final-price">$0.00 TTD</p>
-        </div>
-      </div>
-
-      <div class="space-y-3">
-        <button onclick="confirmBooking()" class="w-full bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white font-bold py-4 px-6 rounded-lg transition transform hover:scale-105 shadow-lg">
-          <i class="fas fa-check-circle mr-2"></i>Confirm Booking
-        </button>
-        
-        <button onclick="resetSearch()" class="w-full bg-gray-500 hover:bg-gray-600 text-white font-semibold py-3 px-6 rounded-lg transition">
-          <i class="fas fa-times-circle mr-2"></i>Cancel
-        </button>
-      </div>
-
-      <p class="text-center text-xs text-gray-500 mt-6">
-        <i class="fas fa-shield-alt mr-1"></i>
-        Your booking is secure with HKJ Logistics
-      </p>
+    <div id="errorMessage" class="hidden bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg mt-4">
+      <i class="fas fa-exclamation-circle mr-2"></i>
+      <span id="errorText"></span>
     </div>
   </div>
 
   <script>
     // ==========================================
-    // ⚠️ REPLACE WITH YOUR APPS SCRIPT URL
+    // ⚠️ REPLACE THIS WITH YOUR ACTUAL APPS SCRIPT URL
     // ==========================================
     const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbx6xDIYPUdE0Vxl3ndy1axkjX0Y6MWYYNRJ7tla1o-nUUPEMpcssfucjxL3qZIXnHdj/exec';
+    
+    let bookingData = null;
 
-    let bookingRowNumber = null;
-    let currentBookingCode = null;
-
-    // Check if code is in URL when page loads (from WhatsApp link)
+    // Auto-fill from URL parameter if exists
     window.addEventListener('DOMContentLoaded', function() {
       const urlParams = new URLSearchParams(window.location.search);
       const code = urlParams.get('code');
       if (code) {
-        document.getElementById('manual-code').value = code;
-        loadBookingFromCode();
+        document.getElementById('refCode').value = code.toUpperCase();
+        fetchBookingData();
       }
     });
 
-    // SMART SEARCH FUNCTION (Ignores hyphens)
-    function loadBookingFromCode() {
-      // Get input, make uppercase, and remove hyphens for matching
-      const rawInput = document.getElementById('manual-code').value.trim().toUpperCase();
-      const codeInput = rawInput.replace(/-/g, ''); 
+    async function fetchBookingData() {
+      const refCode = document.getElementById('refCode').value.trim().toUpperCase();
       
-      if (!codeInput) {
-        alert('Please enter a reference code');
+      if (refCode.length < 5) {
+        hideBookingDetails();
         return;
       }
 
-      currentBookingCode = rawInput; // Keep original for display
-      
-      document.getElementById('code-entry').classList.add('hidden');
       document.getElementById('loading').classList.remove('hidden');
+      document.getElementById('errorMessage').classList.add('hidden');
 
-      fetch(APPS_SCRIPT_URL)
-        .then(response => response.json())
-        .then(data => {
-          if (!data.success) {
-            showError('Error fetching bookings');
-            return;
+      try {
+        const response = await fetch(APPS_SCRIPT_URL);
+        const data = await response.json();
+        
+        if (data.success) {
+          const booking = data.bookings.find(b => b['REF CODE'] === refCode);
+          
+          if (booking) {
+            bookingData = booking;
+            populateBookingDetails(booking);
+          } else {
+            hideBookingDetails();
+            showError('Booking not found. Please check your reference code.');
           }
-
-          // Find booking by comparing codes WITHOUT hyphens
-          const booking = data.bookings.find(b => {
-            const sheetCode = (b['REF CODE'] || '').toString().replace(/-/g, '');
-            return sheetCode === codeInput;
-          });
-
-          if (!booking) {
-            showError(`Booking ${rawInput} not found. Please check the code and try again.`);
-            return;
-          }
-
-          bookingRowNumber = booking._rowNumber;
-          displayBookingDetails(booking);
-        })
-        .catch(error => {
-          console.error('Error:', error);
-          showError('Network error. Please try again.');
-        });
+        } else {
+          showError('Error loading bookings.');
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        showError('Network error. Please try again.');
+      } finally {
+        document.getElementById('loading').classList.add('hidden');
+      }
     }
 
-    function displayBookingDetails(booking) {
-      document.getElementById('client-name').textContent = booking.NAME || 'Unknown Client';
-      document.getElementById('ref-code').textContent = booking['REF CODE'] || 'N/A';
+    function populateBookingDetails(booking) {
+      // Format dates
+      let displayDate = booking.DATE;
+      let displayTime = booking.TIME;
       
-      // Format date nicely
-      const bookDate = booking.DATE ? new Date(booking.DATE).toLocaleDateString('en-US', {
-        weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
-      }) : 'N/A';
-      document.getElementById('book-date').textContent = bookDate;
-
-      // Format time nicely
-      let bookTime = booking.TIME || 'N/A';
-      if (booking.TIME && typeof booking.TIME === 'string' && booking.TIME.includes('T')) {
-        const timeObj = new Date(booking.TIME);
-        bookTime = timeObj.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+      if (booking.DATE && booking.DATE.includes('T')) {
+        displayDate = new Date(booking.DATE).toLocaleDateString();
       }
-      document.getElementById('book-time').textContent = bookTime;
+      if (booking.TIME && booking.TIME.includes('T')) {
+        displayTime = new Date(booking.TIME).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+      }
 
-      document.getElementById('pickup').textContent = booking['PICK UP'] || 'N/A';
-      document.getElementById('dropoff').textContent = booking['DROP OFF'] || 'N/A';
-      document.getElementById('phone').textContent = booking.PHONE || 'N/A';
-      
-      const price = parseFloat(booking['FINAL PRICE']) || 0;
-      document.getElementById('final-price').textContent = `$${price.toFixed(2)} TTD`;
+      // Fill in fields
+      document.getElementById('clientName').value = booking.NAME || '';
+      document.getElementById('clientPhone').value = booking.PHONE || '';
+      document.getElementById('bookDate').value = displayDate;
+      document.getElementById('bookTime').value = displayTime;
+      document.getElementById('pickupAddress').value = booking['PICK UP'] || '';
+      document.getElementById('dropoffAddress').value = booking['DROP OFF'] || '';
+      document.getElementById('finalPrice').textContent = '$' + (booking['FINAL PRICE'] || '0.00') + ' TTD';
 
-      document.getElementById('loading').classList.add('hidden');
-      document.getElementById('booking-details').classList.remove('hidden');
+      // Show sections
+      document.getElementById('bookingDetails').classList.remove('hidden');
+      document.getElementById('paymentSection').classList.remove('hidden');
+      document.getElementById('confirmBtn').disabled = false;
+    }
+
+    function hideBookingDetails() {
+      document.getElementById('bookingDetails').classList.add('hidden');
+      document.getElementById('paymentSection').classList.add('hidden');
+      document.getElementById('confirmBtn').disabled = true;
+      bookingData = null;
     }
 
     function showError(message) {
-      document.getElementById('loading').classList.add('hidden');
-      document.getElementById('error-message').textContent = message;
-      document.getElementById('error').classList.remove('hidden');
+      document.getElementById('errorText').textContent = message;
+      document.getElementById('errorMessage').classList.remove('hidden');
+      setTimeout(() => {
+        document.getElementById('errorMessage').classList.add('hidden');
+      }, 5000);
     }
 
-    function resetSearch() {
-      document.getElementById('code-entry').classList.remove('hidden');
-      document.getElementById('error').classList.add('hidden');
-      document.getElementById('booking-details').classList.add('hidden');
-      document.getElementById('manual-code').value = '';
-      bookingRowNumber = null;
-      currentBookingCode = null;
-    }
-
-    function confirmBooking() {
-      if (!bookingRowNumber) {
-        alert('Error: Booking information not loaded');
+    // Form submission
+    document.getElementById('confirmForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      
+      if (!bookingData) {
+        showError('Please enter a valid reference code.');
         return;
       }
 
-      if (!confirm(`Confirm booking ${currentBookingCode} for ${document.getElementById('client-name').textContent}?`)) {
+      const paymentMethod = document.getElementById('paymentMethod').value;
+      if (!paymentMethod) {
+        showError('Please select a payment method.');
         return;
       }
 
-      fetch(APPS_SCRIPT_URL, {
-        method: 'POST',
-        body: new URLSearchParams({
-          action: 'updateStatus',
-          row: bookingRowNumber,
-          status: 'Confirmed'
-        })
-      })
-      .then(response => response.json())
-      .then(data => {
-        if (data.success) {
-          document.getElementById('booking-details').innerHTML = `
+      const confirmBtn = document.getElementById('confirmBtn');
+      confirmBtn.disabled = true;
+      confirmBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Confirming...';
+
+      try {
+        const response = await fetch(APPS_SCRIPT_URL, {
+          method: 'POST',
+          body: new URLSearchParams({
+            action: 'updateStatus',
+            row: bookingData._rowNumber,
+            status: 'Confirmed'
+          })
+        });
+
+        const result = await response.json();
+        
+        if (result.success) {
+          // Show success message
+          document.getElementById('confirmForm').innerHTML = `
             <div class="text-center py-8">
-              <div class="text-6xl mb-4">✅</div>
-              <h2 class="text-2xl font-bold text-green-600 mb-4">Booking Confirmed!</h2>
-              <p class="text-gray-700 mb-6">
-                Thank you for confirming your booking with HKJ Logistics.<br>
-                We look forward to serving you!
-              </p>
-              <div class="bg-blue-50 p-4 rounded-lg mb-6">
-                <p class="text-sm text-blue-800">
-                  <i class="fas fa-check-circle mr-2"></i>
-                  A confirmation email/SMS will be sent to you shortly.
-                </p>
-              </div>
-              <button onclick="window.location.href='/'" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg transition">
-                <i class="fas fa-home mr-2"></i>Back to Home
-              </button>
+              <div class="text-green-500 text-6xl mb-4"><i class="fas fa-check-circle"></i></div>
+              <h2 class="text-2xl font-bold text-gray-800 mb-4">Booking Confirmed!</h2>
+              <p class="text-gray-600 mb-4">Thank you for confirming your reservation.</p>
+              <p class="text-gray-600">Reference: <strong>${bookingData['REF CODE']}</strong></p>
+              <p class="text-gray-600 mt-4">We look forward to serving you!</p>
             </div>
           `;
         } else {
-          alert('Error confirming booking. Please try again.');
+          showError('Error confirming booking. Please try again.');
+          confirmBtn.disabled = false;
+          confirmBtn.innerHTML = '<i class="fas fa-check-circle mr-2"></i> Confirm Booking';
         }
-      })
-      .catch(error => {
-        console.error('Error:', error);
-        alert('Network error. Please try again.');
-      });
-    }
+      } catch (error) {
+        showError('Network error. Please try again.');
+        confirmBtn.disabled = false;
+        confirmBtn.innerHTML = '<i class="fas fa-check-circle mr-2"></i> Confirm Booking';
+      }
+    });
   </script>
 </body>
 </html>
