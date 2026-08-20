@@ -7,23 +7,84 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
-    body { background-color: #f3f4f6; }
+    /* Tropical Beach Background */
+    body {
+      background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)),
+                  url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=1920&q=80');
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
+      min-height: 100vh;
+    }
+    
     .status-pending { background-color: #fef3c7; color: #92400e; }
     .status-confirmed { background-color: #dbeafe; color: #1e40af; }
     .status-completed { background-color: #dcfce7; color: #166534; }
     .status-cancelled { background-color: #fee2e2; color: #991b1b; }
     .status-price-sent { background-color: #f3e8ff; color: #6b21a8; }
-    .card-hover:hover { transform: translateY(-2px); box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
+    .card-hover:hover { transform: translateY(-2px); box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
+    
+    /* Login Screen */
+    .login-screen {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.9);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+    }
   </style>
 </head>
 <body class="p-6">
 
-  <div class="max-w-7xl mx-auto">
+  <!-- LOGIN SCREEN -->
+  <div id="loginScreen" class="login-screen">
+    <div class="bg-white rounded-2xl shadow-2xl p-8 max-w-md w-full mx-4">
+      <div class="text-center mb-8">
+        <div class="w-20 h-20 bg-yellow-400 rounded-full flex items-center justify-center mx-auto mb-4">
+          <i class="fas fa-user-shield text-black text-3xl"></i>
+        </div>
+        <h1 class="text-3xl font-bold text-gray-800 mb-2">HKJ Logistics</h1>
+        <p class="text-gray-600">Admin Dashboard</p>
+      </div>
+      
+      <div class="mb-6">
+        <label class="block text-gray-700 text-sm font-bold mb-2">
+          <i class="fas fa-lock mr-2"></i>Enter Password
+        </label>
+        <input type="password" id="passwordInput" 
+          class="w-full p-4 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-yellow-400 text-lg"
+          placeholder="Enter admin password"
+          onkeypress="if(event.key === 'Enter') checkPassword()">
+      </div>
+      
+      <button onclick="checkPassword()" 
+        class="w-full bg-yellow-400 hover:bg-yellow-500 text-black font-bold py-4 rounded-lg transition transform hover:scale-105 shadow-lg">
+        <i class="fas fa-sign-in-alt mr-2"></i> Login
+      </button>
+      
+      <p id="loginError" class="text-red-500 text-center mt-4 hidden">
+        <i class="fas fa-exclamation-circle mr-2"></i>Incorrect password!
+      </p>
+    </div>
+  </div>
+
+  <!-- ADMIN DASHBOARD (Hidden until login) -->
+  <div id="adminDashboard" class="hidden max-w-7xl mx-auto">
     <!-- Header -->
     <div class="bg-white rounded-xl shadow-md p-6 mb-6 flex justify-between items-center">
-      <div>
-        <h1 class="text-3xl font-bold text-gray-800">🚗 HKJ Logistics Admin</h1>
-        <p class="text-gray-500">Manage bookings and communicate with clients</p>
+      <div class="flex items-center">
+        <div class="w-12 h-12 bg-yellow-400 rounded-full flex items-center justify-center mr-3">
+          <i class="fas fa-truck text-black text-xl"></i>
+        </div>
+        <div>
+          <h1 class="text-3xl font-bold text-gray-800">HKJ Logistics Admin</h1>
+          <p class="text-gray-500">Manage bookings and communicate with clients</p>
+        </div>
       </div>
       <div class="flex gap-3">
         <button onclick="generateReport()" class="bg-purple-600 hover:bg-purple-700 text-white px-6 py-2 rounded-lg font-bold transition shadow-md">
@@ -32,13 +93,16 @@
         <button onclick="fetchBookings()" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-bold transition shadow-md">
           <i class="fas fa-sync-alt mr-2"></i> Refresh
         </button>
+        <button onclick="logout()" class="bg-red-600 hover:bg-red-700 text-white px-6 py-2 rounded-lg font-bold transition shadow-md">
+          <i class="fas fa-sign-out-alt mr-2"></i> Logout
+        </button>
       </div>
     </div>
 
     <!-- Loading State -->
     <div id="loading" class="text-center py-20">
-      <i class="fas fa-spinner fa-spin text-4xl text-blue-600"></i>
-      <p class="mt-4 text-gray-600">Loading bookings...</p>
+      <i class="fas fa-spinner fa-spin text-4xl text-yellow-400"></i>
+      <p class="mt-4 text-white text-lg font-semibold">Loading bookings...</p>
     </div>
 
     <!-- Bookings Grid -->
@@ -49,9 +113,40 @@
 
   <script>
     // ==========================================
-    // ️ REPLACE WITH YOUR APPS SCRIPT URL
+    // ⚠️ REPLACE WITH YOUR APPS SCRIPT URL
     // ==========================================
     const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw1Fji0W9KckebjpfTcMLLtRNdf8fVMT_yQ_3PPrwg6kBZxsK8C-12TB-bAeCLY2ckwcg/exec';
+    
+    // Admin Password
+    const ADMIN_PASSWORD = 'hkj5762';
+
+    // Check if already logged in
+    if (sessionStorage.getItem('hkjAdminLoggedIn') === 'true') {
+      showDashboard();
+    }
+
+    function checkPassword() {
+      const input = document.getElementById('passwordInput').value;
+      if (input === ADMIN_PASSWORD) {
+        sessionStorage.setItem('hkjAdminLoggedIn', 'true');
+        showDashboard();
+      } else {
+        document.getElementById('loginError').classList.remove('hidden');
+        document.getElementById('passwordInput').value = '';
+        document.getElementById('passwordInput').focus();
+      }
+    }
+
+    function showDashboard() {
+      document.getElementById('loginScreen').classList.add('hidden');
+      document.getElementById('adminDashboard').classList.remove('hidden');
+      fetchBookings();
+    }
+
+    function logout() {
+      sessionStorage.removeItem('hkjAdminLoggedIn');
+      location.reload();
+    }
 
     async function fetchBookings() {
       document.getElementById('loading').classList.remove('hidden');
@@ -68,7 +163,7 @@
         }
       } catch (error) {
         console.error('Error:', error);
-        alert('Network error. Please try again.');
+        alert('Network error. Please check your Apps Script URL and try again.');
       } finally {
         document.getElementById('loading').classList.add('hidden');
         document.getElementById('bookingsGrid').classList.remove('hidden');
@@ -86,7 +181,7 @@
         const price = booking['FINAL PRICE'] || '';
         
         const card = document.createElement('div');
-        card.className = 'bg-white rounded-xl shadow-md p-6 border-l-4 border-blue-500 card-hover transition-all duration-300';
+        card.className = 'bg-white rounded-xl shadow-lg p-6 border-l-4 border-yellow-400 card-hover transition-all duration-300';
         card.innerHTML = `
           <div class="flex justify-between items-start mb-4">
             <div>
@@ -99,11 +194,11 @@
           </div>
 
           <div class="space-y-3 mb-4 text-sm">
-            <div class="flex items-center text-gray-600">
+            <div class="flex items-center text-gray-700">
               <i class="fas fa-phone mr-2 text-blue-500"></i> 
               <a href="tel:${booking.PHONE}" class="hover:text-blue-600">${booking.PHONE || 'N/A'}</a>
             </div>
-            <div class="flex items-center text-gray-600">
+            <div class="flex items-center text-gray-700">
               <i class="fas fa-envelope mr-2 text-blue-500"></i> 
               <a href="mailto:${booking.EMAIL}" class="hover:text-blue-600 truncate">${booking.EMAIL || 'N/A'}</a>
             </div>
@@ -121,8 +216,8 @@
                 <p class="text-gray-600 text-xs">${booking['DROP OFF'] || 'N/A'}</p>
               </div>
             </div>
-            <div class="flex items-center text-gray-600">
-              <i class="fas fa-calendar-alt mr-2"></i> ${booking.DATE || 'N/A'} at ${booking.TIME || 'N/A'}
+            <div class="flex items-center text-gray-700">
+              <i class="fas fa-calendar-alt mr-2"></i> ${formatDate(booking.DATE)} at ${booking.TIME || 'N/A'}
             </div>
             ${booking.NOTES ? `<div class="bg-yellow-50 p-2 rounded text-yellow-800 text-xs border border-yellow-200"><i class="fas fa-sticky-note mr-1"></i> ${booking.NOTES.substring(0, 100)}${booking.NOTES.length > 100 ? '...' : ''}</div>` : ''}
           </div>
@@ -132,7 +227,7 @@
             <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Final Price (TTD)</label>
             <div class="flex gap-2 mb-3">
               <input type="number" id="price-${row}" value="${price}" placeholder="0.00" 
-                class="flex-1 p-2 border rounded-lg focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200">
+                class="flex-1 p-2 border rounded-lg focus:outline-none focus:border-yellow-400 focus:ring-2 focus:ring-yellow-200">
               <button onclick="quickSetPrice(${row}, 200)" class="bg-gray-200 hover:bg-gray-300 text-gray-700 px-2 py-1 rounded text-xs font-bold" title="$200">200</button>
               <button onclick="quickSetPrice(${row}, 350)" class="bg-gray-200 hover:bg-gray-300 text-gray-700 px-2 py-1 rounded text-xs font-bold" title="$350">350</button>
               <button onclick="quickSetPrice(${row}, 400)" class="bg-gray-200 hover:bg-gray-300 text-gray-700 px-2 py-1 rounded text-xs font-bold" title="$400">400</button>
@@ -152,9 +247,9 @@
           <!-- Status Update Dropdown -->
           <div class="mb-3">
             <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Update Status</label>
-            <select onchange="updateStatus(${row}, this.value)" class="w-full p-2 border rounded-lg focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 text-sm">
+            <select onchange="updateStatus(${row}, this.value)" class="w-full p-2 border rounded-lg focus:outline-none focus:border-yellow-400 focus:ring-2 focus:ring-yellow-200 text-sm">
               <option value="Pending" ${booking.STATUS === 'Pending' ? 'selected' : ''}>🔄 Pending</option>
-              <option value="Price Sent" ${booking.STATUS === 'Price Sent' ? 'selected' : ''}>💰 Price Sent</option>
+              <option value="Price Sent" ${booking.STATUS === 'Price Sent' ? 'selected' : ''}> Price Sent</option>
               <option value="Confirmed" ${booking.STATUS === 'Confirmed' ? 'selected' : ''}>✅ Confirmed</option>
               <option value="Completed" ${booking.STATUS === 'Completed' ? 'selected' : ''}>✔️ Completed</option>
               <option value="Cancelled" ${booking.STATUS === 'Cancelled' ? 'selected' : ''}>❌ Cancelled</option>
@@ -178,6 +273,16 @@
         `;
         grid.appendChild(card);
       });
+    }
+
+    function formatDate(dateString) {
+      if (!dateString) return 'N/A';
+      try {
+        const date = new Date(dateString);
+        return date.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+      } catch (e) {
+        return dateString;
+      }
     }
 
     function quickSetPrice(row, price) {
@@ -227,7 +332,6 @@
       btn.disabled = true;
 
       try {
-        // Fetch booking details
         const response = await fetch(APPS_SCRIPT_URL);
         const data = await response.json();
         const booking = data.bookings.find(b => b._rowNumber === row);
@@ -239,10 +343,8 @@
           const price = booking['FINAL PRICE'] || 'TBD';
           const pickup = booking['PICK UP'] || '';
           
-          // Clean phone number
           const cleanPhone = phone.toString().replace(/\D/g, '');
           
-          // Create message
           let message = `Hello ${clientName},\n\n`;
           message += `Your booking ${refCode} has been confirmed!\n`;
           message += `Final Price: $${price} TTD\n`;
@@ -251,11 +353,9 @@
           message += `https://hkjlogisticsltdtt.vercel.app/confirm.html?code=${refCode}\n\n`;
           message += `Thank you,\nHKJ Logistics Ltd\n+1 (868) 780-0300`;
           
-          // Open WhatsApp
           const whatsappUrl = `https://wa.me/1${cleanPhone}?text=${encodeURIComponent(message)}`;
           window.open(whatsappUrl, '_blank');
           
-          // Update status to Price Sent
           await fetch(APPS_SCRIPT_URL, {
             method: 'POST',
             body: new URLSearchParams({
@@ -333,7 +433,7 @@
             `─────────────────\n` +
             `Total Bookings: ${bookings.length}\n` +
             `⏳ Pending: ${pending}\n` +
-            ` Price Sent: ${priceSent}\n` +
+            `💰 Price Sent: ${priceSent}\n` +
             `✅ Confirmed: ${confirmed}\n` +
             `✔️ Completed: ${completed}\n` +
             `❌ Cancelled: ${cancelled}\n\n` +
@@ -349,7 +449,10 @@
     }
 
     // Load bookings on page load
-    window.addEventListener('DOMContentLoaded', fetchBookings);
+    window.addEventListener('DOMContentLoaded', () => {
+      // Login screen is shown by default
+      // Dashboard loads after successful login
+    });
   </script>
 </body>
 </html>
