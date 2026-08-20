@@ -537,15 +537,42 @@
         return;
       }
 
-      // Get Coordinates
-      const startCoords = await getCoordinates(pickup);
-      const endCoords = await getCoordinates(dropoff);
+      // Simplify addresses for better geocoding
+      const simplifyAddress = (addr) => {
+        if (!addr) return '';
+        // Remove duplicate "Trinidad and Tobago"
+        let clean = addr.replace(/,?\s*trinidad and tobago/gi, '');
+        // Remove postal codes (5-6 digits)
+        clean = clean.replace(/,?\s*\d{5,6}/g, '');
+        // Take only first 3 parts (most specific)
+        const parts = clean.split(',').slice(0, 3);
+        return parts.join(',') + ', Trinidad';
+      };
+
+      const pickupSimple = simplifyAddress(pickup);
+      const dropoffSimple = simplifyAddress(dropoff);
+
+      console.log('Simplified Pickup:', pickupSimple);
+      console.log('Simplified Dropoff:', dropoffSimple);
+
+      // Get Coordinates with delay to respect rate limit (Nominatim allows 1 req/sec)
+      const startCoords = await getCoordinates(pickupSimple);
+      
+      // Wait 1.5 seconds before second request
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      
+      const endCoords = await getCoordinates(dropoffSimple);
 
       if (startCoords && endCoords) {
+        console.log('Start Coords:', startCoords);
+        console.log('End Coords:', endCoords);
+        
         // Get Route
         const route = await getDrivingRoute(startCoords.lat, startCoords.lon, endCoords.lat, endCoords.lon);
         
         if (route) {
+          console.log('Route:', route);
+          
           let price = 50; // Base fare
           const dist = route.distanceKm;
           const time = route.durationMins;
@@ -574,7 +601,7 @@
           btn.innerHTML = originalText;
         }
       } else {
-        alert('Could not find locations on map. Please enter price manually.');
+        alert('Could not find locations on map. Please enter price manually.\n\nTried:\nPickup: ' + pickupSimple + '\nDropoff: ' + dropoffSimple);
         btn.innerHTML = originalText;
       }
       btn.disabled = false;
@@ -701,7 +728,7 @@
           <div class="mb-3">
             <label class="block text-xs font-bold text-gray-600 uppercase mb-2">Update Status</label>
             <select onchange="updateStatus(${row}, this.value)" class="w-full p-2.5 border-2 border-gray-200 rounded-lg focus:outline-none input-focus transition text-sm font-medium bg-white">
-              <option value="Pending" ${booking.STATUS === 'Pending' ? 'selected' : ''}>🔄 Pending</option>
+              <option value="Pending" ${booking.STATUS === 'Pending' ? 'selected' : ''}> Pending</option>
               <option value="Price Sent" ${booking.STATUS === 'Price Sent' ? 'selected' : ''}>💰 Price Sent</option>
               <option value="Confirmed" ${booking.STATUS === 'Confirmed' ? 'selected' : ''}>✅ Confirmed</option>
               <option value="Completed" ${booking.STATUS === 'Completed' ? 'selected' : ''}>✔️ Completed</option>
@@ -970,7 +997,7 @@
           let message = `Hello ${clientName},\n\n`;
           message += `Your HKJ Logistics booking ${refCode} is ready for review!\n`;
           message += `📅 Date: ${date} at ${time}\n`;
-          message += `📍 Pickup: ${pickup}\n`;
+          message += ` Pickup: ${pickup}\n`;
           message += `💰 Final Price: $${price} TTD\n\n`;
           message += `📋 HOW IT WORKS:\n`;
           message += `1. We received your request.\n`;
@@ -985,7 +1012,7 @@
           const newWindow = window.open(whatsappUrl, '_blank');
           
           if (!newWindow || newWindow.closed || typeof newWindow.closed == 'undefined') {
-            alert('⚠️ WhatsApp popup was blocked!');
+            alert('️ WhatsApp popup was blocked!');
           } else {
             setTimeout(() => {
               alert('✅ WhatsApp opened!');
@@ -1065,10 +1092,10 @@
           });
           
           const report = `📊 HKJ Logistics Report\n\n` +
-            `📈 BOOKING STATUS:\n` +
+            ` BOOKING STATUS:\n` +
             `─────────────────\n` +
             `Total Bookings: ${bookings.length}\n` +
-            ` Pending: ${pending}\n` +
+            `⏳ Pending: ${pending}\n` +
             `💰 Price Sent: ${priceSent}\n` +
             `✅ Confirmed: ${confirmed}\n` +
             `✔️ Completed: ${completed}\n` +
