@@ -28,7 +28,7 @@
     /* Hero Background */
     .hero-bg {
       background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.7)),
-                  url('https://images.unsplash.com/photo-1449965408869-eaa3f722e40d?w=1920&q=80'); /* Changed to a more professional road/transport image */
+                  url('https://images.unsplash.com/photo-1449965408869-eaa3f722e40d?w=1920&q=80');
       background-size: cover;
       background-position: center;
       background-attachment: fixed;
@@ -127,6 +127,7 @@
         <p class="text-gray-400 mt-4 text-lg">Fill out the form below and we will get back to you shortly.</p>
       </div>
       
+      <!-- FORM START -->
       <form id="bookingForm" class="bg-white rounded-2xl shadow-2xl p-8 md:p-12 border-t-8 border-yellow-400">
         
         <!-- Name and Phone -->
@@ -162,7 +163,7 @@
             class="w-full py-3 px-4 text-gray-700 border border-gray-300 rounded-lg focus:outline-none input-focus transition"
             placeholder="Type place name (e.g., Hyatt Hotel, West Mall)"
             onblur="autoDetectLocation('pickup')">
-          <p class="text-xs text-gray-500 mt-2 italic"> Type a place name - we'll auto-detect the area!</p>
+          <p class="text-xs text-gray-500 mt-2 italic">💡 Type a place name - we'll auto-detect the area!</p>
           <div id="pickupDetected" class="hidden mt-3 p-3 bg-green-50 text-green-700 rounded-lg text-sm border border-green-200 flex items-center">
             <i class="fas fa-check-circle mr-2 text-lg"></i> <span id="pickupDetectedText"></span>
           </div>
@@ -252,29 +253,31 @@
           class="w-full bg-yellow-400 hover:bg-yellow-500 text-black font-extrabold py-4 px-8 rounded-lg text-lg transition transform hover:scale-[1.02] shadow-lg uppercase tracking-wider">
           <i class="fas fa-paper-plane mr-2"></i> Submit Booking Request
         </button>
-
-        <!-- Loading State -->
-        <div id="loading" class="hidden text-center py-8">
-          <div class="inline-block animate-spin rounded-full h-10 w-10 border-4 border-gray-300 border-t-yellow-400 mb-4"></div>
-          <p class="text-gray-700 font-semibold">Submitting your booking...</p>
-        </div>
-
-        <!-- Success Message -->
-        <div id="successMessage" class="hidden text-center py-8">
-          <i class="fas fa-check-circle text-green-500 text-6xl mb-4"></i>
-          <h3 class="text-3xl font-extrabold text-gray-800 mb-4">THANK YOU!</h3>
-          <p class="text-gray-600 mb-4 text-lg">Your booking request has been received.</p>
-          <p class="text-gray-700 font-bold mb-2 uppercase tracking-wide text-sm">Your Reference Code:</p>
-          <div class="bg-black text-yellow-400 text-3xl font-extrabold py-4 px-8 rounded-lg mb-6 inline-block tracking-widest shadow-inner">
-            <span id="refCodeDisplay">HKJ-XXXX</span>
-          </div>
-          <p class="text-gray-600 mb-6">We'll contact you shortly with the final price.</p>
-          <button type="button" onclick="location.reload()" 
-            class="bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-8 rounded-lg transition uppercase tracking-wider shadow-md">
-            Got It!
-          </button>
-        </div>
       </form>
+      <!-- FORM END -->
+
+      <!-- Loading State (MOVED OUTSIDE FORM) -->
+      <div id="loading" class="hidden text-center py-12 bg-white rounded-2xl shadow-2xl mt-8">
+        <div class="inline-block animate-spin rounded-full h-12 w-12 border-4 border-gray-300 border-t-yellow-400 mb-4"></div>
+        <p class="text-gray-700 font-semibold text-lg">Submitting your booking...</p>
+      </div>
+
+      <!-- Success Message (MOVED OUTSIDE FORM) -->
+      <div id="successMessage" class="hidden text-center py-12 bg-white rounded-2xl shadow-2xl mt-8 border-t-8 border-green-500">
+        <i class="fas fa-check-circle text-green-500 text-7xl mb-6"></i>
+        <h3 class="text-4xl font-extrabold text-gray-800 mb-4">THANK YOU!</h3>
+        <p class="text-gray-600 mb-6 text-lg">Your booking request has been received.</p>
+        <p class="text-gray-700 font-bold mb-3 uppercase tracking-wide text-sm">Your Reference Code:</p>
+        <div class="bg-black text-yellow-400 text-4xl font-extrabold py-5 px-10 rounded-lg mb-6 inline-block tracking-widest shadow-inner">
+          <span id="refCodeDisplay">HKJ-XXXX</span>
+        </div>
+        <p class="text-gray-600 mb-8 text-lg">We'll contact you shortly with the final price.</p>
+        <button type="button" onclick="location.reload()" 
+          class="bg-green-600 hover:bg-green-700 text-white font-bold py-4 px-10 rounded-lg transition uppercase tracking-wider shadow-lg text-lg">
+          <i class="fas fa-check mr-2"></i> Got It!
+        </button>
+      </div>
+
     </div>
   </section>
 
@@ -379,8 +382,13 @@
     form.addEventListener('submit', async function(e) {
       e.preventDefault();
       
+      // Hide the form and button, show loading
+      form.classList.add('hidden');
       submitBtn.classList.add('hidden');
       loading.classList.remove('hidden');
+      
+      // Scroll to loading message
+      loading.scrollIntoView({ behavior: 'smooth', block: 'center' });
       
       const formData = new FormData(form);
       const params = new URLSearchParams();
@@ -398,18 +406,22 @@
         const result = await response.json();
         
         if (result.result === 'success') {
-          form.classList.add('hidden');
           loading.classList.add('hidden');
           successMessage.classList.remove('hidden');
           document.getElementById('refCodeDisplay').textContent = result.refCode;
+          
+          // Scroll to success message
+          successMessage.scrollIntoView({ behavior: 'smooth', block: 'center' });
         } else {
           alert('Error submitting booking. Please try again.');
+          form.classList.remove('hidden');
           submitBtn.classList.remove('hidden');
           loading.classList.add('hidden');
         }
       } catch (error) {
         console.error('Error:', error);
         alert('Network error. Please try again.');
+        form.classList.remove('hidden');
         submitBtn.classList.remove('hidden');
         loading.classList.add('hidden');
       }
