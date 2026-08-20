@@ -265,11 +265,11 @@
               </label>
               <input type="text" id="pickupLocation" name="pickupAddressText" required
                 class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-purple-500 focus:outline-none bg-gray-50 focus:bg-white transition"
-                placeholder="Type place name (e.g., Hyatt Hotel, West Mall, Piarco Airport)"
+                placeholder="Type place name or street address (e.g., Hyatt Hotel, 12 Wrightson Road, Piarco Airport)"
                 onblur="autoDetectLocation('pickup')" id="placeholderPickup">
               <p class="text-xs text-gray-500 mt-2">
                 <i class="fas fa-lightbulb text-yellow-500 mr-1"></i>
-                <span data-i18n="autoDetectHint">Type a place name - we'll auto-detect the area!</span>
+                <span data-i18n="autoDetectHint">Type a place name or street address - we'll auto-detect the area!</span>
               </p>
               <div id="pickupDetected" class="hidden mt-3 p-3 bg-green-50 text-green-700 rounded-lg text-sm border border-green-200 flex items-center">
                 <i class="fas fa-check-circle mr-2 text-lg"></i> <span id="pickupDetectedText"></span>
@@ -285,11 +285,11 @@
               </label>
               <input type="text" id="dropoffLocation" name="dropoffAddressText" required
                 class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-purple-500 focus:outline-none bg-gray-50 focus:bg-white transition"
-                placeholder="Type place name (e.g., Galleria Mall, Queen's Park Hotel)"
+                placeholder="Type place name or street address (e.g., Galleria Mall, 45 Independence Square, Queen's Park Hotel)"
                 onblur="autoDetectLocation('dropoff')" id="placeholderDropoff">
               <p class="text-xs text-gray-500 mt-2">
                 <i class="fas fa-lightbulb text-yellow-500 mr-1"></i>
-                <span data-i18n="autoDetectHint">Type a place name - we'll auto-detect the area!</span>
+                <span data-i18n="autoDetectHint">Type a place name or street address - we'll auto-detect the area!</span>
               </p>
               <div id="dropoffDetected" class="hidden mt-3 p-3 bg-green-50 text-green-700 rounded-lg text-sm border border-green-200 flex items-center">
                 <i class="fas fa-check-circle mr-2 text-lg"></i> <span id="dropoffDetectedText"></span>
@@ -454,7 +454,7 @@
         tripDetails: 'Trip Details',
         pickupLocation: 'Pickup Location',
         dropoffLocation: 'Drop-off Location',
-        autoDetectHint: 'Type a place name - we\'ll auto-detect the area!',
+        autoDetectHint: 'Type a place name or street address - we\'ll auto-detect the area!',
         date: 'Date',
         time: 'Time',
         serviceOptions: 'Service Options',
@@ -468,8 +468,8 @@
         placeholderName: 'John Doe',
         placeholderPhone: '868-XXX-XXXX',
         placeholderEmail: 'example@email.com',
-        placeholderPickup: 'Type place name (e.g., Hyatt Hotel, West Mall, Piarco Airport)',
-        placeholderDropoff: 'Type place name (e.g., Galleria Mall, Queen\'s Park Hotel)'
+        placeholderPickup: 'Type place name or street address (e.g., Hyatt Hotel, 12 Wrightson Road, Piarco Airport)',
+        placeholderDropoff: 'Type place name or street address (e.g., Galleria Mall, 45 Independence Square, Queen\'s Park Hotel)'
       },
       es: {
         tagline: 'resolviendo todos tus problemas',
@@ -499,7 +499,7 @@
         tripDetails: 'Detalles del Viaje',
         pickupLocation: 'Lugar de Recogida',
         dropoffLocation: 'Lugar de Destino',
-        autoDetectHint: 'Escribe un lugar - ¡detectaremos el área automáticamente!',
+        autoDetectHint: 'Escribe un lugar o dirección - ¡detectaremos el área automáticamente!',
         date: 'Fecha',
         time: 'Hora',
         serviceOptions: 'Opciones de Servicio',
@@ -513,8 +513,8 @@
         placeholderName: 'Ingrese su nombre',
         placeholderPhone: '868-XXX-XXXX',
         placeholderEmail: 'ejemplo@email.com',
-        placeholderPickup: 'Ej: Hyatt Hotel, West Mall',
-        placeholderDropoff: 'Ej: Galleria Mall'
+        placeholderPickup: 'Ej: Hyatt Hotel, 12 Wrightson Road',
+        placeholderDropoff: 'Ej: Galleria Mall, 45 Independence Square'
       }
     };
 
@@ -581,7 +581,7 @@
         const detectedDiv = document.getElementById(detectedId);
         const detectedText = document.getElementById(detectedTextId);
         
-        detectedText.textContent = currentLang === 'en' ? ' Searching...' : '🔍 Buscando...';
+        detectedText.textContent = currentLang === 'en' ? '🔍 Searching...' : ' Buscando...';
         detectedDiv.classList.remove('hidden');
         detectedDiv.className = 'mt-3 p-3 bg-blue-50 text-blue-700 rounded-lg text-sm border border-blue-200 flex items-center';
         
@@ -594,7 +594,7 @@
           detectedDiv.className = 'mt-3 p-3 bg-green-50 text-green-700 rounded-lg text-sm border border-green-200 flex items-center';
           document.getElementById(inputId).value = placeInfo.fullAddress;
         } else {
-          const notFoundMsg = currentLang === 'en' ? '️ Place not found. Please enter full address.' : '⚠️ Lugar no encontrado. Ingrese la dirección completa.';
+          const notFoundMsg = currentLang === 'en' ? '⚠️ Place not found. Please enter full address.' : '️ Lugar no encontrado. Ingrese la dirección completa.';
           detectedText.textContent = notFoundMsg;
           detectedDiv.className = 'mt-3 p-3 bg-yellow-50 text-yellow-700 rounded-lg text-sm border border-yellow-200 flex items-center';
         }
