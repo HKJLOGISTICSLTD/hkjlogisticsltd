@@ -20,7 +20,6 @@
       background-attachment: fixed;
     }
     
-    /* Professional Booking Section */
     .booking-section {
       background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
       position: relative;
@@ -114,17 +113,17 @@
           </div>
           <div>
             <h1 class="text-2xl font-bold">LOGISTICS <span class="text-yellow-400">LTD</span></h1>
-            <p class="text-xs text-blue-300">solving all your problems</p>
+            <p class="text-xs text-blue-300" data-i18n="tagline">solving all your problems</p>
           </div>
         </div>
 
         <!-- Navigation Links -->
         <div class="flex flex-wrap justify-center gap-6">
-          <a href="#" class="text-yellow-400 font-bold hover:text-yellow-300 transition">HOME</a>
-          <a href="#services" class="text-white font-bold hover:text-yellow-400 transition">SERVICES</a>
-          <a href="#book" class="text-white font-bold hover:text-yellow-400 transition">BOOK A RIDE</a>
-          <a href="confirm.html" class="text-green-400 font-bold hover:text-green-300 transition">CONFIRM BOOKING</a>
-          <a href="#contact" class="text-white font-bold hover:text-yellow-400 transition">CONTACT US</a>
+          <a href="#" class="text-yellow-400 font-bold hover:text-yellow-300 transition" data-i18n="navHome">HOME</a>
+          <a href="#services" class="text-white font-bold hover:text-yellow-400 transition" data-i18n="navServices">SERVICES</a>
+          <a href="#book" class="text-white font-bold hover:text-yellow-400 transition" data-i18n="navBook">BOOK A RIDE</a>
+          <a href="confirm.html" class="text-green-400 font-bold hover:text-green-300 transition" data-i18n="navConfirm">CONFIRM BOOKING</a>
+          <a href="#contact" class="text-white font-bold hover:text-yellow-400 transition" data-i18n="navContact">CONTACT US</a>
         </div>
       </div>
 
@@ -136,11 +135,11 @@
           </div>
           <div>
             <p class="text-xl font-bold">+1 (868) 780-0300</p>
-            <p class="text-xs text-yellow-400">24/7 SERVICE</p>
+            <p class="text-xs text-yellow-400" data-i18n="service247">24/7 SERVICE</p>
           </div>
         </div>
         <a href="https://wa.me/18687800300" class="bg-yellow-400 hover:bg-yellow-500 text-black font-bold py-3 px-6 rounded-full transition shadow-lg">
-          <i class="fab fa-whatsapp mr-2"></i> WHATSAPP US
+          <i class="fab fa-whatsapp mr-2"></i> <span data-i18n="whatsappUs">WHATSAPP US</span>
         </a>
         <button onclick="toggleLanguage()" class="border-2 border-yellow-400 text-yellow-400 hover:bg-yellow-400 hover:text-black font-bold py-2 px-6 rounded-full transition">
           <i class="fas fa-globe mr-2"></i> <span id="langButton">EN</span>
@@ -157,30 +156,30 @@
         <span class="text-yellow-400">SAFE.</span><br>
         ON TIME.
       </h1>
-      <p class="text-xl md:text-2xl mb-8 max-w-3xl mx-auto text-gray-200">
+      <p class="text-xl md:text-2xl mb-8 max-w-3xl mx-auto text-gray-200" data-i18n="heroSubtitle">
         Professional Taxi & Transportation Services Across the Beautiful Islands of Trinidad and Tobago
       </p>
       <div class="flex flex-col md:flex-row justify-center gap-4">
         <a href="#book" class="bg-yellow-400 hover:bg-yellow-500 text-black font-bold py-4 px-8 rounded-full text-lg transition transform hover:scale-105 shadow-xl">
-          <i class="fas fa-calendar-check mr-2"></i> BOOK YOUR RIDE
+          <i class="fas fa-calendar-check mr-2"></i> <span data-i18n="bookYourRide">BOOK YOUR RIDE</span>
         </a>
         <a href="tel:+18687800300" class="border-2 border-white hover:bg-white hover:text-black font-bold py-4 px-8 rounded-full text-lg transition">
-          <i class="fas fa-phone mr-2"></i> CALL NOW
+          <i class="fas fa-phone mr-2"></i> <span data-i18n="callNow">CALL NOW</span>
         </a>
       </div>
     </div>
   </section>
 
-  <!-- BOOK A RIDE Section - PROFESSIONAL DESIGN -->
+  <!-- BOOK A RIDE Section -->
   <section id="book" class="booking-section py-24">
     <div class="container mx-auto px-4 max-w-5xl relative z-10">
       
       <!-- Section Header -->
       <div class="text-center mb-12 animate-fade-in">
         <h2 class="text-5xl font-bold text-white mb-4 drop-shadow-lg">
-          <i class="fas fa-calendar-alt mr-3"></i> BOOK YOUR RIDE
+          <i class="fas fa-calendar-alt mr-3"></i> <span data-i18n="bookRideTitle">BOOK YOUR RIDE</span>
         </h2>
-        <p class="text-xl text-white/90 max-w-2xl mx-auto">
+        <p class="text-xl text-white/90 max-w-2xl mx-auto" data-i18n="bookRideSubtitle">
           Fill out the form below and we'll get back to you within minutes
         </p>
         <div class="w-24 h-1 bg-yellow-400 mx-auto mt-6 rounded-full"></div>
@@ -194,22 +193,22 @@
           <div class="flex items-center justify-center p-4 bg-gradient-to-r from-purple-50 to-blue-50 rounded-xl">
             <i class="fas fa-shield-alt text-3xl feature-icon mr-3"></i>
             <div>
-              <p class="font-bold text-gray-800">Safe & Secure</p>
-              <p class="text-xs text-gray-600">Licensed drivers</p>
+              <p class="font-bold text-gray-800" data-i18n="featureSafe">Safe & Secure</p>
+              <p class="text-xs text-gray-600" data-i18n="featureSafeSub">Licensed drivers</p>
             </div>
           </div>
           <div class="flex items-center justify-center p-4 bg-gradient-to-r from-purple-50 to-blue-50 rounded-xl">
             <i class="fas fa-clock text-3xl feature-icon mr-3"></i>
             <div>
-              <p class="font-bold text-gray-800">24/7 Available</p>
-              <p class="text-xs text-gray-600">Anytime, anywhere</p>
+              <p class="font-bold text-gray-800" data-i18n="feature247">24/7 Available</p>
+              <p class="text-xs text-gray-600" data-i18n="feature247Sub">Anytime, anywhere</p>
             </div>
           </div>
           <div class="flex items-center justify-center p-4 bg-gradient-to-r from-purple-50 to-blue-50 rounded-xl">
             <i class="fas fa-tag text-3xl feature-icon mr-3"></i>
             <div>
-              <p class="font-bold text-gray-800">Best Prices</p>
-              <p class="text-xs text-gray-600">Competitive rates</p>
+              <p class="font-bold text-gray-800" data-i18n="featurePrices">Best Prices</p>
+              <p class="text-xs text-gray-600" data-i18n="featurePricesSub">Competitive rates</p>
             </div>
           </div>
         </div>
@@ -220,34 +219,34 @@
           <div class="mb-8">
             <h3 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
               <i class="fas fa-user-circle text-purple-600 mr-3 text-3xl"></i>
-              <span class="form-label">Personal Information</span>
+              <span class="form-label" data-i18n="personalInfo">Personal Information</span>
             </h3>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div class="input-group">
                 <label class="block text-gray-700 text-sm font-bold mb-2">
-                  <i class="fas fa-user mr-2 text-purple-600"></i>Full Name *
+                  <i class="fas fa-user mr-2 text-purple-600"></i><span data-i18n="fullName">Full Name</span> *
                 </label>
                 <input type="text" name="clientName" required
                   class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-purple-500 focus:outline-none bg-gray-50 focus:bg-white transition"
-                  placeholder="John Doe">
+                  placeholder="John Doe" id="placeholderName">
               </div>
               <div class="input-group">
                 <label class="block text-gray-700 text-sm font-bold mb-2">
-                  <i class="fab fa-whatsapp mr-2 text-green-600"></i>WhatsApp Number *
+                  <i class="fab fa-whatsapp mr-2 text-green-600"></i><span data-i18n="whatsappNumber">WhatsApp Number</span> *
                 </label>
                 <input type="tel" name="clientPhone" required
                   class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-purple-500 focus:outline-none bg-gray-50 focus:bg-white transition"
-                  placeholder="868-XXX-XXXX">
+                  placeholder="868-XXX-XXXX" id="placeholderPhone">
               </div>
             </div>
             <div class="mt-6">
               <div class="input-group">
                 <label class="block text-gray-700 text-sm font-bold mb-2">
-                  <i class="fas fa-envelope mr-2 text-blue-600"></i>Email Address (Optional)
+                  <i class="fas fa-envelope mr-2 text-blue-600"></i><span data-i18n="emailAddress">Email Address</span> (<span data-i18n="optional">Optional</span>)
                 </label>
                 <input type="email" name="clientEmail"
                   class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-purple-500 focus:outline-none bg-gray-50 focus:bg-white transition"
-                  placeholder="example@email.com">
+                  placeholder="example@email.com" id="placeholderEmail">
               </div>
             </div>
           </div>
@@ -256,21 +255,21 @@
           <div class="mb-8">
             <h3 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
               <i class="fas fa-map-marked-alt text-purple-600 mr-3 text-3xl"></i>
-              <span class="form-label">Trip Details</span>
+              <span class="form-label" data-i18n="tripDetails">Trip Details</span>
             </h3>
             
             <!-- Pickup -->
             <div class="input-group mb-6">
               <label class="block text-gray-700 text-sm font-bold mb-2">
-                <i class="fas fa-map-marker-alt text-green-600 mr-2"></i>Pickup Location *
+                <i class="fas fa-map-marker-alt text-green-600 mr-2"></i><span data-i18n="pickupLocation">Pickup Location</span> *
               </label>
               <input type="text" id="pickupLocation" name="pickupAddressText" required
                 class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-purple-500 focus:outline-none bg-gray-50 focus:bg-white transition"
                 placeholder="Type place name (e.g., Hyatt Hotel, West Mall, Piarco Airport)"
-                onblur="autoDetectLocation('pickup')">
+                onblur="autoDetectLocation('pickup')" id="placeholderPickup">
               <p class="text-xs text-gray-500 mt-2">
                 <i class="fas fa-lightbulb text-yellow-500 mr-1"></i>
-                Type a place name - we'll auto-detect the area!
+                <span data-i18n="autoDetectHint">Type a place name - we'll auto-detect the area!</span>
               </p>
               <div id="pickupDetected" class="hidden mt-3 p-3 bg-green-50 text-green-700 rounded-lg text-sm border border-green-200 flex items-center">
                 <i class="fas fa-check-circle mr-2 text-lg"></i> <span id="pickupDetectedText"></span>
@@ -282,15 +281,15 @@
             <!-- Drop-off -->
             <div class="input-group mb-6">
               <label class="block text-gray-700 text-sm font-bold mb-2">
-                <i class="fas fa-flag-checkered text-red-600 mr-2"></i>Drop-off Location *
+                <i class="fas fa-flag-checkered text-red-600 mr-2"></i><span data-i18n="dropoffLocation">Drop-off Location</span> *
               </label>
               <input type="text" id="dropoffLocation" name="dropoffAddressText" required
                 class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-purple-500 focus:outline-none bg-gray-50 focus:bg-white transition"
                 placeholder="Type place name (e.g., Galleria Mall, Queen's Park Hotel)"
-                onblur="autoDetectLocation('dropoff')">
+                onblur="autoDetectLocation('dropoff')" id="placeholderDropoff">
               <p class="text-xs text-gray-500 mt-2">
                 <i class="fas fa-lightbulb text-yellow-500 mr-1"></i>
-                Type a place name - we'll auto-detect the area!
+                <span data-i18n="autoDetectHint">Type a place name - we'll auto-detect the area!</span>
               </p>
               <div id="dropoffDetected" class="hidden mt-3 p-3 bg-green-50 text-green-700 rounded-lg text-sm border border-green-200 flex items-center">
                 <i class="fas fa-check-circle mr-2 text-lg"></i> <span id="dropoffDetectedText"></span>
@@ -303,14 +302,14 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
               <div class="input-group">
                 <label class="block text-gray-700 text-sm font-bold mb-2">
-                  <i class="fas fa-calendar text-purple-600 mr-2"></i>Date *
+                  <i class="fas fa-calendar text-purple-600 mr-2"></i><span data-i18n="date">Date</span> *
                 </label>
                 <input type="date" name="bookDate" required
                   class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-purple-500 focus:outline-none bg-gray-50 focus:bg-white transition">
               </div>
               <div class="input-group">
                 <label class="block text-gray-700 text-sm font-bold mb-2">
-                  <i class="fas fa-clock text-purple-600 mr-2"></i>Time *
+                  <i class="fas fa-clock text-purple-600 mr-2"></i><span data-i18n="time">Time</span> *
                 </label>
                 <input type="time" name="bookTime" required
                   class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-purple-500 focus:outline-none bg-gray-50 focus:bg-white transition">
@@ -322,13 +321,13 @@
           <div class="mb-8">
             <h3 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
               <i class="fas fa-car text-purple-600 mr-3 text-3xl"></i>
-              <span class="form-label">Service Options</span>
+              <span class="form-label" data-i18n="serviceOptions">Service Options</span>
             </h3>
             
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
               <div class="input-group">
                 <label class="block text-gray-700 text-sm font-bold mb-2">
-                  <i class="fas fa-car-side text-blue-600 mr-2"></i>Vehicle Type *
+                  <i class="fas fa-car-side text-blue-600 mr-2"></i><span data-i18n="vehicleType">Vehicle Type</span> *
                 </label>
                 <select name="vehicleType" required
                   class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-purple-500 focus:outline-none bg-gray-50 focus:bg-white transition">
@@ -341,7 +340,7 @@
               </div>
               <div class="input-group">
                 <label class="block text-gray-700 text-sm font-bold mb-2">
-                  <i class="fas fa-concierge-bell text-purple-600 mr-2"></i>Service Type *
+                  <i class="fas fa-concierge-bell text-purple-600 mr-2"></i><span data-i18n="serviceType">Service Type</span> *
                 </label>
                 <select name="serviceType" required
                   class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-purple-500 focus:outline-none bg-gray-50 focus:bg-white transition">
@@ -355,7 +354,7 @@
             <!-- Waiting Time -->
             <div class="input-group mb-6">
               <label class="block text-gray-700 text-sm font-bold mb-2">
-                <i class="fas fa-hourglass-half text-orange-600 mr-2"></i>Waiting Time (hours)
+                <i class="fas fa-hourglass-half text-orange-600 mr-2"></i><span data-i18n="waitingTime">Waiting Time</span> (hours)
               </label>
               <input type="number" name="waitingTime" min="0" value="0"
                 class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-purple-500 focus:outline-none bg-gray-50 focus:bg-white transition"
@@ -367,7 +366,7 @@
           <div class="mb-8">
             <div class="input-group">
               <label class="block text-gray-700 text-sm font-bold mb-2">
-                <i class="fas fa-comment-alt text-purple-600 mr-2"></i>Additional Notes
+                <i class="fas fa-comment-alt text-purple-600 mr-2"></i><span data-i18n="additionalNotes">Additional Notes</span>
               </label>
               <textarea name="additionalNotes" rows="4"
                 class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-purple-500 focus:outline-none bg-gray-50 focus:bg-white transition"
@@ -381,7 +380,7 @@
               <input type="checkbox" name="isCarnival" class="form-checkbox h-5 w-5 text-yellow-600 rounded focus:ring-yellow-500">
               <span class="ml-3 text-gray-700 font-semibold">
                 <i class="fas fa-mask text-yellow-600 mr-2"></i>
-                This is a Carnival Event Booking (Minimum $400 TTD)
+                <span data-i18n="carnivalEvent">This is a Carnival Event Booking (Minimum $400 TTD)</span>
               </span>
             </label>
           </div>
@@ -390,7 +389,7 @@
           <button type="submit" id="submitBtn"
             class="submit-btn w-full text-white font-bold py-5 px-8 rounded-xl text-xl shadow-2xl flex items-center justify-center">
             <i class="fas fa-paper-plane mr-3 text-2xl"></i> 
-            <span>Submit Booking Request</span>
+            <span data-i18n="submitBooking">Submit Booking Request</span>
           </button>
         </form>
       </div>
@@ -411,18 +410,116 @@
     
     const translations = {
       en: {
-        bookRide: 'BOOK YOUR RIDE',
-        submitBooking: 'Submit Booking Request'
+        tagline: 'solving all your problems',
+        navHome: 'HOME',
+        navServices: 'SERVICES',
+        navBook: 'BOOK A RIDE',
+        navConfirm: 'CONFIRM BOOKING',
+        navContact: 'CONTACT US',
+        service247: '24/7 SERVICE',
+        whatsappUs: 'WHATSAPP US',
+        heroSubtitle: 'Professional Taxi & Transportation Services Across the Beautiful Islands of Trinidad and Tobago',
+        bookYourRide: 'BOOK YOUR RIDE',
+        callNow: 'CALL NOW',
+        bookRideTitle: 'BOOK YOUR RIDE',
+        bookRideSubtitle: 'Fill out the form below and we\'ll get back to you within minutes',
+        featureSafe: 'Safe & Secure',
+        featureSafeSub: 'Licensed drivers',
+        feature247: '24/7 Available',
+        feature247Sub: 'Anytime, anywhere',
+        featurePrices: 'Best Prices',
+        featurePricesSub: 'Competitive rates',
+        personalInfo: 'Personal Information',
+        fullName: 'Full Name',
+        whatsappNumber: 'WhatsApp Number',
+        emailAddress: 'Email Address',
+        optional: 'Optional',
+        tripDetails: 'Trip Details',
+        pickupLocation: 'Pickup Location',
+        dropoffLocation: 'Drop-off Location',
+        autoDetectHint: 'Type a place name - we\'ll auto-detect the area!',
+        date: 'Date',
+        time: 'Time',
+        serviceOptions: 'Service Options',
+        vehicleType: 'Vehicle Type',
+        serviceType: 'Service Type',
+        waitingTime: 'Waiting Time',
+        additionalNotes: 'Additional Notes',
+        carnivalEvent: 'This is a Carnival Event Booking (Minimum $400 TTD)',
+        submitBooking: 'Submit Booking Request',
+        placeholderName: 'John Doe',
+        placeholderPhone: '868-XXX-XXXX',
+        placeholderEmail: 'example@email.com',
+        placeholderPickup: 'Type place name (e.g., Hyatt Hotel, West Mall, Piarco Airport)',
+        placeholderDropoff: 'Type place name (e.g., Galleria Mall, Queen\'s Park Hotel)'
       },
       es: {
-        bookRide: 'RESERVAR AHORA',
-        submitBooking: 'Enviar Solicitud de Reserva'
+        tagline: 'resolviendo todos tus problemas',
+        navHome: 'INICIO',
+        navServices: 'SERVICIOS',
+        navBook: 'RESERVAR',
+        navConfirm: 'CONFIRMAR',
+        navContact: 'CONTACTO',
+        service247: 'SERVICIO 24/7',
+        whatsappUs: 'WHATSAPP',
+        heroSubtitle: 'Servicio Profesional de Taxi y Transporte en las Hermosas Islas de Trinidad y Tobago',
+        bookYourRide: 'RESERVAR AHORA',
+        callNow: 'LLAMAR',
+        bookRideTitle: 'RESERVAR VIAJE',
+        bookRideSubtitle: 'Complete el formulario y nos comunicaremos con usted en minutos',
+        featureSafe: 'Seguro y Protegido',
+        featureSafeSub: 'Conductores licenciados',
+        feature247: 'Disponible 24/7',
+        feature247Sub: 'En cualquier momento',
+        featurePrices: 'Mejores Precios',
+        featurePricesSub: 'Tarifas competitivas',
+        personalInfo: 'Información Personal',
+        fullName: 'Nombre Completo',
+        whatsappNumber: 'Número de WhatsApp',
+        emailAddress: 'Correo Electrónico',
+        optional: 'Opcional',
+        tripDetails: 'Detalles del Viaje',
+        pickupLocation: 'Lugar de Recogida',
+        dropoffLocation: 'Lugar de Destino',
+        autoDetectHint: 'Escribe un lugar - ¡detectaremos el área automáticamente!',
+        date: 'Fecha',
+        time: 'Hora',
+        serviceOptions: 'Opciones de Servicio',
+        vehicleType: 'Tipo de Vehículo',
+        serviceType: 'Tipo de Servicio',
+        waitingTime: 'Tiempo de Espera',
+        additionalNotes: 'Notas Adicionales',
+        carnivalEvent: 'Esta es una Reserva de Carnaval (Mínimo $400 TTD)',
+        submitBooking: 'Enviar Solicitud de Reserva',
+        placeholderName: 'Ingrese su nombre',
+        placeholderPhone: '868-XXX-XXXX',
+        placeholderEmail: 'ejemplo@email.com',
+        placeholderPickup: 'Ej: Hyatt Hotel, West Mall',
+        placeholderDropoff: 'Ej: Galleria Mall'
       }
     };
 
     function toggleLanguage() {
       currentLang = currentLang === 'en' ? 'es' : 'en';
       document.getElementById('langButton').textContent = currentLang.toUpperCase();
+      updateLanguage();
+    }
+
+    function updateLanguage() {
+      // Update all elements with data-i18n attribute
+      document.querySelectorAll('[data-i18n]').forEach(element => {
+        const key = element.getAttribute('data-i18n');
+        if (translations[currentLang][key]) {
+          element.textContent = translations[currentLang][key];
+        }
+      });
+      
+      // Update placeholders
+      document.getElementById('placeholderName').placeholder = translations[currentLang].placeholderName;
+      document.getElementById('placeholderPhone').placeholder = translations[currentLang].placeholderPhone;
+      document.getElementById('placeholderEmail').placeholder = translations[currentLang].placeholderEmail;
+      document.getElementById('placeholderPickup').placeholder = translations[currentLang].placeholderPickup;
+      document.getElementById('placeholderDropoff').placeholder = translations[currentLang].placeholderDropoff;
     }
 
     async function searchPlace(placeName) {
@@ -465,7 +562,7 @@
         const detectedDiv = document.getElementById(detectedId);
         const detectedText = document.getElementById(detectedTextId);
         
-        detectedText.textContent = '🔍 Searching...';
+        detectedText.textContent = currentLang === 'en' ? ' Searching...' : '🔍 Buscando...';
         detectedDiv.classList.remove('hidden');
         detectedDiv.className = 'mt-3 p-3 bg-blue-50 text-blue-700 rounded-lg text-sm border border-blue-200 flex items-center';
         
@@ -478,7 +575,8 @@
           detectedDiv.className = 'mt-3 p-3 bg-green-50 text-green-700 rounded-lg text-sm border border-green-200 flex items-center';
           document.getElementById(inputId).value = placeInfo.fullAddress;
         } else {
-          detectedText.textContent = '⚠️ Place not found. Please enter full address.';
+          const notFoundMsg = currentLang === 'en' ? '️ Place not found. Please enter full address.' : '⚠️ Lugar no encontrado. Ingrese la dirección completa.';
+          detectedText.textContent = notFoundMsg;
           detectedDiv.className = 'mt-3 p-3 bg-yellow-50 text-yellow-700 rounded-lg text-sm border border-yellow-200 flex items-center';
         }
       }
@@ -492,7 +590,8 @@
       
       const originalHTML = submitBtn.innerHTML;
       submitBtn.disabled = true;
-      submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-3 text-2xl"></i> <span>Submitting...</span>';
+      const loadingText = currentLang === 'en' ? 'Submitting...' : 'Enviando...';
+      submitBtn.innerHTML = `<i class="fas fa-spinner fa-spin mr-3 text-2xl"></i> <span>${loadingText}</span>`;
       
       const formData = new FormData(form);
       const params = new URLSearchParams();
@@ -510,18 +609,27 @@
         const result = await response.json();
         
         if (result.result === 'success') {
-          alert('✅ Booking submitted successfully! Your reference code: ' + result.refCode);
+          const successMsg = currentLang === 'en' 
+            ? '✅ Booking submitted successfully! Your reference code: ' 
+            : '✅ ¡Reserva enviada con éxito! Tu código de referencia: ';
+          alert(successMsg + result.refCode);
           form.reset();
           submitBtn.innerHTML = originalHTML;
           submitBtn.disabled = false;
         } else {
-          alert('Error submitting booking. Please try again.');
+          const errorMsg = currentLang === 'en' 
+            ? 'Error submitting booking. Please try again.' 
+            : 'Error al enviar la reserva. Intente nuevamente.';
+          alert(errorMsg);
           submitBtn.innerHTML = originalHTML;
           submitBtn.disabled = false;
         }
       } catch (error) {
         console.error('Error:', error);
-        alert('Network error. Please try again.');
+        const networkError = currentLang === 'en' 
+          ? 'Network error. Please try again.' 
+          : 'Error de red. Intente nuevamente.';
+        alert(networkError);
         submitBtn.innerHTML = originalHTML;
         submitBtn.disabled = false;
       }
