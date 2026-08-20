@@ -13,6 +13,7 @@
     .status-completed { background-color: #dcfce7; color: #166534; }
     .status-cancelled { background-color: #fee2e2; color: #991b1b; }
     .status-price-sent { background-color: #f3e8ff; color: #6b21a8; }
+    .card-hover:hover { transform: translateY(-2px); box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
   </style>
 </head>
 <body class="p-6">
@@ -21,12 +22,17 @@
     <!-- Header -->
     <div class="bg-white rounded-xl shadow-md p-6 mb-6 flex justify-between items-center">
       <div>
-        <h1 class="text-3xl font-bold text-gray-800">HKJ Logistics Admin</h1>
-        <p class="text-gray-500">Manage bookings and set prices</p>
+        <h1 class="text-3xl font-bold text-gray-800">🚗 HKJ Logistics Admin</h1>
+        <p class="text-gray-500">Manage bookings and communicate with clients</p>
       </div>
-      <button onclick="fetchBookings()" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-bold transition">
-        <i class="fas fa-sync-alt mr-2"></i> Refresh
-      </button>
+      <div class="flex gap-3">
+        <button onclick="generateReport()" class="bg-purple-600 hover:bg-purple-700 text-white px-6 py-2 rounded-lg font-bold transition shadow-md">
+          <i class="fas fa-chart-bar mr-2"></i> Report
+        </button>
+        <button onclick="fetchBookings()" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-bold transition shadow-md">
+          <i class="fas fa-sync-alt mr-2"></i> Refresh
+        </button>
+      </div>
     </div>
 
     <!-- Loading State -->
@@ -69,30 +75,6 @@
       }
     }
 
-    // Smart Pricing Logic
-    function calculateSuggestedPrice(pickup, dropoff) {
-      const p = (pickup || '').toLowerCase();
-      const d = (dropoff || '').toLowerCase();
-
-      // 1. Check for Airports (Higher fare)
-      if (p.includes('piarco') || d.includes('piarco') || p.includes('airport') || d.includes('airport')) {
-        return 400;
-      }
-
-      // 2. Check for common cities to determine zones
-      const cities = ['port of spain', 'chaguanas', 'san fernando', 'arima', 'point fortin', 'scarborough', 'tobago'];
-      let pCity = cities.find(c => p.includes(c)) || 'other';
-      let dCity = cities.find(c => d.includes(c)) || 'other';
-
-      // 3. Same city = lower fare
-      if (pCity === dCity) {
-        return 200;
-      }
-
-      // 4. Different cities = standard cross-town fare
-      return 350;
-    }
-
     function renderBookings(bookings) {
       const grid = document.getElementById('bookingsGrid');
       grid.innerHTML = '';
@@ -103,11 +85,8 @@
         const status = (booking.STATUS || 'Pending').toLowerCase().replace(' ', '-');
         const price = booking['FINAL PRICE'] || '';
         
-        // Calculate suggested price for the button
-        const suggestedPrice = calculateSuggestedPrice(booking['PICK UP'], booking['DROP OFF']);
-
         const card = document.createElement('div');
-        card.className = 'bg-white rounded-xl shadow-md p-6 border-l-4 border-blue-500';
+        card.className = 'bg-white rounded-xl shadow-md p-6 border-l-4 border-blue-500 card-hover transition-all duration-300';
         card.innerHTML = `
           <div class="flex justify-between items-start mb-4">
             <div>
@@ -120,79 +99,101 @@
           </div>
 
           <div class="space-y-3 mb-4 text-sm">
+            <div class="flex items-center text-gray-600">
+              <i class="fas fa-phone mr-2 text-blue-500"></i> 
+              <a href="tel:${booking.PHONE}" class="hover:text-blue-600">${booking.PHONE || 'N/A'}</a>
+            </div>
+            <div class="flex items-center text-gray-600">
+              <i class="fas fa-envelope mr-2 text-blue-500"></i> 
+              <a href="mailto:${booking.EMAIL}" class="hover:text-blue-600 truncate">${booking.EMAIL || 'N/A'}</a>
+            </div>
             <div class="flex items-start">
               <i class="fas fa-map-marker-alt text-green-500 mt-1 mr-2"></i>
               <div>
                 <p class="font-bold text-gray-700">Pickup:</p>
-                <p class="text-gray-600">${booking['PICK UP'] || 'N/A'}</p>
+                <p class="text-gray-600 text-xs">${booking['PICK UP'] || 'N/A'}</p>
               </div>
             </div>
             <div class="flex items-start">
               <i class="fas fa-flag-checkered text-red-500 mt-1 mr-2"></i>
               <div>
                 <p class="font-bold text-gray-700">Drop-off:</p>
-                <p class="text-gray-600">${booking['DROP OFF'] || 'N/A'}</p>
+                <p class="text-gray-600 text-xs">${booking['DROP OFF'] || 'N/A'}</p>
               </div>
             </div>
             <div class="flex items-center text-gray-600">
               <i class="fas fa-calendar-alt mr-2"></i> ${booking.DATE || 'N/A'} at ${booking.TIME || 'N/A'}
             </div>
-            <div class="flex items-center text-gray-600">
-              <i class="fas fa-phone mr-2"></i> ${booking.PHONE || 'N/A'}
-            </div>
-            ${booking.NOTES ? `<div class="bg-yellow-50 p-2 rounded text-yellow-800 text-xs"><i class="fas fa-sticky-note mr-1"></i> ${booking.NOTES}</div>` : ''}
+            ${booking.NOTES ? `<div class="bg-yellow-50 p-2 rounded text-yellow-800 text-xs border border-yellow-200"><i class="fas fa-sticky-note mr-1"></i> ${booking.NOTES.substring(0, 100)}${booking.NOTES.length > 100 ? '...' : ''}</div>` : ''}
           </div>
 
           <!-- Pricing Section -->
           <div class="border-t pt-4 mb-4">
             <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Final Price (TTD)</label>
-            <div class="flex gap-2">
+            <div class="flex gap-2 mb-3">
               <input type="number" id="price-${row}" value="${price}" placeholder="0.00" 
-                class="flex-1 p-2 border rounded-lg focus:outline-none focus:border-blue-500">
-              <button onclick="setSuggestedPrice(${row}, ${suggestedPrice})" 
-                class="bg-gray-200 hover:bg-gray-300 text-gray-700 px-3 py-2 rounded-lg text-xs font-bold transition" title="Auto-suggest price">
-                <i class="fas fa-magic"></i>
-              </button>
+                class="flex-1 p-2 border rounded-lg focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200">
+              <button onclick="quickSetPrice(${row}, 200)" class="bg-gray-200 hover:bg-gray-300 text-gray-700 px-2 py-1 rounded text-xs font-bold" title="$200">200</button>
+              <button onclick="quickSetPrice(${row}, 350)" class="bg-gray-200 hover:bg-gray-300 text-gray-700 px-2 py-1 rounded text-xs font-bold" title="$350">350</button>
+              <button onclick="quickSetPrice(${row}, 400)" class="bg-gray-200 hover:bg-gray-300 text-gray-700 px-2 py-1 rounded text-xs font-bold" title="$400">400</button>
             </div>
           </div>
 
-          <!-- Action Buttons -->
-          <div class="grid grid-cols-2 gap-2">
-            <button onclick="updatePrice(${row})" class="bg-green-600 hover:bg-green-700 text-white py-2 rounded-lg font-bold text-sm transition">
-              <i class="fas fa-paper-plane mr-1"></i> Send Price
+          <!-- Action Buttons Grid -->
+          <div class="grid grid-cols-2 gap-2 mb-3">
+            <button onclick="sendPriceEmail(${row})" class="bg-blue-600 hover:bg-blue-700 text-white py-2 px-3 rounded-lg font-bold text-sm transition shadow-md flex items-center justify-center">
+              <i class="fas fa-envelope mr-1"></i> <span class="hidden sm:inline">Email</span>
             </button>
-            <a href="${booking['WHATSAPP LINK'] || '#'}" target="_blank" class="bg-[#25D366] hover:bg-[#128C7E] text-white py-2 rounded-lg font-bold text-sm transition text-center flex items-center justify-center">
-              <i class="fab fa-whatsapp mr-1"></i> WhatsApp
-            </a>
+            <button onclick="sendWhatsApp(${row})" class="bg-green-500 hover:bg-green-600 text-white py-2 px-3 rounded-lg font-bold text-sm transition shadow-md flex items-center justify-center">
+              <i class="fab fa-whatsapp mr-1"></i> <span class="hidden sm:inline">WhatsApp</span>
+            </button>
           </div>
 
-          <!-- Status Update -->
-          <div class="mt-4">
+          <!-- Status Update Dropdown -->
+          <div class="mb-3">
             <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Update Status</label>
-            <select onchange="updateStatus(${row}, this.value)" class="w-full p-2 border rounded-lg focus:outline-none focus:border-blue-500">
-              <option value="Pending" ${booking.STATUS === 'Pending' ? 'selected' : ''}>Pending</option>
-              <option value="Confirmed" ${booking.STATUS === 'Confirmed' ? 'selected' : ''}>Confirmed</option>
-              <option value="Price Sent" ${booking.STATUS === 'Price Sent' ? 'selected' : ''}>Price Sent</option>
-              <option value="Completed" ${booking.STATUS === 'Completed' ? 'selected' : ''}>Completed</option>
-              <option value="Cancelled" ${booking.STATUS === 'Cancelled' ? 'selected' : ''}>Cancelled</option>
+            <select onchange="updateStatus(${row}, this.value)" class="w-full p-2 border rounded-lg focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 text-sm">
+              <option value="Pending" ${booking.STATUS === 'Pending' ? 'selected' : ''}>🔄 Pending</option>
+              <option value="Price Sent" ${booking.STATUS === 'Price Sent' ? 'selected' : ''}>💰 Price Sent</option>
+              <option value="Confirmed" ${booking.STATUS === 'Confirmed' ? 'selected' : ''}>✅ Confirmed</option>
+              <option value="Completed" ${booking.STATUS === 'Completed' ? 'selected' : ''}>✔️ Completed</option>
+              <option value="Cancelled" ${booking.STATUS === 'Cancelled' ? 'selected' : ''}>❌ Cancelled</option>
             </select>
+          </div>
+
+          <!-- Quick Actions -->
+          <div class="border-t pt-3 mt-3">
+            <div class="grid grid-cols-3 gap-2">
+              <button onclick="updateStatus(${row}, 'Confirmed')" class="bg-blue-100 hover:bg-blue-200 text-blue-700 py-2 rounded-lg font-bold text-xs transition">
+                <i class="fas fa-check mr-1"></i> Confirm
+              </button>
+              <button onclick="updateStatus(${row}, 'Completed')" class="bg-green-100 hover:bg-green-200 text-green-700 py-2 rounded-lg font-bold text-xs transition">
+                <i class="fas fa-check-double mr-1"></i> Complete
+              </button>
+              <button onclick="updateStatus(${row}, 'Pending')" class="bg-yellow-100 hover:bg-yellow-200 text-yellow-700 py-2 rounded-lg font-bold text-xs transition">
+                <i class="fas fa-undo mr-1"></i> Pending
+              </button>
+            </div>
           </div>
         `;
         grid.appendChild(card);
       });
     }
 
-    function setSuggestedPrice(row, price) {
+    function quickSetPrice(row, price) {
       document.getElementById(`price-${row}`).value = price;
     }
 
-    async function updatePrice(row) {
+    async function sendPriceEmail(row) {
       const price = document.getElementById(`price-${row}`).value;
-      if (!price) return alert('Please enter a price.');
+      if (!price) {
+        alert('Please enter a price first.');
+        return;
+      }
 
-      const btn = event.target;
-      const originalText = btn.innerHTML;
-      btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
+      const btn = event.target.closest('button');
+      const originalHTML = btn.innerHTML;
+      btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
       btn.disabled = true;
 
       try {
@@ -206,20 +207,79 @@
         });
         const result = await response.json();
         if (result.success) {
-          alert('Price sent to client successfully!');
-          fetchBookings(); // Refresh to show updated status
+          alert('✅ Price email sent successfully!');
+          fetchBookings();
         } else {
-          alert('Error sending price.');
+          alert('Error sending email.');
         }
       } catch (error) {
         alert('Network error.');
       } finally {
-        btn.innerHTML = originalText;
+        btn.innerHTML = originalHTML;
+        btn.disabled = false;
+      }
+    }
+
+    async function sendWhatsApp(row) {
+      const btn = event.target.closest('button');
+      const originalHTML = btn.innerHTML;
+      btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+      btn.disabled = true;
+
+      try {
+        // Fetch booking details
+        const response = await fetch(APPS_SCRIPT_URL);
+        const data = await response.json();
+        const booking = data.bookings.find(b => b._rowNumber === row);
+        
+        if (booking) {
+          const phone = booking.PHONE || '';
+          const refCode = booking['REF CODE'] || '';
+          const clientName = booking.NAME || '';
+          const price = booking['FINAL PRICE'] || 'TBD';
+          const pickup = booking['PICK UP'] || '';
+          
+          // Clean phone number
+          const cleanPhone = phone.toString().replace(/\D/g, '');
+          
+          // Create message
+          let message = `Hello ${clientName},\n\n`;
+          message += `Your booking ${refCode} has been confirmed!\n`;
+          message += `Final Price: $${price} TTD\n`;
+          message += `Pickup: ${pickup}\n\n`;
+          message += `Please confirm your booking:\n`;
+          message += `https://hkjlogisticsltdtt.vercel.app/confirm.html?code=${refCode}\n\n`;
+          message += `Thank you,\nHKJ Logistics Ltd\n+1 (868) 780-0300`;
+          
+          // Open WhatsApp
+          const whatsappUrl = `https://wa.me/1${cleanPhone}?text=${encodeURIComponent(message)}`;
+          window.open(whatsappUrl, '_blank');
+          
+          // Update status to Price Sent
+          await fetch(APPS_SCRIPT_URL, {
+            method: 'POST',
+            body: new URLSearchParams({
+              action: 'updateStatus',
+              row: row,
+              status: 'Price Sent'
+            })
+          });
+          
+          alert('✅ WhatsApp opened! Status updated to Price Sent.');
+          fetchBookings();
+        }
+      } catch (error) {
+        alert('Error sending WhatsApp message.');
+      } finally {
+        btn.innerHTML = originalHTML;
         btn.disabled = false;
       }
     }
 
     async function updateStatus(row, status) {
+      const originalText = event.target.innerHTML;
+      event.target.disabled = true;
+
       try {
         const response = await fetch(APPS_SCRIPT_URL, {
           method: 'POST',
@@ -231,10 +291,60 @@
         });
         const result = await response.json();
         if (result.success) {
-          fetchBookings(); // Refresh to update the badge color
+          fetchBookings();
+        } else {
+          alert('Error updating status.');
         }
       } catch (error) {
-        alert('Error updating status.');
+        alert('Network error.');
+      } finally {
+        event.target.disabled = false;
+      }
+    }
+
+    async function generateReport() {
+      try {
+        const response = await fetch(APPS_SCRIPT_URL);
+        const data = await response.json();
+        
+        if (data.success) {
+          const bookings = data.bookings;
+          
+          let pending = 0, confirmed = 0, completed = 0, cancelled = 0, priceSent = 0;
+          let totalRevenue = 0;
+          
+          bookings.forEach(b => {
+            const status = b.STATUS || 'Pending';
+            const price = parseFloat(b['FINAL PRICE']) || 0;
+            
+            if (status === 'Pending') pending++;
+            else if (status === 'Price Sent') priceSent++;
+            else if (status === 'Confirmed') confirmed++;
+            else if (status === 'Completed') completed++;
+            else if (status === 'Cancelled') cancelled++;
+            
+            if (price && ['Completed', 'Confirmed', 'Price Sent'].includes(status)) {
+              totalRevenue += price;
+            }
+          });
+          
+          const report = `📊 HKJ Logistics Report\n\n` +
+            `📈 BOOKING STATUS:\n` +
+            `─────────────────\n` +
+            `Total Bookings: ${bookings.length}\n` +
+            `⏳ Pending: ${pending}\n` +
+            ` Price Sent: ${priceSent}\n` +
+            `✅ Confirmed: ${confirmed}\n` +
+            `✔️ Completed: ${completed}\n` +
+            `❌ Cancelled: ${cancelled}\n\n` +
+            `💵 TOTAL REVENUE: $${totalRevenue.toFixed(2)} TTD\n` +
+            `─────────────────\n` +
+            `Generated: ${new Date().toLocaleString()}`;
+          
+          alert(report);
+        }
+      } catch (error) {
+        alert('Error generating report.');
       }
     }
 
