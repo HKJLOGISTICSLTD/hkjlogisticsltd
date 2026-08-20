@@ -518,7 +518,7 @@
       bookings.reverse().forEach(booking => {
         const row = booking._rowNumber;
         const status = (booking.STATUS || 'Pending').toLowerCase().replace(' ', '-');
-        const price = booking['FINAL PRICE'];
+        const price = booking['FINAL PRICE'] || booking['FARES'];
         
         const autoPrice = calculateAutoPrice(booking['PICK UP'], booking['DROP OFF']);
         
@@ -655,14 +655,12 @@
       document.getElementById('editPhone').value = booking.PHONE || '';
       document.getElementById('editEmail').value = booking.EMAIL || '';
       
-      // Format date
       let dateStr = booking.DATE || '';
       if (dateStr && dateStr.includes('T')) {
         dateStr = dateStr.split('T')[0];
       }
       document.getElementById('editDate').value = dateStr;
       
-      // Format time
       let timeStr = booking.TIME || '';
       if (timeStr && timeStr.includes('T')) {
         const timeParts = timeStr.split('T')[1];
@@ -674,7 +672,7 @@
       document.getElementById('editDropoff').value = booking['DROP OFF'] || '';
       document.getElementById('editVehicle').value = booking['VEHICLE TYPE'] || '';
       document.getElementById('editService').value = booking['SERVICE TYPE'] || '';
-      document.getElementById('editPrice').value = booking['FINAL PRICE'] || '';
+      document.getElementById('editPrice').value = booking['FINAL PRICE'] || booking['FARES'] || '';
       document.getElementById('editPayment').value = booking['PAYMENT METHOD'] || '';
       document.getElementById('editNotes').value = booking.NOTES || '';
       
@@ -802,7 +800,7 @@
 
       const btn = event.target.closest('button');
       const originalHTML = btn.innerHTML;
-      btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+      btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
       btn.disabled = true;
 
       try {
@@ -838,10 +836,27 @@
 
       const btn = event.target.closest('button');
       const originalHTML = btn.innerHTML;
-      btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+      btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Preparing...';
       btn.disabled = true;
 
       try {
+        const saveResponse = await fetch(APPS_SCRIPT_URL, {
+          method: 'POST',
+          body: new URLSearchParams({
+            action: 'updatePrice',
+            row: row,
+            price: price
+          })
+        });
+        const saveResult = await saveResponse.json();
+        
+        if (!saveResult.success) {
+          alert('Error saving price to sheet.');
+          btn.innerHTML = originalHTML;
+          btn.disabled = false;
+          return;
+        }
+
         const response = await fetch(APPS_SCRIPT_URL);
         const data = await response.json();
         const booking = data.bookings.find(b => b._rowNumber === row);
@@ -860,8 +875,8 @@
           message += `Your HKJ Logistics booking ${refCode} is ready for review!\n`;
           message += `📅 Date: ${date} at ${time}\n`;
           message += `📍 Pickup: ${pickup}\n`;
-          message += ` Final Price: $${price} TTD\n\n`;
-          message += `📋 HOW IT WORKS:\n`;
+          message += `💰 Final Price: $${price} TTD\n\n`;
+          message += ` HOW IT WORKS:\n`;
           message += `1. We received your request.\n`;
           message += `2. This is your personalized quote.\n`;
           message += `3. Click the link below to accept and confirm!\n\n`;
@@ -871,20 +886,11 @@
           const whatsappUrl = `https://wa.me/1${cleanPhone}?text=${encodeURIComponent(message)}`;
           window.open(whatsappUrl, '_blank');
           
-          await fetch(APPS_SCRIPT_URL, {
-            method: 'POST',
-            body: new URLSearchParams({
-              action: 'updateStatus',
-              row: row,
-              status: 'Price Sent'
-            })
-          });
-          
-          alert('✅ WhatsApp opened! Status updated to Price Sent.');
+          alert('✅ WhatsApp opened with pre-filled message! Price saved to sheet.');
           fetchBookings();
         }
       } catch (error) {
-        alert('Error sending WhatsApp message.');
+        alert('Error preparing WhatsApp message.');
       } finally {
         btn.innerHTML = originalHTML;
         btn.disabled = false;
@@ -930,7 +936,7 @@
           
           bookings.forEach(b => {
             const status = b.STATUS || 'Pending';
-            const price = parseFloat(b['FINAL PRICE']) || 0;
+            const price = parseFloat(b['FINAL PRICE'] || b['FARES']) || 0;
             
             if (status === 'Pending') pending++;
             else if (status === 'Price Sent') priceSent++;
@@ -944,15 +950,15 @@
           });
           
           const report = `📊 HKJ Logistics Report\n\n` +
-            ` BOOKING STATUS:\n` +
+            `📈 BOOKING STATUS:\n` +
             `─────────────────\n` +
             `Total Bookings: ${bookings.length}\n` +
-            `⏳ Pending: ${pending}\n` +
+            ` Pending: ${pending}\n` +
             `💰 Price Sent: ${priceSent}\n` +
             `✅ Confirmed: ${confirmed}\n` +
             `✔️ Completed: ${completed}\n` +
-            ` Cancelled: ${cancelled}\n\n` +
-            `💵 TOTAL REVENUE: $${totalRevenue.toFixed(2)} TTD\n` +
+            `❌ Cancelled: ${cancelled}\n\n` +
+            ` TOTAL REVENUE: $${totalRevenue.toFixed(2)} TTD\n` +
             `─────────────────\n` +
             `Generated: ${new Date().toLocaleString()}`;
           
