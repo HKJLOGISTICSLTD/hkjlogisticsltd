@@ -107,9 +107,10 @@
       backdrop-filter: blur(20px);
     }
     
-    /* Price Dropdown */
+    /* Compact Price Dropdown */
     .price-dropdown {
       position: relative;
+      display: inline-block;
     }
     .price-dropdown-content {
       display: none;
@@ -118,11 +119,12 @@
       right: 0;
       margin-top: 0.5rem;
       background: white;
-      border-radius: 0.75rem;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+      border-radius: 0.5rem;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
       z-index: 50;
-      min-width: 160px;
+      min-width: 120px;
       overflow: hidden;
+      border: 1px solid #e5e7eb;
     }
     .price-dropdown-content.show {
       display: block;
@@ -133,11 +135,15 @@
       to { opacity: 1; transform: translateY(0); }
     }
     .price-option {
-      padding: 0.75rem 1rem;
+      padding: 0.5rem 0.75rem;
       cursor: pointer;
       transition: all 0.2s ease;
       font-weight: 600;
+      font-size: 0.875rem;
       color: #374151;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
     }
     .price-option:hover {
       background: linear-gradient(135deg, #fef3c7, #fde68a);
@@ -355,31 +361,34 @@
             ${booking.NOTES ? `<div class="bg-yellow-50 p-3 rounded-lg text-yellow-800 text-xs border border-yellow-200"><i class="fas fa-sticky-note mr-2 text-yellow-600"></i> ${booking.NOTES.substring(0, 100)}${booking.NOTES.length > 100 ? '...' : ''}</div>` : ''}
           </div>
 
-          <!-- Pricing Section with Dropdown -->
+          <!-- Pricing Section with Compact Dropdown -->
           <div class="border-t pt-4 mb-4 bg-gradient-to-r from-gray-50 to-gray-100 p-4 rounded-xl">
             <label class="block text-xs font-bold text-gray-600 uppercase mb-2">Final Price (TTD)</label>
-            <div class="flex items-center gap-3 mb-3">
+            <div class="flex items-center gap-2 mb-3">
               <input type="number" id="price-${row}" value="${price}" placeholder="0.00" 
-                class="flex-1 p-3 border-2 border-gray-200 rounded-xl focus:outline-none input-focus transition font-bold text-lg">
+                class="flex-1 p-2.5 border-2 border-gray-200 rounded-lg focus:outline-none input-focus transition font-bold text-base">
               
-              <!-- Price Dropdown -->
+              <!-- Compact Price Dropdown -->
               <div class="price-dropdown">
                 <button onclick="togglePriceDropdown(${row})" 
-                  class="bg-gradient-to-r from-yellow-400 to-yellow-500 hover:from-yellow-500 hover:to-yellow-600 text-black font-bold py-3 px-4 rounded-xl shadow-md transition flex items-center gap-2">
+                  class="bg-gradient-to-r from-yellow-400 to-yellow-500 hover:from-yellow-500 hover:to-yellow-600 text-black font-bold py-2 px-3 rounded-lg shadow-md transition text-sm flex items-center gap-1">
                   <i class="fas fa-tags"></i>
-                  <span>Quick Set</span>
+                  <span class="hidden sm:inline">Quick</span>
                   <i class="fas fa-chevron-down text-xs"></i>
                 </button>
                 
                 <div id="priceDropdown-${row}" class="price-dropdown-content">
                   <div class="price-option" onclick="setQuickPrice(${row}, 200)">
-                    <i class="fas fa-dollar-sign text-green-600 mr-2"></i>$200 TTD
+                    <span>$200</span>
+                    <i class="fas fa-check text-green-600 opacity-0 hover:opacity-100"></i>
                   </div>
                   <div class="price-option" onclick="setQuickPrice(${row}, 350)">
-                    <i class="fas fa-dollar-sign text-blue-600 mr-2"></i>$350 TTD
+                    <span>$350</span>
+                    <i class="fas fa-check text-blue-600 opacity-0 hover:opacity-100"></i>
                   </div>
                   <div class="price-option" onclick="setQuickPrice(${row}, 400)">
-                    <i class="fas fa-dollar-sign text-purple-600 mr-2"></i>$400 TTD
+                    <span>$400</span>
+                    <i class="fas fa-check text-purple-600 opacity-0 hover:opacity-100"></i>
                   </div>
                 </div>
               </div>
@@ -388,10 +397,10 @@
 
           <!-- Action Buttons Grid -->
           <div class="grid grid-cols-2 gap-3 mb-3">
-            <button onclick="sendPriceEmail(${row})" class="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white py-3 px-4 rounded-xl font-bold text-sm transition shadow-lg flex items-center justify-center">
+            <button onclick="sendPriceEmail(${row})" class="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white py-2.5 px-4 rounded-xl font-bold text-sm transition shadow-lg flex items-center justify-center">
               <i class="fas fa-envelope mr-2"></i> Email
             </button>
-            <button onclick="sendWhatsApp(${row})" class="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white py-3 px-4 rounded-xl font-bold text-sm transition shadow-lg flex items-center justify-center">
+            <button onclick="sendWhatsApp(${row})" class="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white py-2.5 px-4 rounded-xl font-bold text-sm transition shadow-lg flex items-center justify-center">
               <i class="fab fa-whatsapp mr-2"></i> WhatsApp
             </button>
           </div>
@@ -399,7 +408,7 @@
           <!-- Status Update Dropdown -->
           <div class="mb-3">
             <label class="block text-xs font-bold text-gray-600 uppercase mb-2">Update Status</label>
-            <select onchange="updateStatus(${row}, this.value)" class="w-full p-3 border-2 border-gray-200 rounded-xl focus:outline-none input-focus transition text-sm font-medium bg-white">
+            <select onchange="updateStatus(${row}, this.value)" class="w-full p-2.5 border-2 border-gray-200 rounded-lg focus:outline-none input-focus transition text-sm font-medium bg-white">
               <option value="Pending" ${booking.STATUS === 'Pending' ? 'selected' : ''}>🔄 Pending</option>
               <option value="Price Sent" ${booking.STATUS === 'Price Sent' ? 'selected' : ''}>💰 Price Sent</option>
               <option value="Confirmed" ${booking.STATUS === 'Confirmed' ? 'selected' : ''}>✅ Confirmed</option>
@@ -411,13 +420,13 @@
           <!-- Quick Actions -->
           <div class="border-t pt-3 mt-3">
             <div class="grid grid-cols-3 gap-2">
-              <button onclick="updateStatus(${row}, 'Confirmed')" class="bg-gradient-to-r from-blue-100 to-blue-200 hover:from-blue-200 hover:to-blue-300 text-blue-700 py-2 rounded-xl font-bold text-xs transition shadow-sm">
+              <button onclick="updateStatus(${row}, 'Confirmed')" class="bg-gradient-to-r from-blue-100 to-blue-200 hover:from-blue-200 hover:to-blue-300 text-blue-700 py-2 rounded-lg font-bold text-xs transition shadow-sm">
                 <i class="fas fa-check mr-1"></i> Confirm
               </button>
-              <button onclick="updateStatus(${row}, 'Completed')" class="bg-gradient-to-r from-green-100 to-green-200 hover:from-green-200 hover:to-green-300 text-green-700 py-2 rounded-xl font-bold text-xs transition shadow-sm">
+              <button onclick="updateStatus(${row}, 'Completed')" class="bg-gradient-to-r from-green-100 to-green-200 hover:from-green-200 hover:to-green-300 text-green-700 py-2 rounded-lg font-bold text-xs transition shadow-sm">
                 <i class="fas fa-check-double mr-1"></i> Complete
               </button>
-              <button onclick="updateStatus(${row}, 'Pending')" class="bg-gradient-to-r from-yellow-100 to-yellow-200 hover:from-yellow-200 hover:to-yellow-300 text-yellow-700 py-2 rounded-xl font-bold text-xs transition shadow-sm">
+              <button onclick="updateStatus(${row}, 'Pending')" class="bg-gradient-to-r from-yellow-100 to-yellow-200 hover:from-yellow-200 hover:to-yellow-300 text-yellow-700 py-2 rounded-lg font-bold text-xs transition shadow-sm">
                 <i class="fas fa-undo mr-1"></i> Pending
               </button>
             </div>
@@ -428,7 +437,14 @@
     }
 
     function togglePriceDropdown(row) {
+      event.stopPropagation();
       const dropdown = document.getElementById(`priceDropdown-${row}`);
+      
+      // Close all other dropdowns
+      document.querySelectorAll('.price-dropdown-content').forEach(d => {
+        if (d !== dropdown) d.classList.remove('show');
+      });
+      
       dropdown.classList.toggle('show');
     }
 
@@ -607,7 +623,7 @@
             }
           });
           
-          const report = ` HKJ Logistics Report\n\n` +
+          const report = `📊 HKJ Logistics Report\n\n` +
             `📈 BOOKING STATUS:\n` +
             `─────────────────\n` +
             `Total Bookings: ${bookings.length}\n` +
