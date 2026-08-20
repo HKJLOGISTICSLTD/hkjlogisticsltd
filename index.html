@@ -1,457 +1,380 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HKJ Logistics Ltd | Reliable. Safe. On Time.</title>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Open Sans', sans-serif; background: #000; color: #fff; overflow-x: hidden; }
-        .header { background: #000; padding: 1rem 2rem; position: sticky; top: 0; z-index: 1000; border-bottom: 2px solid #FFD700; }
-        .header-container { max-width: 1400px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; }
-        .logo { display: flex; align-items: center; gap: 0.5rem; }
-        .logo-icon { width: 60px; height: 60px; background: #000; border: 3px solid #FFD700; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: 'Montserrat', sans-serif; font-weight: 900; font-size: 1.2rem; color: #fff; }
-        .logo-text { display: flex; flex-direction: column; }
-        .logo-text .company { font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: 1.2rem; color: #fff; }
-        .logo-text .company span { color: #FFD700; }
-        .logo-text .tagline { font-size: 0.7rem; color: #4A90E2; font-style: italic; }
-        .nav-menu { display: flex; gap: 2rem; list-style: none; }
-        .nav-menu a { color: #fff; text-decoration: none; font-family: 'Montserrat', sans-serif; font-weight: 600; font-size: 0.9rem; transition: color 0.3s; }
-        .nav-menu a:hover, .nav-menu a.active { color: #FFD700; }
-        .header-contact { display: flex; align-items: center; gap: 1.5rem; }
-        .phone-info { display: flex; align-items: center; gap: 0.75rem; }
-        .phone-icon { width: 50px; height: 50px; background: #FFD700; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; color: #000; }
-        .phone-details { display: flex; flex-direction: column; }
-        .phone-number { font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: 1.1rem; color: #fff; }
-        .phone-label { font-size: 0.75rem; color: #FFD700; font-weight: 600; }
-        .btn-whatsapp-header { background: #FFD700; color: #000; padding: 0.75rem 1.5rem; border-radius: 6px; font-family: 'Montserrat', sans-serif; font-weight: 700; text-decoration: none; display: flex; align-items: center; gap: 0.5rem; transition: all 0.3s; }
-        .btn-whatsapp-header:hover { background: #FFC107; transform: translateY(-2px); }
-        .mobile-menu-btn { display: none; background: #FFD700; border: none; color: #000; width: 44px; height: 44px; border-radius: 8px; font-size: 1.2rem; cursor: pointer; }
-        .lang-toggle { background: transparent; border: 2px solid #FFD700; color: #FFD700; padding: 0.5rem 1rem; border-radius: 20px; font-weight: 700; cursor: pointer; font-size: 0.9rem; display: flex; align-items: center; gap: 0.5rem; }
-        .lang-toggle:hover { background: #FFD700; color: #000; }
-        .hero { background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.6)), url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1920&q=80'); background-size: cover; background-position: center; background-attachment: fixed; padding: 6rem 2rem; position: relative; overflow: hidden; text-align: center; }
-        .hero-container { max-width: 1000px; margin: 0 auto; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-        .hero-content { z-index: 2; width: 100%; }
-        .hero-title { font-family: 'Montserrat', sans-serif; font-weight: 900; font-size: 4.5rem; line-height: 1.1; margin-bottom: 1.5rem; color: #fff; text-shadow: 3px 3px 15px rgba(0,0,0,0.9); }
-        .hero-title .highlight { color: #FFD700; text-shadow: 3px 3px 15px rgba(0,0,0,0.9); }
-        .hero-subtitle { font-size: 1.3rem; margin-bottom: 2.5rem; line-height: 1.6; max-width: 800px; margin-left: auto; margin-right: auto; color: #fff; text-shadow: 2px 2px 10px rgba(0,0,0,0.9); }
-        .hero-buttons { display: flex; gap: 1rem; flex-wrap: wrap; margin-bottom: 2.5rem; justify-content: center; }
-        .btn-hero { padding: 1.25rem 2rem; border-radius: 8px; font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: 1.1rem; text-decoration: none; display: flex; align-items: center; gap: 0.75rem; transition: all 0.3s; border: none; cursor: pointer; }
-        .btn-book { background: #FFD700; color: #000; }
-        .btn-book:hover { background: #FFC107; transform: translateY(-3px); box-shadow: 0 10px 20px rgba(255,215,0,0.3); }
-        .btn-whatsapp-hero { background: #25D366; color: #fff; }
-        .btn-whatsapp-hero:hover { background: #128C7E; transform: translateY(-3px); box-shadow: 0 10px 20px rgba(37,211,102,0.3); }
-        .btn-call-hero { background: #0066CC; color: #fff; }
-        .btn-call-hero:hover { background: #0052A3; transform: translateY(-3px); box-shadow: 0 10px 20px rgba(0,102,204,0.3); }
-        .trust-badges { display: flex; gap: 2rem; flex-wrap: wrap; justify-content: center; }
-        .trust-badge { display: flex; align-items: center; gap: 0.5rem; font-size: 0.9rem; font-weight: 600; color: #fff; text-shadow: 2px 2px 8px rgba(0,0,0,0.9); }
-        .trust-badge i { color: #FFD700; font-size: 1.2rem; }
-        .services { background: #fff; padding: 4rem 2rem; color: #000; }
-        .services-container { max-width: 1400px; margin: 0 auto; }
-        .section-title { text-align: center; font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: 2.5rem; margin-bottom: 3rem; }
-        .section-title span { color: #FFD700; }
-        .services-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 2rem; }
-        .service-card { background: #fff; padding: 2rem; border-radius: 12px; text-align: center; border: 2px solid #f0f0f0; transition: all 0.3s; }
-        .service-card:hover { border-color: #FFD700; transform: translateY(-5px); box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
-        .service-icon { width: 70px; height: 70px; background: #000; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem; font-size: 1.75rem; color: #FFD700; }
-        .service-card h3 { font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: 1.1rem; margin-bottom: 0.75rem; }
-        .service-card p { font-size: 0.9rem; line-height: 1.6; color: #666; }
-        .footer-contact { background: #000; padding: 2rem; border-top: 3px solid #FFD700; }
-        .footer-container { max-width: 1400px; margin: 0 auto; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 2rem; }
-        .footer-item { display: flex; align-items: center; gap: 1rem; }
-        .footer-icon { width: 50px; height: 50px; background: #FFD700; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; color: #000; flex-shrink: 0; }
-        .footer-details h4 { font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: 0.85rem; color: #FFD700; margin-bottom: 0.25rem; }
-        .footer-details p { font-size: 0.9rem; color: #fff; }
-        .footer-details .sub { font-size: 0.75rem; color: #999; }
-        .booking { background: #f5f5f5; padding: 4rem 2rem; }
-        .booking-container { max-width: 900px; margin: 0 auto; }
-        .booking-widget { background: #fff; padding: 2.5rem; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
-        .booking-widget h2 { font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: 2rem; margin-bottom: 1.5rem; color: #000; text-align: center; }
-        .booking-widget h2 span { color: #FFD700; }
-        .form-group { margin-bottom: 1.5rem; }
-        .form-group label { display: block; margin-bottom: 0.75rem; font-weight: 700; color: #333; font-size: 1.15rem; }
-        .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 1.25rem; border: 2px solid #e0e0e0; border-radius: 10px; font-family: inherit; font-size: 1.2rem; transition: border-color 0.3s; background: #fff; color: #000; box-sizing: border-box; }
-        .form-group input:focus, .form-group select:focus, .form-group textarea:focus { outline: none; border-color: #FFD700; }
-        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
-        .location-method { background: #f0f0f0; padding: 1.5rem; border-radius: 10px; margin-bottom: 1.5rem; }
-        .location-method h4 { color: #333; margin-bottom: 1rem; font-size: 1.15rem; display: flex; align-items: center; gap: 0.5rem; }
-        .method-content { display: block; margin-bottom: 1rem; }
-        .method-content input[type="text"], .method-content select { width: 100% !important; padding: 1.25rem !important; font-size: 1.2rem !important; border: 2px solid #e0e0e0 !important; border-radius: 10px !important; box-sizing: border-box !important; margin-top: 0.5rem; background: #fff; color: #000; }
-        .btn-submit { width: 100%; padding: 1.5rem; background: #DC2626; color: #fff; border: none; border-radius: 8px; font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: 1.3rem; cursor: pointer; transition: all 0.3s; display: flex; align-items: center; justify-content: center; gap: 0.5rem; text-transform: uppercase; box-shadow: 0 4px 15px rgba(220, 38, 38, 0.4); animation: pulse 2s infinite; }
-        .btn-submit:hover { background: #B91C1C; transform: translateY(-2px); box-shadow: 0 6px 20px rgba(220, 38, 38, 0.6); }
-        .btn-submit:disabled { background: #999; animation: none; cursor: not-allowed; }
-        @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.7); } 70% { box-shadow: 0 0 0 10px rgba(220, 38, 38, 0); } 100% { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0); } }
-        select { cursor: pointer; }
-        
-        .popup-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 9999; justify-content: center; align-items: center; padding: 1rem; }
-        .popup-box { background: #fff; padding: 2.5rem; border-radius: 16px; max-width: 550px; width: 100%; text-align: center; border-top: 10px solid #25D366; box-shadow: 0 15px 50px rgba(0,0,0,0.5); animation: slideIn 0.4s ease-out; }
-        @keyframes slideIn { from { transform: translateY(-50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-        .popup-box h3 { color: #25D366; font-size: 2.2rem; margin-bottom: 1rem; font-family: 'Montserrat', sans-serif; font-weight: 900; text-transform: uppercase; }
-        .popup-box p { color: #333; font-size: 1.1rem; line-height: 1.6; margin-bottom: 1rem; }
-        .popup-box strong { color: #000; }
-        .popup-box .code-display { background: #000; color: #FFD700; padding: 1.25rem; font-size: 2.2rem; font-weight: 900; border-radius: 10px; margin: 1.5rem 0; letter-spacing: 3px; font-family: 'Montserrat', sans-serif; box-shadow: inset 0 0 10px rgba(255,215,0,0.2); }
-        .popup-btn { background: #25D366; color: #fff; border: none; padding: 1.25rem 3rem; border-radius: 50px; font-weight: 800; cursor: pointer; font-size: 1.2rem; font-family: 'Montserrat', sans-serif; transition: all 0.3s; text-transform: uppercase; letter-spacing: 1px; }
-        .popup-btn:hover { background: #128C7E; transform: translateY(-2px); box-shadow: 0 5px 15px rgba(37,211,102,0.4); }
-
-        /* LANGUAGE SPLASH SCREEN */
-        #langSplash { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 10000; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 2rem; }
-        .splash-logo { font-family: 'Montserrat', sans-serif; font-weight: 900; font-size: 3rem; color: #fff; margin-bottom: 1rem; }
-        .splash-logo span { color: #FFD700; }
-        .splash-sub { color: #ccc; font-size: 1.2rem; margin-bottom: 3rem; }
-        .lang-btns { display: flex; gap: 2rem; flex-wrap: wrap; justify-content: center; }
-        .lang-btn { padding: 1.5rem 3rem; border: 2px solid #FFD700; background: transparent; color: #FFD700; font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: 1.5rem; border-radius: 12px; cursor: pointer; transition: all 0.3s; min-width: 200px; }
-        .lang-btn:hover { background: #FFD700; color: #000; transform: scale(1.05); }
-
-        @media (max-width: 968px) { .nav-menu { display: none; position: fixed; top: 80px; left: 0; right: 0; background: #000; flex-direction: column; padding: 2rem; border-top: 2px solid #FFD700; } .nav-menu.active { display: flex; } .mobile-menu-btn { display: block; } .header-contact { display: none; } .hero-title { font-size: 2.5rem; } .hero-buttons { flex-direction: column; } .btn-hero { width: 100%; justify-content: center; } .form-row { grid-template-columns: 1fr; } .hero { background-attachment: scroll; } .popup-box { padding: 1.5rem; } .popup-box h3 { font-size: 1.8rem; } .popup-box .code-display { font-size: 1.8rem; } }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HKJ Logistics Ltd | Reliable. Safe. On Time.</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    .hero-bg {
+      background: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)),
+                  url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=1920&q=80');
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
+    }
+  </style>
 </head>
-<body>
+<body class="font-sans">
 
-    <!-- LANGUAGE SELECTION SPLASH SCREEN -->
-    <div id="langSplash">
-        <div class="splash-logo">H.K.J <span>LOGISTICS LTD</span></div>
-        <div class="splash-sub" data-en="Select Your Language" data-es="Selecciona Tu Idioma">Select Your Language</div>
-        <div class="lang-btns">
-            <button class="lang-btn" onclick="setLanguage('en')">🇧 English</button>
-            <button class="lang-btn" onclick="setLanguage('es')">🇪🇸 Español</button>
+  <!-- Navigation -->
+  <nav class="bg-black text-white py-4 border-b-4 border-yellow-400">
+    <div class="container mx-auto px-4">
+      <div class="flex flex-col md:flex-row justify-between items-center">
+        <!-- Logo -->
+        <div class="flex items-center mb-4 md:mb-0">
+          <div class="w-16 h-16 bg-yellow-400 rounded-full flex items-center justify-center mr-3">
+            <span class="text-black font-bold text-xl">H.K.J</span>
+          </div>
+          <div>
+            <h1 class="text-2xl font-bold">LOGISTICS <span class="text-yellow-400">LTD</span></h1>
+            <p class="text-xs text-blue-300">solving all your problems</p>
+          </div>
         </div>
+
+        <!-- Navigation Links -->
+        <div class="flex flex-wrap justify-center gap-6">
+          <a href="#" class="text-yellow-400 font-bold hover:text-yellow-300">HOME</a>
+          <a href="#services" class="text-white font-bold hover:text-yellow-400">SERVICES</a>
+          <a href="#book" class="text-white font-bold hover:text-yellow-400">BOOK A RIDE</a>
+          <a href="confirm.html" class="text-green-400 font-bold hover:text-green-300">CONFIRM BOOKING</a>
+          <a href="#contact" class="text-white font-bold hover:text-yellow-400">CONTACT US</a>
+        </div>
+      </div>
+
+      <!-- Contact Info -->
+      <div class="flex flex-col md:flex-row items-center justify-center md:justify-start gap-4 mt-6 pt-6 border-t border-gray-800">
+        <div class="flex items-center">
+          <div class="w-12 h-12 bg-yellow-400 rounded-full flex items-center justify-center mr-3">
+            <i class="fas fa-phone text-black text-xl"></i>
+          </div>
+          <div>
+            <p class="text-xl font-bold">+1 (868) 780-0300</p>
+            <p class="text-xs text-yellow-400">24/7 SERVICE</p>
+          </div>
+        </div>
+        <a href="https://wa.me/18687800300" class="bg-yellow-400 hover:bg-yellow-500 text-black font-bold py-3 px-6 rounded-full transition">
+          <i class="fab fa-whatsapp mr-2"></i> WHATSAPP US
+        </a>
+        <button class="border-2 border-yellow-400 text-yellow-400 hover:bg-yellow-400 hover:text-black font-bold py-2 px-6 rounded-full transition">
+          <i class="fas fa-globe mr-2"></i> EN
+        </button>
+      </div>
     </div>
+  </nav>
 
-    <header class="header">
-        <div class="header-container">
-            <div class="logo"><div class="logo-icon">H.K.J</div><div class="logo-text"><div class="company">LOGISTICS <span>LTD</span></div><div class="tagline" data-en="solving all your problems" data-es="resolviendo todos tus problemas">solving all your problems</div></div></div>
-            <ul class="nav-menu" id="navMenu">
-                <li><a href="#home" class="active" data-en="HOME" data-es="INICIO">HOME</a></li>
-                <li><a href="#services" data-en="SERVICES" data-es="SERVICIOS">SERVICES</a></li>
-                <li><a href="#book" data-en="BOOK A RIDE" data-es="RESERVAR VIAJE">BOOK A RIDE</a></li>
-                <li><a href="confirm.html" style="color: #25D366; font-weight: 800;" data-en="CONFIRM BOOKING" data-es="CONFIRMAR RESERVA">CONFIRM BOOKING</a></li>
-                <li><a href="#contact" data-en="CONTACT US" data-es="CONTÁCTENOS">CONTACT US</a></li>
-            </ul>
-            <div class="header-contact">
-                <div class="phone-info"><div class="phone-icon"><i class="fas fa-phone"></i></div><div class="phone-details"><div class="phone-number">+1 (868) 780-0300</div><div class="phone-label" data-en="24/7 SERVICE" data-es="SERVICIO 24/7">24/7 SERVICE</div></div></div>
-                <a href="https://wa.me/18687800300" class="btn-whatsapp-header" target="_blank"><i class="fab fa-whatsapp"></i> WHATSAPP US</a>
-                <button class="lang-toggle" onclick="toggleLanguage()"><i class="fas fa-globe"></i> <span id="currentLangDisplay">EN/ES</span></button>
-            </div>
-            <button class="mobile-menu-btn" onclick="toggleMenu()"><i class="fas fa-bars"></i></button>
-        </div>
-    </header>
-    
-    <section class="hero" id="home"><div class="hero-container"><div class="hero-content">
-        <h1 class="hero-title">
-            <span data-en="RELIABLE." data-es="CONFIABLE.">RELIABLE.</span><br>
-            <span class="highlight" data-en="SAFE." data-es="SEGURO.">SAFE.</span><br>
-            <span data-en="ON TIME." data-es="A TIEMPO.">ON TIME.</span>
-        </h1>
-        <p class="hero-subtitle" data-en="Professional Taxi & Transportation Services Across the Beautiful Islands of Trinidad & Tobago" data-es="Servicio Profesional de Taxi y Transporte en las Hermosas Islas de Trinidad y Tobago">Professional Taxi & Transportation Services Across the Beautiful Islands of Trinidad & Tobago</p>
-        <div class="hero-buttons">
-            <a href="#book" class="btn-hero btn-book" data-en="BOOK A RIDE" data-es="RESERVAR VIAJE"><i class="fas fa-calendar-alt"></i> BOOK A RIDE</a>
-            <a href="https://wa.me/18687800300" class="btn-hero btn-whatsapp-hero" target="_blank"><i class="fab fa-whatsapp"></i> WHATSAPP</a>
-            <a href="tel:+18687800300" class="btn-hero btn-call-hero" data-en="CALL NOW" data-es="LLAMAR AHORA"><i class="fas fa-phone"></i> CALL NOW</a>
-        </div>
-        <div class="trust-badges">
-            <div class="trust-badge"><i class="fas fa-shield-alt"></i> <span data-en="SAFE & SECURE" data-es="SEGURO Y PROTEGIDO">SAFE & SECURE</span></div>
-            <div class="trust-badge"><i class="fas fa-clock"></i> <span data-en="ON TIME, EVERY TIME" data-es="A TIEMPO, SIEMPRE">ON TIME, EVERY TIME</span></div>
-            <div class="trust-badge"><i class="fas fa-user-tie"></i> <span data-en="PROFESSIONAL DRIVERS" data-es="CHOFERES PROFESIONALES">PROFESSIONAL DRIVERS</span></div>
-            <div class="trust-badge"><i class="fas fa-headset"></i> <span data-en="24/7 SERVICE" data-es="SERVICIO 24/7">24/7 SERVICE</span></div>
-        </div>
-    </div></div></section>
-    
-    <section class="services" id="services"><div class="services-container">
-        <h2 class="section-title" data-en="OUR SERVICES" data-es="NUESTROS SERVICIOS">OUR <span data-en="SERVICES" data-es="SERVICIOS">SERVICES</span></h2>
-        <div class="services-grid">
-            <div class="service-card"><div class="service-icon"><i class="fas fa-plane"></i></div><h3 data-en="AIRPORT TRANSFERS" data-es="TRASLADOS AL AEROPUERTO">AIRPORT TRANSFERS</h3><p data-en="On-time pick up and drop off to and from the airport." data-es="Recogida y traslado puntual desde y hacia el aeropuerto.">On-time pick up and drop off to and from the airport.</p></div>
-            <div class="service-card"><div class="service-icon"><i class="fas fa-briefcase"></i></div><h3 data-en="CORPORATE TRANSPORT" data-es="TRANSPORTE CORPORATIVO">CORPORATE TRANSPORT</h3><p data-en="Reliable transportation for business meetings, events and more." data-es="Transporte confiable para reuniones de negocios, eventos y más.">Reliable transportation for business meetings, events and more.</p></div>
-            <div class="service-card"><div class="service-icon"><i class="fas fa-umbrella-beach"></i></div><h3 data-en="TOURS & SIGHTSEEING" data-es="TOURS Y PASEOS TURÍSTICOS">TOURS & SIGHTSEEING</h3><p data-en="Explore Trinidad & Tobago with our comfortable tour services." data-es="Explora Trinidad y Tobago con nuestros cómodos servicios de tours.">Explore Trinidad & Tobago with our comfortable tour services.</p></div>
-            <div class="service-card"><div class="service-icon"><i class="fas fa-calendar-check"></i></div><h3 data-en="SCHEDULED APPOINTMENTS" data-es="CITAS PROGRAMADAS">SCHEDULED APPOINTMENTS</h3><p data-en="Book your rides in advance for appointments and special events." data-es="Reserva tus viajes con anticipación para citas y eventos especiales.">Book your rides in advance for appointments and special events.</p></div>
-            <div class="service-card"><div class="service-icon"><i class="fas fa-taxi"></i></div><h3 data-en="PRIVATE TAXI SERVICE" data-es="SERVICIO DE TAXI PRIVADO">PRIVATE TAXI SERVICE</h3><p data-en="Comfortable, private and hassle-free rides anytime." data-es="Viajes cómodos, privados y sin complicaciones en cualquier momento.">Comfortable, private and hassle-free rides anytime.</p></div>
-        </div>
-    </div></section>
-    
-    <section class="booking" id="book">
-        <div class="booking-container">
-            <div class="booking-widget">
-                <h2 data-en="BOOK A RIDE" data-es="RESERVAR VIAJE">BOOK <span data-en="A RIDE" data-es="VIAJE">A RIDE</span></h2>
-                <form name="hkj-bookings" method="POST" onsubmit="return handleBooking(event)">
-                    <input type="hidden" name="calendarLink" id="calendarLink">
-                    <input type="hidden" name="referenceCode" id="hiddenRefCode">
-                    
-                    <div class="form-row">
-                        <div class="form-group"><label data-en="Your Name *" data-es="Su Nombre *">Your Name *</label><input type="text" name="clientName" id="clientName" required data-placeholder-en="Enter your full name" data-placeholder-es="Ingrese su nombre completo" placeholder="Enter your full name"></div>
-                        <div class="form-group"><label data-en="WhatsApp Number *" data-es="Número de WhatsApp *">WhatsApp Number *</label><input type="tel" name="clientPhone" id="clientPhone" placeholder="868-XXX-XXXX" required></div>
-                    </div>
-                    <div class="form-group">
-                        <label data-en="Your Email Address (Optional)" data-es="Su Correo Electrónico (Opcional)">Your Email Address (Optional)</label>
-                        <input type="email" name="clientEmail" id="clientEmail" placeholder="example@email.com" data-placeholder-en="example@email.com" data-placeholder-es="ejemplo@correo.com">
-                    </div>
-                    
-                    <div class="location-method">
-                        <h4><i class="fas fa-map-marker-alt" style="color: #0066CC;"></i> <span data-en="Pickup Location *" data-es="Lugar de Recogida *">Pickup Location *</span></h4>
-                        <div class="method-content">
-                            <label style="font-weight:600; color:#555;" data-en="1. Select Area from List:" data-es="1. Seleccionar Área de la Lista:">1. Select Area from List:</label>
-                            <select name="pickupCity" id="pickupCity" onchange="updatePickupFromDropdown()">
-                                <option value="" data-en="Select pickup area" data-es="Seleccionar área de recogida">Select pickup area</option>
-                                <optgroup label="Port of Spain & North West">
-                                    <option value="Port of Spain">Port of Spain</option><option value="Diego Martin">Diego Martin</option><option value="Petit Valley">Petit Valley</option><option value="Four Roads">Four Roads</option><option value="St. James">St. James</option><option value="St. Clair">St. Clair</option><option value="Woodbrook">Woodbrook</option><option value="Belmont">Belmont</option><option value="Carenage">Carenage</option><option value="Chaguaramas">Chaguaramas</option>
-                                </optgroup>
-                                <optgroup label="East & North Central">
-                                    <option value="San Juan">San Juan</option><option value="Barataria">Barataria</option><option value="Curepe">Curepe</option><option value="Curepe Junction">Curepe Junction</option><option value="St. Augustine">St. Augustine</option><option value="Tunapuna">Tunapuna</option><option value="El Dorado">El Dorado</option><option value="Arima">Arima</option><option value="Sangre Grande">Sangre Grande</option>
-                                </optgroup>
-                                <optgroup label="Central">
-                                    <option value="Chaguanas">Chaguanas</option><option value="Couva">Couva</option><option value="California">California</option><option value="Point Lisas">Point Lisas</option>
-                                </optgroup>
-                                <optgroup label="South">
-                                    <option value="San Fernando">San Fernando</option><option value="Marabella">Marabella</option><option value="Gasparillo">Gasparillo</option><option value="Princes Town">Princes Town</option><option value="Debe">Debe</option><option value="Penal">Penal</option><option value="Siparia">Siparia</option><option value="Fyzabad">Fyzabad</option><option value="Point Fortin">Point Fortin</option>
-                                </optgroup>
-                                <optgroup label="Airports & Terminals">
-                                    <option value="Piarco International Airport">Piarco International Airport</option><option value="Caroni Bird Sanctuary">Caroni Bird Sanctuary</option><option value="San Fernando Water Taxi Terminal">San Fernando Water Taxi Terminal</option><option value="Port of Spain Water Taxi Terminal">Port of Spain Water Taxi Terminal</option>
-                                </optgroup>
-                            </select>
-                        </div>
-                        <div class="method-content">
-                            <label style="font-weight:600; color:#555;" data-en="2. Type Exact Address / Landmark:" data-es="2. Escribir Dirección Exacta / Referencia:">2. Type Exact Address / Landmark:</label>
-                            <input type="text" name="pickupAddressText" id="pickupAddressText" placeholder="e.g., 123 Main Street, Marabella" data-placeholder-en="e.g., 123 Main Street, Marabella" data-placeholder-es="ej., 123 Calle Principal, Marabella">
-                        </div>
-                    </div>
-
-                    <div class="location-method">
-                        <h4><i class="fas fa-location-arrow" style="color: #0066CC;"></i> <span data-en="Drop-off Location *" data-es="Lugar de Destino *">Drop-off Location *</span></h4>
-                        <div class="method-content">
-                            <label style="font-weight:600; color:#555;" data-en="1. Select Area from List:" data-es="1. Seleccionar Área de la Lista:">1. Select Area from List:</label>
-                            <select name="dropoffCity" id="dropoffCity" onchange="updateDropoffFromDropdown()">
-                                <option value="" data-en="Select drop-off area" data-es="Seleccionar área de destino">Select drop-off area</option>
-                                <optgroup label="Port of Spain & North West">
-                                    <option value="Port of Spain">Port of Spain</option><option value="Diego Martin">Diego Martin</option><option value="Petit Valley">Petit Valley</option><option value="Four Roads">Four Roads</option><option value="St. James">St. James</option><option value="St. Clair">St. Clair</option><option value="Woodbrook">Woodbrook</option><option value="Belmont">Belmont</option><option value="Carenage">Carenage</option><option value="Chaguaramas">Chaguaramas</option>
-                                </optgroup>
-                                <optgroup label="East & North Central">
-                                    <option value="San Juan">San Juan</option><option value="Barataria">Barataria</option><option value="Curepe">Curepe</option><option value="Curepe Junction">Curepe Junction</option><option value="St. Augustine">St. Augustine</option><option value="Tunapuna">Tunapuna</option><option value="El Dorado">El Dorado</option><option value="Arima">Arima</option><option value="Sangre Grande">Sangre Grande</option>
-                                </optgroup>
-                                <optgroup label="Central">
-                                    <option value="Chaguanas">Chaguanas</option><option value="Couva">Couva</option><option value="California">California</option><option value="Point Lisas">Point Lisas</option>
-                                </optgroup>
-                                <optgroup label="South">
-                                    <option value="San Fernando">San Fernando</option><option value="Marabella">Marabella</option><option value="Gasparillo">Gasparillo</option><option value="Princes Town">Princes Town</option><option value="Debe">Debe</option><option value="Penal">Penal</option><option value="Siparia">Siparia</option><option value="Fyzabad">Fyzabad</option><option value="Point Fortin">Point Fortin</option>
-                                </optgroup>
-                                <optgroup label="Airports & Terminals">
-                                    <option value="Piarco International Airport">Piarco International Airport</option><option value="Caroni Bird Sanctuary">Caroni Bird Sanctuary</option><option value="San Fernando Water Taxi Terminal">San Fernando Water Taxi Terminal</option><option value="Port of Spain Water Taxi Terminal">Port of Spain Water Taxi Terminal</option>
-                                </optgroup>
-                            </select>
-                        </div>
-                        <div class="method-content">
-                            <label style="font-weight:600; color:#555;" data-en="2. Type Exact Address / Landmark:" data-es="2. Escribir Dirección Exacta / Referencia:">2. Type Exact Address / Landmark:</label>
-                            <input type="text" name="dropoffAddressText" id="dropoffAddressText" placeholder="e.g., First Citizens Bank, Marabella" data-placeholder-en="e.g., First Citizens Bank, Marabella" data-placeholder-es="ej., First Citizens Bank, Marabella">
-                        </div>
-                    </div>
-
-                    <div class="form-group"><label data-en="Estimated Waiting Time (Optional)" data-es="Tiempo de Espera Estimado (Opcional)">Estimated Waiting Time (Optional)</label><select name="waitingTime" id="waitingTime"><option value="0" data-en="No waiting time required" data-es="No se requiere tiempo de espera">No waiting time required</option><option value="0.5" data-en="30 Minutes (+ $50.00)" data-es="30 Minutos (+ $50.00)">30 Minutes (+ $50.00)</option><option value="1" data-en="1 Hour (+ $100.00)" data-es="1 Hora (+ $100.00)">1 Hour (+ $100.00)</option><option value="1.5" data-en="1.5 Hours (+ $150.00)" data-es="1.5 Horas (+ $150.00)">1.5 Hours (+ $150.00)</option><option value="2" data-en="2 Hours (+ $200.00)" data-es="2 Horas (+ $200.00)">2 Hours (+ $200.00)</option><option value="3" data-en="3 Hours (+ $300.00)" data-es="3 Horas (+ $300.00)">3 Hours (+ $300.00)</option></select></div>
-                    <div class="form-row"><div class="form-group"><label data-en="Date *" data-es="Fecha *">Date *</label><input type="date" name="bookDate" id="bookDate" required></div><div class="form-group"><label data-en="Time *" data-es="Hora *">Time *</label><input type="time" name="bookTime" id="bookTime" required></div></div>
-                    
-                    <div class="form-group" style="background: #fff0f0; padding: 1rem; border-radius: 8px; border: 2px solid #DC2626;">
-                        <label style="display: flex; align-items: center; gap: 10px; cursor: pointer; margin: 0; font-weight: 700; color: #DC2626;">
-                            <!-- FIX APPLIED HERE: Added name="isCarnival" -->
-                            <input type="checkbox" id="isCarnival" name="isCarnival" style="width: 20px; height: 20px;">
-                            <span data-en="Is this for a Carnival Event? (J'ouvert, Parade, Fete)" data-es="¿Es para un evento de Carnaval? (J'ouvert, Desfile, Fiesta)">Is this for a Carnival Event? (J'ouvert, Parade, Fete)</span>
-                        </label>
-                        <p style="font-size: 0.85rem; color: #555; margin-top: 5px; margin-left: 30px;" data-en="Special event rates apply. Minimum starting price: $400.00 TTD." data-es="Aplican tarifas de eventos especiales. Precio mínimo inicial: $400.00 TTD.">Special event rates apply. Minimum starting price: $400.00 TTD.</p>
-                    </div>
-                    
-                    <div class="form-group"><label data-en="Service Type *" data-es="Tipo de Servicio *">Service Type *</label><select name="serviceType" id="serviceType" required><option value="private" data-en="Private Taxi" data-es="Taxi Privado">Private Taxi</option><option value="airport" data-en="Airport Transfer" data-es="Traslado al Aeropuerto">Airport Transfer</option><option value="corporate" data-en="Corporate Travel" data-es="Viaje Corporativo">Corporate Travel</option><option value="tour" data-en="Island Tour" data-es="Tour por la Isla">Island Tour</option></select></div>
-                    
-                    <div class="form-group">
-                        <label data-en="Vehicle Type / Group Size *" data-es="Tipo de Vehículo / Tamaño del Grupo *">Vehicle Type / Group Size *</label>
-                        <select name="vehicleType" id="vehicleType" required>
-                            <option value="Standard Sedan (1-4 Passengers)" data-en="Standard Sedan (1-4 Passengers)" data-es="Sedán Estándar (1-4 Pasajeros)">Standard Sedan (1-4 Passengers)</option>
-                            <option value="7-Seater Van / Maxi Taxi (5-7 Passengers)" data-en="7-Seater Van / Maxi Taxi (5-7 Passengers)" data-es="Van 7 Asientos / Maxi Taxi (5-7 Pasajeros)">7-Seater Van / Maxi Taxi (5-7 Passengers)</option>
-                            <option value="Minibus (8-14 Passengers)" data-en="Minibus (8-14 Passengers)" data-es="Minibus (8-14 Pasajeros)">Minibus (8-14 Passengers)</option>
-                            <option value="Coach / Large Bus (15+ Passengers)" data-en="Coach / Large Bus (15+ Passengers)" data-es="Autobús / Bus Grande (15+ Pasajeros)">Coach / Large Bus (15+ Passengers)</option>
-                        </select>
-                    </div>
-
-                    <div class="form-group"><label data-en="Additional Notes" data-es="Notas Adicionales">Additional Notes</label><textarea name="additionalNotes" id="addNotes" rows="3" placeholder="Landmarks, building name, special instructions..." data-placeholder-en="Landmarks, building name, special instructions..." data-placeholder-es="Referencias, nombre del edificio, instrucciones especiales..."></textarea></div>
-                    <button type="submit" class="btn-submit" id="submitBtn" data-en="SUBMIT BOOKING REQUEST" data-es="ENVIAR SOLICITUD DE RESERVA"><i class="fas fa-paper-plane"></i> SUBMIT BOOKING REQUEST</button>
-                    
-                    <div style="background: #fff0f0; border: 2px solid #DC2626; border-radius: 8px; padding: 1.25rem; margin-top: 1.5rem; text-align: center;">
-                        <p style="color: #DC2626; font-weight: 800; font-size: 1.1rem; margin-bottom: 0.5rem; text-transform: uppercase;" data-en="IMPORTANT NOTICE" data-es="AVISO IMPORTANTE"><i class="fas fa-exclamation-triangle"></i> IMPORTANT NOTICE</p>
-                        <p style="color: #DC2626; font-weight: 600; font-size: 1rem; margin: 0; line-height: 1.5;" data-en="Admin will determine the final cost and notify you. After receiving your final price, please confirm your booking by clicking CONFIRM BOOKING in the menu above." data-es="El administrador determinará el costo final y le notificará. Después de recibir su precio final, por favor confirme su reserva haciendo clic en CONFIRMAR RESERVA en el menú de arriba.">Admin will determine the final cost and notify you.<br>After receiving your final price, please confirm your booking by clicking <a href="confirm.html" style="color:#DC2626; text-decoration:underline; font-weight:800;" data-en="CONFIRM BOOKING" data-es="CONFIRMAR RESERVA">CONFIRM BOOKING</a> in the menu above.</p>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </section>
-
-    <footer class="footer-contact" id="contact"><div class="footer-container">
-        <div class="footer-item"><div class="footer-icon"><i class="fas fa-map-marker-alt"></i></div><div class="footer-details"><h4 data-en="OUR LOCATION" data-es="NUESTRA UBICACIÓN">OUR LOCATION</h4><p>Chaguanas, Trinidad</p><div class="sub" data-en="Proudly serving all areas" data-es="Orgullosamente sirviendo a todas las áreas">Proudly serving all areas</div></div></div>
-        <div class="footer-item"><div class="footer-icon"><i class="fas fa-phone"></i></div><div class="footer-details"><h4 data-en="CALL US" data-es="LLÁMENOS">CALL US</h4><p>+1 (868) 780-0300</p><div class="sub" data-en="24/7 Service" data-es="Servicio 24/7">24/7 Service</div></div></div>
-        <div class="footer-item"><div class="footer-icon"><i class="fab fa-whatsapp"></i></div><div class="footer-details"><h4>WHATSAPP</h4><p>+1 (868) 780-0300</p><div class="sub" data-en="Chat with us anytime" data-es="Chatee con nosotros en cualquier momento">Chat with us anytime</div></div></div>
-        <div class="footer-item"><div class="footer-icon"><i class="fas fa-envelope"></i></div><div class="footer-details"><h4 data-en="EMAIL US" data-es="ENVÍENOS UN CORREO">EMAIL US</h4><p>hkjlogisticsltd@gmail.com</p><div class="sub" data-en="We'll respond quickly" data-es="Responderemos rápidamente">We'll respond quickly</div></div></div>
-        <div class="footer-item"><div class="footer-icon"><i class="fas fa-shield-alt"></i></div><div class="footer-details"><h4 data-en="SAFE & SECURE" data-es="SEGURO Y PROTEGIDO">SAFE & SECURE</h4><p data-en="Your safety is" data-es="Tu seguridad es">Your safety is</p><div class="sub" data-en="our top priority" data-es="nuestra máxima prioridad">our top priority</div></div></div>
-    </div></footer>
-
-    <div id="successPopup" class="popup-overlay">
-        <div class="popup-box">
-            <div style="font-size: 4rem; color: #25D366; margin-bottom: 0.5rem;"><i class="fas fa-check-circle"></i></div>
-            <h3 data-en="THANK YOU!" data-es="¡GRACIAS!">THANK YOU!</h3>
-            <p data-en="Thank you for choosing HKJ Logistics. Your booking request has been successfully received!" data-es="Gracias por elegir HKJ Logistics. ¡Su solicitud de reserva ha sido recibida exitosamente!">Thank you for choosing HKJ Logistics. Your booking request has been successfully received!</p>
-            <p style="font-weight: 700; color: #000; margin-top: 1.5rem; margin-bottom: 0.5rem;" data-en="Your Reference Code is:" data-es="Su Código de Referencia es:">Your Reference Code is:</p>
-            <div class="code-display" id="popupCodeDisplay">HKJ-0000</div>
-            <p style="font-size: 1rem; color: #555; margin-bottom: 1.5rem;" data-en="An Admin will contact you shortly with the final price. Once confirmed, please click CONFIRM BOOKING to lock it in!" data-es="Un administrador se contactará con usted pronto con el precio final. Una vez confirmado, ¡por favor haga clic en CONFIRMAR RESERVA para asegurarlo!">An Admin will contact you shortly with the final price. Once confirmed, please click <a href="confirm.html" style="color:#DC2626; font-weight:800;" data-en="CONFIRM BOOKING" data-es="CONFIRMAR RESERVA">CONFIRM BOOKING</a> to lock it in!</p>
-            <button class="popup-btn" onclick="closePopup()" data-en="GOT IT!" data-es="¡ENTENDIDO!">GOT IT!</button>
-        </div>
+  <!-- Hero Section -->
+  <section class="hero-bg min-h-screen flex items-center justify-center text-center text-white py-20">
+    <div class="container mx-auto px-4">
+      <h1 class="text-5xl md:text-7xl font-bold mb-6 leading-tight">
+        RELIABLE.<br>
+        <span class="text-yellow-400">SAFE.</span><br>
+        ON TIME.
+      </h1>
+      <p class="text-xl md:text-2xl mb-8 max-w-3xl mx-auto">
+        Professional Taxi & Transportation Services Across the Beautiful Islands of Trinidad and Tobago
+      </p>
+      <div class="flex flex-col md:flex-row justify-center gap-4">
+        <a href="#book" class="bg-yellow-400 hover:bg-yellow-500 text-black font-bold py-4 px-8 rounded-full text-lg transition transform hover:scale-105">
+          <i class="fas fa-calendar-check mr-2"></i> BOOK YOUR RIDE
+        </a>
+        <a href="tel:+18687800300" class="border-2 border-white hover:bg-white hover:text-black font-bold py-4 px-8 rounded-full text-lg transition">
+          <i class="fas fa-phone mr-2"></i> CALL NOW
+        </a>
+      </div>
     </div>
+  </section>
 
-    <script>
-        // --- LANGUAGE SYSTEM ---
-        let currentLang = 'en';
+  <!-- BOOK A RIDE Section -->
+  <section id="book" class="py-20 bg-gray-50">
+    <div class="container mx-auto px-4 max-w-4xl">
+      <h2 class="text-4xl font-bold text-center mb-12 text-gray-800">BOOK A RIDE</h2>
+      
+      <form id="bookingForm" class="bg-white rounded-xl shadow-2xl p-8 md:p-12">
+        
+        <!-- Name and Phone -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+          <div>
+            <label class="block text-gray-700 text-sm font-bold mb-2">Your Name *</label>
+            <input type="text" name="clientName" required
+              class="shadow appearance-none border rounded w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-yellow-400"
+              placeholder="Enter your full name">
+          </div>
+          <div>
+            <label class="block text-gray-700 text-sm font-bold mb-2">WhatsApp Number *</label>
+            <input type="tel" name="clientPhone" required
+              class="shadow appearance-none border rounded w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-yellow-400"
+              placeholder="868-XXX-XXXX">
+          </div>
+        </div>
 
-        function setLanguage(lang) {
-            currentLang = lang;
-            localStorage.setItem('hkj_lang', lang);
-            document.getElementById('langSplash').style.display = 'none';
-            applyTranslations();
+        <!-- Email -->
+        <div class="mb-6">
+          <label class="block text-gray-700 text-sm font-bold mb-2">Your Email Address (Optional)</label>
+          <input type="email" name="clientEmail"
+            class="shadow appearance-none border rounded w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-yellow-400"
+            placeholder="example@email.com">
+        </div>
+
+        <!-- Pickup Location with Auto-Detect -->
+        <div class="mb-6">
+          <label class="block text-gray-700 text-sm font-bold mb-2">
+            Pickup Location * <i class="fas fa-map-marker-alt text-green-500"></i>
+          </label>
+          <input type="text" id="pickupLocation" name="pickupAddressText" required
+            class="shadow appearance-none border rounded w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-yellow-400"
+            placeholder="Type place name (e.g., Hyatt Hotel, West Mall, Piarco Airport)"
+            onblur="autoDetectLocation('pickup')">
+          <p class="text-xs text-gray-500 mt-2">💡 Type a place name - we'll auto-detect the area!</p>
+          <div id="pickupDetected" class="hidden mt-2 p-3 bg-green-100 text-green-700 rounded text-sm">
+            <i class="fas fa-check-circle"></i> <span id="pickupDetectedText"></span>
+          </div>
+          <input type="hidden" id="pickupArea" name="pickupArea">
+          <input type="hidden" id="pickupCity" name="pickupCity">
+        </div>
+
+        <!-- Drop-off Location with Auto-Detect -->
+        <div class="mb-6">
+          <label class="block text-gray-700 text-sm font-bold mb-2">
+            Drop-off Location * <i class="fas fa-flag-checkered text-red-500"></i>
+          </label>
+          <input type="text" id="dropoffLocation" name="dropoffAddressText" required
+            class="shadow appearance-none border rounded w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-yellow-400"
+            placeholder="Type place name (e.g., Galleria Mall, Queen's Park Hotel)"
+            onblur="autoDetectLocation('dropoff')">
+          <p class="text-xs text-gray-500 mt-2">💡 Type a place name - we'll auto-detect the area!</p>
+          <div id="dropoffDetected" class="hidden mt-2 p-3 bg-green-100 text-green-700 rounded text-sm">
+            <i class="fas fa-check-circle"></i> <span id="dropoffDetectedText"></span>
+          </div>
+          <input type="hidden" id="dropoffArea" name="dropoffArea">
+          <input type="hidden" id="dropoffCity" name="dropoffCity">
+        </div>
+
+        <!-- Date and Time -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+          <div>
+            <label class="block text-gray-700 text-sm font-bold mb-2">Date *</label>
+            <input type="date" name="bookDate" required
+              class="shadow appearance-none border rounded w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-yellow-400">
+          </div>
+          <div>
+            <label class="block text-gray-700 text-sm font-bold mb-2">Time *</label>
+            <input type="time" name="bookTime" required
+              class="shadow appearance-none border rounded w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-yellow-400">
+          </div>
+        </div>
+
+        <!-- Vehicle Type -->
+        <div class="mb-6">
+          <label class="block text-gray-700 text-sm font-bold mb-2">Vehicle Type *</label>
+          <select name="vehicleType" required
+            class="shadow appearance-none border rounded w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-yellow-400">
+            <option value="">Select vehicle...</option>
+            <option value="Standard Sedan (1-4 Passengers)">Standard Sedan (1-4 Passengers)</option>
+            <option value="SUV (5-7 Passengers)">SUV (5-7 Passengers)</option>
+            <option value="Van (8-12 Passengers)">Van (8-12 Passengers)</option>
+            <option value="Luxury Vehicle">Luxury Vehicle</option>
+          </select>
+        </div>
+
+        <!-- Service Type -->
+        <div class="mb-6">
+          <label class="block text-gray-700 text-sm font-bold mb-2">Service Type *</label>
+          <select name="serviceType" required
+            class="shadow appearance-none border rounded w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-yellow-400">
+            <option value="private">Private Transfer</option>
+            <option value="shared">Shared Transfer</option>
+            <option value="hourly">Hourly Service</option>
+          </select>
+        </div>
+
+        <!-- Waiting Time -->
+        <div class="mb-6">
+          <label class="block text-gray-700 text-sm font-bold mb-2">Waiting Time (hours)</label>
+          <input type="number" name="waitingTime" min="0" value="0"
+            class="shadow appearance-none border rounded w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-yellow-400"
+            placeholder="0">
+        </div>
+
+        <!-- Additional Notes -->
+        <div class="mb-6">
+          <label class="block text-gray-700 text-sm font-bold mb-2">Additional Notes</label>
+          <textarea name="additionalNotes" rows="3"
+            class="shadow appearance-none border rounded w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-yellow-400"
+            placeholder="Special requests, flight numbers, etc."></textarea>
+        </div>
+
+        <!-- Carnival Checkbox -->
+        <div class="mb-8">
+          <label class="flex items-center">
+            <input type="checkbox" name="isCarnival" class="form-checkbox h-5 w-5 text-yellow-600">
+            <span class="ml-2 text-gray-700">This is a Carnival Event Booking (Minimum $400 TTD)</span>
+          </label>
+        </div>
+
+        <!-- Submit Button -->
+        <button type="submit" id="submitBtn"
+          class="w-full bg-yellow-400 hover:bg-yellow-500 text-black font-bold py-4 px-8 rounded-lg text-lg transition transform hover:scale-105 shadow-lg">
+          <i class="fas fa-paper-plane mr-2"></i> Submit Booking Request
+        </button>
+
+        <!-- Loading State -->
+        <div id="loading" class="hidden text-center py-8">
+          <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-black"></div>
+          <p class="mt-4 text-gray-700">Submitting your booking...</p>
+        </div>
+
+        <!-- Success Message -->
+        <div id="successMessage" class="hidden text-center py-8">
+          <i class="fas fa-check-circle text-green-500 text-6xl mb-4"></i>
+          <h3 class="text-2xl font-bold text-gray-800 mb-4">THANK YOU!</h3>
+          <p class="text-gray-600 mb-4">Your booking request has been received!</p>
+          <p class="text-gray-700 font-bold mb-2">Your Reference Code:</p>
+          <div class="bg-black text-yellow-400 text-3xl font-bold py-4 px-8 rounded-lg mb-4 inline-block">
+            <span id="refCodeDisplay">HKJ-XXXX</span>
+          </div>
+          <p class="text-gray-600 mb-4">We'll contact you shortly with the final price.</p>
+          <button type="button" onclick="location.reload()" 
+            class="bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-8 rounded-lg transition">
+            GOT IT!
+          </button>
+        </div>
+      </form>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="bg-black text-white py-8 border-t-4 border-yellow-400">
+    <div class="container mx-auto px-4 text-center">
+      <p class="text-yellow-400 font-bold text-xl mb-2">H.K.J LOGISTICS LTD</p>
+      <p class="text-gray-400 text-sm">© 2024 All Rights Reserved</p>
+    </div>
+  </footer>
+
+  <script>
+    // ==========================================
+    // ⚠️ REPLACE WITH YOUR APPS SCRIPT URL
+    // ==========================================
+    const scriptURL = 'https://script.google.com/macros/s/AKfycbzr4DHnIpxJKiMj9Ktb0nAxQrhRDfBvho573bf98S9TbNKMWZvCw8CxfceuXDsmTyPtGQ/exec';
+
+    // ==========================================
+    // PLACE DETECTION (FREE - No API Key)
+    // ==========================================
+    
+    async function searchPlace(placeName) {
+      if (!placeName || placeName.length < 3) return null;
+      
+      try {
+        const searchQuery = placeName.includes('Trinidad') ? placeName : placeName + ', Trinidad';
+        const response = await fetch(
+          `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(searchQuery)}&limit=1`,
+          { headers: { 'User-Agent': 'HKJLogistics/1.0' } }
+        );
+        const data = await response.json();
+        
+        if (data && data.length > 0) {
+          const place = data[0];
+          const parts = place.display_name.split(',');
+          return {
+            name: parts[0].trim(),
+            area: parts.slice(-3, -1).join(',').trim(),
+            city: parts.pop().trim(),
+            fullAddress: place.display_name
+          };
         }
+        return null;
+      } catch (error) {
+        console.error('Error searching place:', error);
+        return null;
+      }
+    }
 
-        function toggleLanguage() {
-            currentLang = currentLang === 'en' ? 'es' : 'en';
-            localStorage.setItem('hkj_lang', currentLang);
-            applyTranslations();
+    async function autoDetectLocation(type) {
+      const inputId = type === 'pickup' ? 'pickupLocation' : 'dropoffLocation';
+      const detectedId = type === 'pickup' ? 'pickupDetected' : 'dropoffDetected';
+      const detectedTextId = type === 'pickup' ? 'pickupDetectedText' : 'dropoffDetectedText';
+      const areaInputId = type === 'pickup' ? 'pickupArea' : 'dropoffArea';
+      const cityInputId = type === 'pickup' ? 'pickupCity' : 'dropoffCity';
+      
+      const inputValue = document.getElementById(inputId).value.trim();
+      
+      if (inputValue.length > 5) {
+        const detectedDiv = document.getElementById(detectedId);
+        const detectedText = document.getElementById(detectedTextId);
+        
+        detectedText.textContent = '🔍 Searching...';
+        detectedDiv.classList.remove('hidden');
+        detectedDiv.className = 'mt-2 p-3 bg-blue-100 text-blue-700 rounded text-sm';
+        
+        const placeInfo = await searchPlace(inputValue);
+        
+        if (placeInfo) {
+          document.getElementById(areaInputId).value = placeInfo.area;
+          document.getElementById(cityInputId).value = placeInfo.city;
+          detectedText.textContent = `✓ Found: ${placeInfo.name} - ${placeInfo.area}`;
+          detectedDiv.className = 'mt-2 p-3 bg-green-100 text-green-700 rounded text-sm';
+          document.getElementById(inputId).value = placeInfo.fullAddress;
+        } else {
+          detectedText.textContent = '⚠️ Place not found. Please enter full address.';
+          detectedDiv.className = 'mt-2 p-3 bg-yellow-100 text-yellow-700 rounded text-sm';
         }
+      }
+    }
 
-        function applyTranslations() {
-            document.querySelectorAll('[data-en]').forEach(el => {
-                el.innerText = el.getAttribute(`data-${currentLang}`);
-            });
-            document.querySelectorAll('[data-placeholder-en]').forEach(el => {
-                el.placeholder = el.getAttribute(`data-placeholder-${currentLang}`);
-            });
-            document.getElementById('currentLangDisplay').innerText = currentLang.toUpperCase();
-        }
+    // ==========================================
+    // FORM SUBMISSION
+    // ==========================================
+    
+    const form = document.getElementById('bookingForm');
+    const submitBtn = document.getElementById('submitBtn');
+    const loading = document.getElementById('loading');
+    const successMessage = document.getElementById('successMessage');
 
-        // Check for saved language on load
-        window.addEventListener('DOMContentLoaded', () => {
-            const savedLang = localStorage.getItem('hkj_lang');
-            if (savedLang) {
-                setLanguage(savedLang);
-            }
+    form.addEventListener('submit', async function(e) {
+      e.preventDefault();
+      
+      submitBtn.classList.add('hidden');
+      loading.classList.remove('hidden');
+      
+      const formData = new FormData(form);
+      const params = new URLSearchParams();
+      
+      for (let [key, value] of formData.entries()) {
+        params.append(key, value);
+      }
+      
+      try {
+        const response = await fetch(scriptURL, {
+          method: 'POST',
+          body: params
         });
-
-        // --- EXISTING FUNCTIONS ---
-        function toggleMenu() { document.getElementById('navMenu').classList.toggle('active'); }
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => { anchor.addEventListener('click', function(e) { e.preventDefault(); const target = document.querySelector(this.getAttribute('href')); if (target) window.scrollTo({ top: target.offsetTop - 80, behavior: 'smooth' }); }); });
-        document.querySelector('input[type="date"]').setAttribute('min', new Date().toISOString().split('T')[0]);
         
-        function updatePickupFromDropdown() { const city = document.getElementById('pickupCity').value; if (city) document.getElementById('pickupAddressText').value = city + ", Trinidad"; }
-        function updateDropoffFromDropdown() { const city = document.getElementById('dropoffCity').value; if (city) document.getElementById('dropoffAddressText').value = city + ", Trinidad"; }
+        const result = await response.json();
         
-        function getActiveLocation(type) { 
-            const addressText = document.getElementById(`${type}AddressText`).value; 
-            const city = document.getElementById(`${type}City`).value; 
-            if (addressText) return addressText; 
-            return city; 
+        if (result.result === 'success') {
+          form.classList.add('hidden');
+          loading.classList.add('hidden');
+          successMessage.classList.remove('hidden');
+          document.getElementById('refCodeDisplay').textContent = result.refCode;
+        } else {
+          alert('Error submitting booking. Please try again.');
+          submitBtn.classList.remove('hidden');
+          loading.classList.add('hidden');
         }
-        
-        function formatTimeAMPM(time24) {
-            if (!time24) return '';
-            let [hours, minutes] = time24.split(':');
-            let ampm = hours >= 12 ? 'PM' : 'AM';
-            hours = hours % 12;
-            hours = hours ? hours : 12; 
-            return hours + ':' + minutes + ' ' + ampm;
-        }
+      } catch (error) {
+        console.error('Error:', error);
+        alert('Network error. Please try again.');
+        submitBtn.classList.remove('hidden');
+        loading.classList.add('hidden');
+      }
+    });
 
-        function generateReferenceCode() { return 'HKJ-' + Math.floor(1000 + Math.random() * 9000); }
-
-        function generateCalendarLink(name, phone, pickup, dropoff, date, time) {
-            const dateClean = date.replace(/-/g, '');
-            const timeClean = time.replace(/:/g, '') + '00';
-            const startDT = dateClean + 'T' + timeClean;
-            let [hours, minutes] = time.split(':').map(Number);
-            hours = (hours + 1) % 24;
-            const endDT = dateClean + 'T' + hours.toString().padStart(2, '0') + minutes.toString().padStart(2, '0') + '00';
-            const title = encodeURIComponent(`HKJ Logistics Booking - ${name}`);
-            const details = encodeURIComponent(`Phone: ${phone}\nPickup: ${pickup}\nDrop-off: ${dropoff}\n\nBooked via HKJ Logistics Ltd Website.`);
-            const location = encodeURIComponent(`${pickup} to ${dropoff}, Trinidad`);
-            return `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${title}&dates=${startDT}/${endDT}&details=${details}&location=${location}`;
-        }
-
-        function showPopup(code) { document.getElementById('popupCodeDisplay').innerText = code; document.getElementById('successPopup').style.display = 'flex'; }
-        function closePopup() { document.getElementById('successPopup').style.display = 'none'; }
-
-        function handleBooking(e) { 
-            e.preventDefault(); 
-            const form = e.target;
-            const formData = new FormData(form);
-            const name = formData.get('clientName');
-            const phone = formData.get('clientPhone');
-            const email = formData.get('clientEmail');
-            const vehicleType = formData.get('vehicleType'); 
-            const pickup = getActiveLocation('pickup');
-            const dropoff = getActiveLocation('dropoff');
-            const date = formData.get('bookDate');
-            const time = formData.get('bookTime');
-            const service = formData.get('serviceType');
-            const waitTime = formData.get('waitingTime');
-            const isCarnival = document.getElementById('isCarnival').checked;
-            
-            if (!pickup || !dropoff) { alert(currentLang === 'en' ? "Please specify both Pickup and Drop-off locations." : "Por favor especifique ambos lugares de recogida y destino."); return false; } 
-            if (!time) { alert(currentLang === 'en' ? "Please select a Time for your trip." : "Por favor seleccione una Hora para su viaje."); return false; }
-            
-            const refCode = generateReferenceCode();
-            document.getElementById('hiddenRefCode').value = refCode;
-            document.getElementById('calendarLink').value = generateCalendarLink(name, phone, pickup, dropoff, date, time);
-            
-            const formattedTime = formatTimeAMPM(time);
-            
-            let notes = formData.get('additionalNotes') || "";
-            notes += `\nVehicle Requested: ${vehicleType}`;
-            formData.set('additionalNotes', notes);
-            
-            localStorage.setItem('hkj_booking_' + refCode, name);
-            
-            const baseUrl = 'https://hkjlogisticsltdtt.vercel.app/confirm.html';
-            const safeName = name.replace(/ /g, '_');
-            const safeCode = refCode.replace(/ /g, '_');
-            const personalLink = `${baseUrl}?name=${safeName}&code=${safeCode}`;
-            
-            let waMessage = `*NEW BOOKING REQUEST - HKJ LOGISTICS*\n\n`; 
-            waMessage += `*Reference Code:* ${refCode}\n`;
-            waMessage += `*Name:* ${name}\n*Phone:* ${phone}\n`;
-            if(email) waMessage += `*Email:* ${email}\n`;
-            waMessage += `*Vehicle:* ${vehicleType}\n`; 
-            waMessage += `*Pickup:* ${pickup}\n*Drop-off:* ${dropoff}\n*Date:* ${date}\n*Time:* ${formattedTime}\n*Service:* ${service}\n*Waiting:* ${waitTime}\n`; 
-            if(notes) waMessage += `*Notes:* ${notes}\n`; 
-            if(isCarnival) { waMessage += `\n*CARNIVAL EVENT BOOKING - $400.00 MINIMUM RATE APPLIES*\n`; }
-            waMessage += `\n*Client Confirmation Link:* ${personalLink}`;
-            
-            const waUrl = `https://wa.me/18687800300?text=${encodeURIComponent(waMessage)}`; 
-            
-            const scriptURL = 'https://script.google.com/macros/s/AKfycbzr4DHnIpxJKiMj9Ktb0nAxQrhRDfBvho573bf98S9TbNKMWZvCw8CxfceuXDsmTyPtGQ/exec';
-            const submitBtn = document.getElementById('submitBtn');
-            const originalBtnText = submitBtn.innerHTML;
-            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> SENDING...';
-            submitBtn.disabled = true;
-
-            fetch(scriptURL, { 
-                method: "POST", 
-                body: new URLSearchParams(formData) 
-            })
-            .then(response => {
-                window.open(waUrl, '_blank'); 
-                showPopup(refCode); 
-                form.reset(); 
-                submitBtn.innerHTML = originalBtnText;
-                submitBtn.disabled = false;
-            })
-            .catch(error => {
-                console.error('Error!', error.message);
-                window.open(waUrl, '_blank'); 
-                showPopup(refCode);
-                submitBtn.innerHTML = originalBtnText;
-                submitBtn.disabled = false;
-            });
-            
-            return false; 
-        }
-    </script>
+    // Set minimum date to today
+    const dateInput = document.querySelector('input[name="bookDate"]');
+    if (dateInput) {
+      dateInput.setAttribute('min', new Date().toISOString().split('T')[0]);
+    }
+  </script>
 </body>
 </html>
