@@ -484,7 +484,7 @@
     }
 
     // ==========================================
-    // FIXED AUTO-PRICING CALCULATION (YOUR FORMULA)
+    // NEW AUTO-PRICING CALCULATION (YOUR NEW FORMULA)
     // ==========================================
     function calculateAutoPrice(pickup, dropoff) {
       if (!pickup || !dropoff) return null;
@@ -534,17 +534,30 @@
         distance = 5;
       }
       
-      // 4. APPLY YOUR FORMULA
+      // 4. APPLY YOUR NEW FORMULA
       // Base: $50
-      // First 20km: $5/km
-      // After 20km: $4.50/km (Adjusted to ensure POS to San Fernando is at least $300)
-      let price = 50; 
+      // Rate: $5.00 per km AND $5.00 per min (Estimated 2 mins per km for traffic)
+      // Fare increases after 20km (Rate becomes $8.00 per km/min)
+      // Minimum charge: $50
       
+      let price = 50; // Base fare (also the minimum charge)
+      
+      // Estimate time (approx 30km/h average speed -> 2 mins per km)
+      let timeInMins = distance * 2;
+
       if (distance <= 20) {
-        price += (distance * 5);
+        price += (distance * 5); // $5 per km
+        price += (timeInMins * 5); // $5 per min
       } else {
-        price += (20 * 5); // First 20km
-        price += ((distance - 20) * 4.5); // Remaining km at $4.50
+        // First 20km at standard rate
+        price += (20 * 5); // $100
+        price += ((20 * 2) * 5); // 40 mins * $5 = $200
+        
+        // Remaining distance at increased rate ($8/km and $8/min)
+        let extraDistance = distance - 20;
+        let extraTime = extraDistance * 2;
+        price += (extraDistance * 8); 
+        price += (extraTime * 8);
       }
       
       return Math.round(price); // Round to whole number
@@ -670,7 +683,7 @@
                 </div>
               </div>
             </div>
-            ${isAutoCalculated ? `<p class="text-xs text-green-600 font-medium mt-2"><i class="fas fa-info-circle mr-1"></i> Auto-calculated based on distance</p>` : ''}
+            ${isAutoCalculated ? `<p class="text-xs text-green-600 font-medium mt-2"><i class="fas fa-info-circle mr-1"></i> Auto-calculated based on distance & time</p>` : ''}
           </div>
 
           <div class="grid grid-cols-2 gap-3 mb-3">
@@ -1050,7 +1063,7 @@
             }
           });
           
-          const report = `📊 HKJ Logistics Report\n\n` +
+          const report = ` HKJ Logistics Report\n\n` +
             ` BOOKING STATUS:\n` +
             `─────────────────\n` +
             `Total Bookings: ${bookings.length}\n` +
