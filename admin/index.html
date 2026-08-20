@@ -472,44 +472,46 @@
     }
 
     // ==========================================
-    // FIXED GPS DISTANCE CALCULATOR
+    // IMPROVED GPS DISTANCE CALCULATOR
     // ==========================================
     async function getCoordinates(address) {
       if (!address) return null;
       
-      // Try multiple search formats for better results
-      const searchQueries = [
-        address, // Full address
-        address.split(',').slice(0, 2).join(',') + ', Trinidad and Tobago', // Short version
-        address.split(',')[0] + ', Trinidad and Tobago' // Just the place name
+      // Strategy 1: Try the full address as-is
+      // Strategy 2: Extract just the landmark/building name
+      // Strategy 3: Use just street + "Trinidad and Tobago"
+      
+      const strategies = [
+        address,
+        address.split(',')[0] + ', ' + (address.split(',')[1] || '') + ', Trinidad and Tobago',
+        address.split(',')[0] + ', Trinidad',
+        address.replace(/\d{5,6}/g, '').trim() + ', Trinidad and Tobago'
       ];
       
-      for (let query of searchQueries) {
+      for (let i = 0; i < strategies.length; i++) {
+        const query = strategies[i].trim();
+        if (!query || query === ', Trinidad and Tobago') continue;
+        
         try {
-          // Wait 2 seconds between requests (Nominatim strict rate limit)
-          await new Promise(resolve => setTimeout(resolve, 2000));
+          console.log(`Trying geocoding strategy ${i + 1}:`, query);
+          
+          // Wait between requests
+          await new Promise(resolve => setTimeout(resolve, 1500));
           
           const response = await fetch(
-            `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=1`,
-            { 
-              headers: { 
-                'User-Agent': 'HKJLogisticsApp/1.0 (contact@hkjlogistics.com)' 
-              }
-            }
+            `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=1&countrycodes=tt`,
+            { headers: { 'User-Agent': 'HKJLogistics/1.0' } }
           );
           
-          if (!response.ok) {
-            console.log('Nominatim response not OK:', response.status);
-            continue;
-          }
-          
-          const data = await response.json();
-          if (data && data.length > 0) {
-            console.log('Found location for:', query, '->', data[0].display_name);
-            return { lat: data[0].lat, lon: data[0].lon };
+          if (response.ok) {
+            const data = await response.json();
+            if (data && data.length > 0) {
+              console.log('✅ Found:', data[0].display_name);
+              return { lat: data[0].lat, lon: data[0].lon };
+            }
           }
         } catch (error) {
-          console.error('Geocoding error for query:', query, error);
+          console.log(`Strategy ${i + 1} failed:`, error.message);
         }
       }
       
@@ -538,7 +540,7 @@
     async function calculateRealPrice(row) {
       const btn = document.getElementById(`autoBtn-${row}`);
       const originalText = btn.innerHTML;
-      btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> GPS...';
+      btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Calculating...';
       btn.disabled = true;
 
       const booking = allBookings.find(b => b._rowNumber === row);
@@ -547,80 +549,60 @@
       const pickup = booking['PICK UP'];
       const dropoff = booking['DROP OFF'];
 
-      // Check for Tobago first
-      const p = pickup.toLowerCase();
-      const d = dropoff.toLowerCase();
-      const isTobago = (p.includes('tobago') && !p.includes('trinidad')) || 
-                       (d.includes('tobago') && !d.includes('trinidad')) || 
-                       p.includes('scarborough') || d.includes('scarborough');
-      
-      if (isTobago) {
+      // Quick check for Tobago
+      const fullText = (pickup + ' ' + dropoff).toLowerCase();
+      if (fullText.includes('tobago') || fullText.includes('scarborough')) {
         applyAutoPrice(row, 500);
-        btn.innerHTML = '<i class="fas fa-magic mr-1"></i>AUTO $500';
+        btn.innerHTML = '<i class="fas fa-magic mr-1"></i>AUTO $500 (Tobago)';
         btn.disabled = false;
         return;
       }
 
-      // Clean addresses for geocoding - keep them SHORT and add full country name
-      const cleanForGeo = (addr) => {
-        if (!addr) return '';
-        // Remove postal codes
-        let clean = addr.replace(/,?\s*\d{5,6}/g, '');
-        // Remove duplicate country names
-        clean = clean.replace(/,?\s*trinidad and tobago/gi, '');
-        clean = clean.replace(/,?\s*trinidad/gi, '');
-        // Take only first 2 parts (most specific location)
-        const parts = clean.split(',').filter(p => p.trim()).slice(0, 2);
-        // Add full country name for better geocoding
-        return parts.join(', ') + ', Trinidad and Tobago';
-      };
+      console.log('📍 Pickup:', pickup);
+      console.log('📍 Dropoff:', dropoff);
 
-      const pickupGeo = cleanForGeo(pickup);
-      const dropoffGeo = cleanForGeo(dropoff);
-
-      console.log('Geocoding Pickup:', pickupGeo);
-      console.log('Geocoding Dropoff:', dropoffGeo);
-
-      // Get Coordinates (with built-in delays and retries)
-      const startCoords = await getCoordinates(pickupGeo);
-      const endCoords = await getCoordinates(dropoffGeo);
+      // Get coordinates with retries
+      const startCoords = await getCoordinates(pickup);
+      const endCoords = await getCoordinates(dropoff);
 
       if (startCoords && endCoords) {
-        console.log('Start Coords:', startCoords);
-        console.log('End Coords:', endCoords);
+        console.log('🎯 Start:', startCoords);
+        console.log('🎯 End:', endCoords);
         
-        // Get Route
+        // Get driving route
         const route = await getDrivingRoute(startCoords.lat, startCoords.lon, endCoords.lat, endCoords.lon);
         
-        if (route) {
-          console.log('Route:', route);
+        if (route && route.distanceKm > 0) {
+          console.log(' Distance:', route.distanceKm.toFixed(1) + 'km');
+          console.log('⏱️ Duration:', route.durationMins.toFixed(0) + 'mins');
+          
+          // SIMPLIFIED PRICING FORMULA:
+          // Base: $50
+          // $5 per km for first 20km
+          // $3 per km after 20km
           
           let price = 50; // Base fare
-          const dist = route.distanceKm;
-          const time = route.durationMins;
-
-          // YOUR FORMULA:
-          // First 20km: $5/km + $5/min
-          // After 20km: $8/km + $8/min
           
-          if (dist <= 20) {
-            price += (dist * 5) + (time * 5);
+          if (route.distanceKm <= 20) {
+            price += (route.distanceKm * 5);
           } else {
-            price += (20 * 5) + (Math.min(time, 40) * 5);
-            const extraDist = dist - 20;
-            const extraTime = Math.max(0, time - 40);
-            price += (extraDist * 8) + (extraTime * 8);
+            price += (20 * 5); // First 20km
+            price += ((route.distanceKm - 20) * 3); // Remaining km
           }
-
+          
           const finalPrice = Math.round(price);
+          
+          console.log('💰 Calculated price:', finalPrice);
+          
           applyAutoPrice(row, finalPrice);
-          btn.innerHTML = `<i class="fas fa-magic mr-1"></i>AUTO $${finalPrice} (GPS)`;
+          btn.innerHTML = `<i class="fas fa-check mr-1"></i>AUTO $${finalPrice} (${route.distanceKm.toFixed(1)}km)`;
         } else {
-          alert('Could not calculate route. Please enter price manually.');
+          alert('Could not calculate route distance.\n\nDistance: ' + (route ? route.distanceKm : 'N/A') + ' km\n\nPlease enter price manually.');
           btn.innerHTML = originalText;
         }
       } else {
-        alert('Could not find locations on map. Please enter price manually.\n\nTried:\nPickup: ' + pickupGeo + '\nDropoff: ' + dropoffGeo);
+        // Show helpful error with what we tried
+        alert(`Could not find one or both locations on the map.\n\nPickup: ${pickup.substring(0, 50)}...\nDropoff: ${dropoff.substring(0, 50)}...\n\nPlease enter price manually or use more specific addresses (e.g., "Hyatt Hotel, Port of Spain" instead of just "Wrightson Road").`);
         btn.innerHTML = originalText;
       }
       btn.disabled = false;
@@ -1017,7 +999,7 @@
           message += `Your HKJ Logistics booking ${refCode} is ready for review!\n`;
           message += `📅 Date: ${date} at ${time}\n`;
           message += `📍 Pickup: ${pickup}\n`;
-          message += ` Final Price: $${price} TTD\n\n`;
+          message += `💰 Final Price: $${price} TTD\n\n`;
           message += `📋 HOW IT WORKS:\n`;
           message += `1. We received your request.\n`;
           message += `2. This is your personalized quote.\n`;
@@ -1115,7 +1097,7 @@
             `─────────────────\n` +
             `Total Bookings: ${bookings.length}\n` +
             `⏳ Pending: ${pending}\n` +
-            `💰 Price Sent: ${priceSent}\n` +
+            ` Price Sent: ${priceSent}\n` +
             `✅ Confirmed: ${confirmed}\n` +
             `✔️ Completed: ${completed}\n` +
             `❌ Cancelled: ${cancelled}\n\n` +
