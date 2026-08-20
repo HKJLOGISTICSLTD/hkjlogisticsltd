@@ -171,6 +171,36 @@
     .price-flash {
       animation: priceFlash 1s ease;
     }
+    
+    /* Modal Styles */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(5px);
+      z-index: 1000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      overflow-y: auto;
+    }
+    .modal-overlay.active {
+      display: flex;
+    }
+    .modal-content {
+      background: white;
+      border-radius: 1.5rem;
+      padding: 2rem;
+      max-width: 800px;
+      width: 100%;
+      max-height: 90vh;
+      overflow-y: auto;
+      animation: slideUp 0.3s ease;
+    }
   </style>
 </head>
 <body class="p-6">
@@ -250,6 +280,128 @@
     <div id="bookingsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 hidden"></div>
   </div>
 
+  <!-- EDIT MODAL -->
+  <div id="editModal" class="modal-overlay">
+    <div class="modal-content">
+      <div class="flex justify-between items-center mb-6 pb-4 border-b-2 border-gray-200">
+        <h2 class="text-2xl font-bold text-gray-800">
+          <i class="fas fa-edit text-purple-600 mr-2"></i>Edit Booking
+        </h2>
+        <button onclick="closeEditModal()" class="text-gray-500 hover:text-gray-700 text-2xl">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      
+      <form id="editForm" class="space-y-4">
+        <input type="hidden" id="editRowNumber">
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-bold text-gray-700 mb-1">Reference Code</label>
+            <input type="text" id="editRefCode" class="w-full p-3 border-2 border-gray-200 rounded-lg bg-gray-100" readonly>
+          </div>
+          <div>
+            <label class="block text-sm font-bold text-gray-700 mb-1">Status</label>
+            <select id="editStatus" class="w-full p-3 border-2 border-gray-200 rounded-lg focus:border-purple-500 focus:outline-none">
+              <option value="Pending">Pending</option>
+              <option value="Price Sent">Price Sent</option>
+              <option value="Confirmed">Confirmed</option>
+              <option value="Completed">Completed</option>
+              <option value="Cancelled">Cancelled</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-bold text-gray-700 mb-1">Client Name *</label>
+            <input type="text" id="editName" required class="w-full p-3 border-2 border-gray-200 rounded-lg focus:border-purple-500 focus:outline-none">
+          </div>
+          <div>
+            <label class="block text-sm font-bold text-gray-700 mb-1">Phone *</label>
+            <input type="tel" id="editPhone" required class="w-full p-3 border-2 border-gray-200 rounded-lg focus:border-purple-500 focus:outline-none">
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-sm font-bold text-gray-700 mb-1">Email</label>
+          <input type="email" id="editEmail" class="w-full p-3 border-2 border-gray-200 rounded-lg focus:border-purple-500 focus:outline-none">
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-bold text-gray-700 mb-1">Date *</label>
+            <input type="date" id="editDate" required class="w-full p-3 border-2 border-gray-200 rounded-lg focus:border-purple-500 focus:outline-none">
+          </div>
+          <div>
+            <label class="block text-sm font-bold text-gray-700 mb-1">Time *</label>
+            <input type="time" id="editTime" required class="w-full p-3 border-2 border-gray-200 rounded-lg focus:border-purple-500 focus:outline-none">
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-sm font-bold text-gray-700 mb-1">Pickup Location *</label>
+          <input type="text" id="editPickup" required class="w-full p-3 border-2 border-gray-200 rounded-lg focus:border-purple-500 focus:outline-none">
+        </div>
+
+        <div>
+          <label class="block text-sm font-bold text-gray-700 mb-1">Drop-off Location *</label>
+          <input type="text" id="editDropoff" required class="w-full p-3 border-2 border-gray-200 rounded-lg focus:border-purple-500 focus:outline-none">
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-bold text-gray-700 mb-1">Vehicle Type *</label>
+            <select id="editVehicle" required class="w-full p-3 border-2 border-gray-200 rounded-lg focus:border-purple-500 focus:outline-none">
+              <option value="Standard Sedan (1-4 Passengers)">Standard Sedan (1-4 Passengers)</option>
+              <option value="SUV (5-7 Passengers)">SUV (5-7 Passengers)</option>
+              <option value="Van (8-12 Passengers)">Van (8-12 Passengers)</option>
+              <option value="Luxury Vehicle">Luxury Vehicle</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-sm font-bold text-gray-700 mb-1">Service Type *</label>
+            <select id="editService" required class="w-full p-3 border-2 border-gray-200 rounded-lg focus:border-purple-500 focus:outline-none">
+              <option value="private">Private Transfer</option>
+              <option value="shared">Shared Transfer</option>
+              <option value="hourly">Hourly Service</option>
+            </select>
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-sm font-bold text-gray-700 mb-1">Final Price (TTD)</label>
+          <input type="number" id="editPrice" step="0.01" class="w-full p-3 border-2 border-gray-200 rounded-lg focus:border-purple-500 focus:outline-none">
+        </div>
+
+        <div>
+          <label class="block text-sm font-bold text-gray-700 mb-1">Payment Method</label>
+          <select id="editPayment" class="w-full p-3 border-2 border-gray-200 rounded-lg focus:border-purple-500 focus:outline-none">
+            <option value="">Select...</option>
+            <option value="Credit Card / Linx">Credit Card / Linx</option>
+            <option value="Online (WiPay)">Online (WiPay)</option>
+            <option value="Cash">Cash</option>
+            <option value="Online Transfer">Online Transfer</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block text-sm font-bold text-gray-700 mb-1">Notes</label>
+          <textarea id="editNotes" rows="3" class="w-full p-3 border-2 border-gray-200 rounded-lg focus:border-purple-500 focus:outline-none"></textarea>
+        </div>
+
+        <div class="flex gap-3 pt-4">
+          <button type="button" onclick="closeEditModal()" class="flex-1 bg-gray-300 hover:bg-gray-400 text-gray-700 font-bold py-3 rounded-xl transition">
+            Cancel
+          </button>
+          <button type="submit" class="flex-1 bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white font-bold py-3 rounded-xl transition shadow-lg">
+            <i class="fas fa-save mr-2"></i>Save Changes
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
   <script>
     const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw1Fji0W9KckebjpfTcMLLtRNdf8fVMT_yQ_3PPrwg6kBZxsK8C-12TB-bAeCLY2ckwcg/exec';
     const ADMIN_PASSWORD = 'hkj5762';
@@ -286,24 +438,18 @@
       location.reload();
     }
 
-    // ==========================================
-    // AUTO-PRICING CALCULATION
-    // ==========================================
     function calculateAutoPrice(pickup, dropoff) {
       if (!pickup || !dropoff) return null;
       
       const p = pickup.toLowerCase();
       const d = dropoff.toLowerCase();
       
-      // Check for airports (higher fare)
       const isAirport = p.includes('piarco') || d.includes('piarco') || 
                        p.includes('airport') || d.includes('airport');
       
-      // Check for Tobago
       const isTobago = p.includes('tobago') || d.includes('tobago') || 
                       p.includes('scarborough') || d.includes('scarborough');
       
-      // Define major cities/areas
       const cities = {
         'port of spain': ['port of spain', 'pos', 'downtown', 'wrightson', 'hyatt', 'hilton', 'queens park'],
         'chaguanas': ['chaguanas', 'west mall', 'gulf city', 'galleria'],
@@ -318,7 +464,6 @@
         'tunapuna': ['tunapuna', 'piarco']
       };
       
-      // Detect pickup city
       let pickupCity = 'other';
       for (let [city, keywords] of Object.entries(cities)) {
         if (keywords.some(kw => p.includes(kw))) {
@@ -327,7 +472,6 @@
         }
       }
       
-      // Detect dropoff city
       let dropoffCity = 'other';
       for (let [city, keywords] of Object.entries(cities)) {
         if (keywords.some(kw => d.includes(kw))) {
@@ -336,14 +480,13 @@
         }
       }
       
-      // Calculate price
-      if (isTobago) return 500; // Tobago trips
-      if (isAirport) return 400; // Airport trips
-      if (pickupCity === dropoffCity && pickupCity !== 'other') return 200; // Same city
-      if (pickupCity !== 'other' && dropoffCity !== 'other') return 350; // Different cities
-      if (pickupCity !== 'other' || dropoffCity !== 'other') return 300; // One known location
+      if (isTobago) return 500;
+      if (isAirport) return 400;
+      if (pickupCity === dropoffCity && pickupCity !== 'other') return 200;
+      if (pickupCity !== 'other' && dropoffCity !== 'other') return 350;
+      if (pickupCity !== 'other' || dropoffCity !== 'other') return 300;
       
-      return 350; // Default for unknown locations
+      return 350;
     }
 
     async function fetchBookings() {
@@ -377,10 +520,8 @@
         const status = (booking.STATUS || 'Pending').toLowerCase().replace(' ', '-');
         const price = booking['FINAL PRICE'];
         
-        // Auto-calculate price
         const autoPrice = calculateAutoPrice(booking['PICK UP'], booking['DROP OFF']);
         
-        // Check if price is actually set (not 0, not empty, not 0.00)
         const hasRealPrice = price && price !== 0 && price !== '0' && price !== '0.00' && price !== '';
         const displayPrice = hasRealPrice ? price : (autoPrice || '');
         const isAutoCalculated = !hasRealPrice && autoPrice;
@@ -428,11 +569,10 @@
             ${booking.NOTES ? `<div class="bg-yellow-50 p-3 rounded-lg text-yellow-800 text-xs border border-yellow-200"><i class="fas fa-sticky-note mr-2 text-yellow-600"></i> ${booking.NOTES.substring(0, 100)}${booking.NOTES.length > 100 ? '...' : ''}</div>` : ''}
           </div>
 
-          <!-- Pricing Section with Auto-Calculation -->
           <div class="border-t pt-4 mb-4 bg-gradient-to-r from-gray-50 to-gray-100 p-4 rounded-xl">
             <div class="flex items-center justify-between mb-2">
               <label class="block text-xs font-bold text-gray-600 uppercase">Final Price (TTD)</label>
-              ${autoPrice ? `<button onclick="applyAutoPrice(${row}, ${autoPrice})" class="auto-price-badge" title="Click to apply auto-calculated price"><i class="fas fa-magic mr-1"></i>AUTO</button>` : ''}
+              ${autoPrice ? `<button onclick="applyAutoPrice(${row}, ${autoPrice})" class="auto-price-badge hover:opacity-80 transition cursor-pointer" title="Click to apply auto-calculated price"><i class="fas fa-magic mr-1"></i>AUTO</button>` : ''}
             </div>
             <div class="flex items-center gap-2 mb-2">
               <input type="number" id="price-${row}" value="${displayPrice}" placeholder="0.00" 
@@ -486,7 +626,7 @@
           </div>
 
           <div class="border-t pt-3 mt-3">
-            <div class="grid grid-cols-3 gap-2">
+            <div class="grid grid-cols-3 gap-2 mb-3">
               <button onclick="updateStatus(${row}, 'Confirmed')" class="bg-gradient-to-r from-blue-100 to-blue-200 hover:from-blue-200 hover:to-blue-300 text-blue-700 py-2 rounded-lg font-bold text-xs transition shadow-sm">
                 <i class="fas fa-check mr-1"></i> Confirm
               </button>
@@ -497,17 +637,108 @@
                 <i class="fas fa-undo mr-1"></i> Pending
               </button>
             </div>
+            <button onclick="openEditModal(${row}, ${JSON.stringify(booking).replace(/"/g, '&quot;')})" 
+              class="w-full bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white font-bold py-2.5 px-4 rounded-xl transition shadow-lg flex items-center justify-center text-sm">
+              <i class="fas fa-edit mr-2"></i> Edit All Details
+            </button>
           </div>
         `;
         grid.appendChild(card);
       });
     }
 
+    function openEditModal(row, booking) {
+      document.getElementById('editRowNumber').value = row;
+      document.getElementById('editRefCode').value = booking['REF CODE'] || '';
+      document.getElementById('editStatus').value = booking.STATUS || 'Pending';
+      document.getElementById('editName').value = booking.NAME || '';
+      document.getElementById('editPhone').value = booking.PHONE || '';
+      document.getElementById('editEmail').value = booking.EMAIL || '';
+      
+      // Format date
+      let dateStr = booking.DATE || '';
+      if (dateStr && dateStr.includes('T')) {
+        dateStr = dateStr.split('T')[0];
+      }
+      document.getElementById('editDate').value = dateStr;
+      
+      // Format time
+      let timeStr = booking.TIME || '';
+      if (timeStr && timeStr.includes('T')) {
+        const timeParts = timeStr.split('T')[1];
+        timeStr = timeParts ? timeParts.substring(0, 5) : '';
+      }
+      document.getElementById('editTime').value = timeStr;
+      
+      document.getElementById('editPickup').value = booking['PICK UP'] || '';
+      document.getElementById('editDropoff').value = booking['DROP OFF'] || '';
+      document.getElementById('editVehicle').value = booking['VEHICLE TYPE'] || '';
+      document.getElementById('editService').value = booking['SERVICE TYPE'] || '';
+      document.getElementById('editPrice').value = booking['FINAL PRICE'] || '';
+      document.getElementById('editPayment').value = booking['PAYMENT METHOD'] || '';
+      document.getElementById('editNotes').value = booking.NOTES || '';
+      
+      document.getElementById('editModal').classList.add('active');
+    }
+
+    function closeEditModal() {
+      document.getElementById('editModal').classList.remove('active');
+    }
+
+    document.getElementById('editForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      
+      const row = document.getElementById('editRowNumber').value;
+      const formData = {
+        action: 'updateBooking',
+        row: row,
+        refCode: document.getElementById('editRefCode').value,
+        status: document.getElementById('editStatus').value,
+        name: document.getElementById('editName').value,
+        phone: document.getElementById('editPhone').value,
+        email: document.getElementById('editEmail').value,
+        date: document.getElementById('editDate').value,
+        time: document.getElementById('editTime').value,
+        pickup: document.getElementById('editPickup').value,
+        dropoff: document.getElementById('editDropoff').value,
+        vehicle: document.getElementById('editVehicle').value,
+        service: document.getElementById('editService').value,
+        price: document.getElementById('editPrice').value,
+        payment: document.getElementById('editPayment').value,
+        notes: document.getElementById('editNotes').value
+      };
+      
+      const btn = e.target.querySelector('button[type="submit"]');
+      const originalHTML = btn.innerHTML;
+      btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Saving...';
+      btn.disabled = true;
+      
+      try {
+        const response = await fetch(APPS_SCRIPT_URL, {
+          method: 'POST',
+          body: new URLSearchParams(formData)
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+          alert('✅ Booking updated successfully!');
+          closeEditModal();
+          fetchBookings();
+        } else {
+          alert('Error updating booking.');
+        }
+      } catch (error) {
+        alert('Network error.');
+      } finally {
+        btn.innerHTML = originalHTML;
+        btn.disabled = false;
+      }
+    });
+
     function applyAutoPrice(row, price) {
       const input = document.getElementById(`price-${row}`);
       input.value = price;
-      
-      // Visual feedback - flash green
       input.classList.add('price-flash');
       setTimeout(() => {
         input.classList.remove('price-flash');
@@ -526,13 +757,10 @@
     function setQuickPrice(row, price) {
       const input = document.getElementById(`price-${row}`);
       input.value = price;
-      
-      // Visual feedback
       input.classList.add('price-flash');
       setTimeout(() => {
         input.classList.remove('price-flash');
       }, 1000);
-      
       const dropdown = document.getElementById(`priceDropdown-${row}`);
       dropdown.classList.remove('show');
     }
@@ -623,15 +851,21 @@
           const refCode = booking['REF CODE'] || '';
           const clientName = booking.NAME || '';
           const pickup = booking['PICK UP'] || '';
+          const date = formatDate(booking.DATE);
+          const time = formatTime(booking.TIME);
           
           const cleanPhone = phone.toString().replace(/\D/g, '');
           
           let message = `Hello ${clientName},\n\n`;
-          message += `Your booking ${refCode} has been confirmed!\n`;
-          message += `Final Price: $${price} TTD\n`;
-          message += `Pickup: ${pickup}\n\n`;
-          message += `Please confirm your booking:\n`;
-          message += `https://hkjlogisticsltdtt.vercel.app/confirm.html?code=${refCode}\n\n`;
+          message += `Your HKJ Logistics booking ${refCode} is ready for review!\n`;
+          message += `📅 Date: ${date} at ${time}\n`;
+          message += `📍 Pickup: ${pickup}\n`;
+          message += ` Final Price: $${price} TTD\n\n`;
+          message += `📋 HOW IT WORKS:\n`;
+          message += `1. We received your request.\n`;
+          message += `2. This is your personalized quote.\n`;
+          message += `3. Click the link below to accept and confirm!\n\n`;
+          message += `Confirm here: https://hkjlogisticsltdtt.vercel.app/confirm.html?code=${refCode}\n\n`;
           message += `Thank you,\nHKJ Logistics Ltd\n+1 (868) 780-0300`;
           
           const whatsappUrl = `https://wa.me/1${cleanPhone}?text=${encodeURIComponent(message)}`;
@@ -710,14 +944,14 @@
           });
           
           const report = `📊 HKJ Logistics Report\n\n` +
-            `📈 BOOKING STATUS:\n` +
+            ` BOOKING STATUS:\n` +
             `─────────────────\n` +
             `Total Bookings: ${bookings.length}\n` +
-            ` Pending: ${pending}\n` +
+            `⏳ Pending: ${pending}\n` +
             `💰 Price Sent: ${priceSent}\n` +
             `✅ Confirmed: ${confirmed}\n` +
             `✔️ Completed: ${completed}\n` +
-            `❌ Cancelled: ${cancelled}\n\n` +
+            ` Cancelled: ${cancelled}\n\n` +
             `💵 TOTAL REVENUE: $${totalRevenue.toFixed(2)} TTD\n` +
             `─────────────────\n` +
             `Generated: ${new Date().toLocaleString()}`;
