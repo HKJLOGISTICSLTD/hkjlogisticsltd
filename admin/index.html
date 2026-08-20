@@ -3,395 +3,243 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>HKJ Logistics Admin Dashboard</title>
+  <title>Admin Dashboard - HKJ Logistics</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
-    body {
-      background: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), 
-                  url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e?ixlib=rb-4.0.3&auto=format&fit=crop&w=2073&q=80');
-      background-size: cover; background-position: center; background-attachment: fixed;
-      min-height: 100vh; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    }
-    .status-pending { @apply bg-yellow-100 text-yellow-800; }
-    .status-pricesent { @apply bg-orange-100 text-orange-800; }
-    .status-confirmed { @apply bg-blue-600 text-white; }
-    .status-completed { @apply bg-green-500 text-white; }
-    .status-cancelled { @apply bg-red-600 text-white; }
-    .glass-card { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
-    .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 50; display: none; align-items: center; justify-content: center; }
-    #login-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; z-index: 100; }
-    .status-dropdown select { cursor: pointer; font-weight: 600; padding: 0.5rem 1rem; border-radius: 0.5rem; border: 0; font-size: 0.875rem; }
+    body { background-color: #f3f4f6; }
+    .status-pending { background-color: #fef3c7; color: #92400e; }
+    .status-confirmed { background-color: #dbeafe; color: #1e40af; }
+    .status-completed { background-color: #dcfce7; color: #166534; }
+    .status-cancelled { background-color: #fee2e2; color: #991b1b; }
+    .status-price-sent { background-color: #f3e8ff; color: #6b21a8; }
   </style>
 </head>
 <body class="p-6">
 
-  <!-- LOGIN SCREEN -->
-  <div id="login-screen">
-    <div class="glass-card rounded-2xl shadow-2xl p-8 max-w-md w-full mx-4">
-      <div class="text-center mb-6">
-        <div class="text-6xl mb-4">🚗</div>
-        <h2 class="text-3xl font-bold text-gray-800 mb-2">HKJ Logistics</h2>
-        <p class="text-gray-600">Admin Access</p>
+  <div class="max-w-7xl mx-auto">
+    <!-- Header -->
+    <div class="bg-white rounded-xl shadow-md p-6 mb-6 flex justify-between items-center">
+      <div>
+        <h1 class="text-3xl font-bold text-gray-800">HKJ Logistics Admin</h1>
+        <p class="text-gray-500">Manage bookings and set prices</p>
       </div>
-      <form id="login-form" onsubmit="handleLogin(event)">
-        <div class="mb-4">
-          <label class="block text-sm font-semibold text-gray-700 mb-2"><i class="fas fa-lock mr-2"></i>Password</label>
-          <input type="password" id="password" class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 transition" placeholder="Enter admin password" required>
-        </div>
-        <div id="error-message" class="hidden mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded-lg text-sm"><i class="fas fa-exclamation-circle mr-2"></i>Incorrect password.</div>
-        <button type="submit" class="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-bold py-3 px-4 rounded-lg transition transform hover:scale-105 shadow-lg"><i class="fas fa-sign-in-alt mr-2"></i>Login</button>
-      </form>
-    </div>
-  </div>
-
-  <!-- ADMIN CONTENT -->
-  <div id="admin-content" style="display: none;">
-    
-    <!-- FARE CALCULATOR MODAL -->
-    <div id="fare-modal" class="modal-overlay">
-      <div class="glass-card rounded-xl shadow-2xl p-6 max-w-md w-full mx-4 relative">
-        <button onclick="closeFareModal()" class="absolute top-4 right-4 text-gray-500 hover:text-red-500 text-xl"><i class="fas fa-times"></i></button>
-        <h2 class="text-2xl font-bold mb-4 text-gray-800"><i class="fas fa-calculator mr-2"></i>Fare Calculator</h2>
-        <input type="hidden" id="fare-row">
-        
-        <div class="space-y-3 mb-4">
-          <div class="flex items-center">
-            <input type="checkbox" id="fare-carnival" class="w-5 h-5 text-blue-600 rounded">
-            <label for="fare-carnival" class="ml-2 text-sm font-bold text-gray-700">Carnival Event (Min $400)</label>
-          </div>
-          <div>
-            <label class="block text-xs font-bold text-gray-600 mb-1">Waiting Time (Hours)</label>
-            <input type="number" id="fare-waiting" value="0" min="0" step="0.5" class="w-full p-2 border rounded focus:outline-none focus:border-blue-500">
-          </div>
-        </div>
-
-        <div class="bg-gray-100 p-3 rounded-lg mb-4 text-sm font-mono whitespace-pre-line" id="fare-breakdown">
-          Ready to calculate...
-        </div>
-
-        <div class="flex gap-2 mb-4">
-          <button onclick="calculateFare()" class="flex-1 bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-2 rounded-lg transition">Calculate</button>
-        </div>
-
-        <div>
-          <label class="block text-xs font-bold text-gray-600 mb-1">Final Price (TTD)</label>
-          <input type="number" id="fare-final" class="w-full p-2 border-2 border-blue-500 rounded text-lg font-bold focus:outline-none">
-        </div>
-
-        <button onclick="saveFare()" class="w-full mt-4 bg-green-600 hover:bg-green-700 text-white font-bold py-3 rounded-lg transition">Save Price</button>
-      </div>
+      <button onclick="fetchBookings()" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-bold transition">
+        <i class="fas fa-sync-alt mr-2"></i> Refresh
+      </button>
     </div>
 
-    <!-- EDIT MODAL -->
-    <div id="edit-modal" class="modal-overlay">
-      <div class="glass-card rounded-xl shadow-2xl p-6 max-w-md w-full mx-4 relative">
-        <button onclick="closeEditModal()" class="absolute top-4 right-4 text-gray-500 hover:text-red-500 text-xl"><i class="fas fa-times"></i></button>
-        <h2 class="text-2xl font-bold mb-4 text-gray-800"><i class="fas fa-edit mr-2"></i>Edit Booking</h2>
-        <input type="hidden" id="edit-row">
-        <div class="space-y-3">
-          <div><label class="block text-xs font-bold text-gray-600 mb-1">Date</label><input type="date" id="edit-date" class="w-full p-2 border rounded focus:outline-none focus:border-blue-500"></div>
-          <div><label class="block text-xs font-bold text-gray-600 mb-1">Time</label><input type="time" id="edit-time" class="w-full p-2 border rounded focus:outline-none focus:border-blue-500"></div>
-          <div><label class="block text-xs font-bold text-gray-600 mb-1">Phone</label><input type="text" id="edit-phone" class="w-full p-2 border rounded focus:outline-none focus:border-blue-500"></div>
-          <div><label class="block text-xs font-bold text-gray-600 mb-1">Pickup Location</label><textarea id="edit-pickup" class="w-full p-2 border rounded focus:outline-none focus:border-blue-500" rows="2"></textarea></div>
-          <div><label class="block text-xs font-bold text-gray-600 mb-1">Drop-off Location</label><textarea id="edit-dropoff" class="w-full p-2 border rounded focus:outline-none focus:border-blue-500" rows="2"></textarea></div>
-        </div>
-        <button onclick="saveEdit()" class="w-full mt-6 bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-lg transition">Save Changes</button>
-      </div>
+    <!-- Loading State -->
+    <div id="loading" class="text-center py-20">
+      <i class="fas fa-spinner fa-spin text-4xl text-blue-600"></i>
+      <p class="mt-4 text-gray-600">Loading bookings...</p>
     </div>
 
-    <div class="max-w-7xl mx-auto">
-      <div class="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
-        <div>
-          <h1 class="text-4xl font-bold text-white mb-2 drop-shadow-lg"> HKJ Logistics Admin</h1>
-          <p class="text-blue-100 text-sm drop-shadow">Managing bookings from beautiful Trinidad & Tobago 🌴</p>
-        </div>
-        <div class="flex gap-4">
-          <button onclick="loadBookings()" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg shadow-lg transition flex items-center"><i class="fas fa-sync-alt mr-2"></i> Refresh</button>
-          <button onclick="logout()" class="bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-lg shadow-lg transition flex items-center"><i class="fas fa-sign-out-alt mr-2"></i> Logout</button>
-        </div>
-      </div>
-
-      <div id="loading" class="hidden text-center py-12">
-        <div class="glass-card inline-block px-8 py-6 rounded-xl shadow-xl"><i class="fas fa-spinner fa-spin text-4xl text-blue-600"></i><p class="mt-4 text-gray-700 font-semibold">Loading bookings...</p></div>
-      </div>
-      <div id="bookings-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+    <!-- Bookings Grid -->
+    <div id="bookingsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 hidden">
+      <!-- Cards will be injected here by JavaScript -->
     </div>
   </div>
 
   <script>
     // ==========================================
-    // ⚠️ REPLACE THIS WITH YOUR ACTUAL APPS SCRIPT URL
+    // ️ REPLACE WITH YOUR APPS SCRIPT URL
     // ==========================================
-    const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyoSUKqeMpHACuKe3z5InSzlx4QvlN4UGshxun4Ur9a87RpflY-WYEBoIWyaDksa8eYWg/exec';
-    const ADMIN_PASSWORD = 'hkj5762';
-    let allBookings = [];
+    const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzr4DHnIpxJKiMj9Ktb0nAxQrhRDfBvho573bf98S9TbNKMWZvCw8CxfceuXDsmTyPtGQ/exec';
 
-    window.addEventListener('DOMContentLoaded', function() {
-      if (sessionStorage.getItem('hkj_admin_auth') === 'true') { showAdminContent(); loadBookings(); }
-    });
+    async function fetchBookings() {
+      document.getElementById('loading').classList.remove('hidden');
+      document.getElementById('bookingsGrid').classList.add('hidden');
 
-    function handleLogin(event) {
-      event.preventDefault();
-      if (document.getElementById('password').value === ADMIN_PASSWORD) {
-        sessionStorage.setItem('hkj_admin_auth', 'true'); showAdminContent(); loadBookings();
-      } else {
-        document.getElementById('error-message').classList.remove('hidden');
-        document.getElementById('password').value = '';
-        setTimeout(() => document.getElementById('error-message').classList.add('hidden'), 3000);
-      }
-    }
-
-    function showAdminContent() { document.getElementById('login-screen').style.display = 'none'; document.getElementById('admin-content').style.display = 'block'; }
-    function logout() { sessionStorage.removeItem('hkj_admin_auth'); document.getElementById('admin-content').style.display = 'none'; document.getElementById('login-screen').style.display = 'flex'; document.getElementById('password').value = ''; }
-
-    function loadBookings() {
-      const container = document.getElementById('bookings-container');
-      const loading = document.getElementById('loading');
-      container.innerHTML = ''; loading.classList.remove('hidden');
-      fetch(APPS_SCRIPT_URL).then(r => r.json()).then(data => {
-        loading.classList.add('hidden');
-        if (data.success && data.bookings.length > 0) {
-          allBookings = data.bookings.sort((a, b) => new Date(b.DATE) - new Date(a.DATE));
-          allBookings.forEach(b => renderBookingCard(b));
-        } else { container.innerHTML = '<div class="glass-card col-span-full text-center p-8 rounded-xl shadow-xl"><p class="text-gray-700 text-lg">No bookings found.</p></div>'; }
-      }).catch(e => { loading.classList.add('hidden'); container.innerHTML = '<div class="glass-card col-span-full text-center p-8 rounded-xl shadow-xl"><p class="text-red-600 text-lg">Error loading.</p></div>'; });
-    }
-
-    // FIXED: Always convert to integer for comparison
-    function getBookingByRow(rowNumber) {
-      const rowNum = parseInt(rowNumber);
-      return allBookings.find(b => parseInt(b._rowNumber) === rowNum);
-    }
-
-    function renderBookingCard(booking) {
-      const container = document.getElementById('bookings-container');
-      const statusClass = { 'Pending': 'status-pending', 'Price Sent': 'status-pricesent', 'Confirmed': 'status-confirmed', 'Completed': 'status-completed', 'Cancelled': 'status-cancelled' }[booking.STATUS] || 'status-pending';
-      let displayDate = booking.DATE, displayTime = booking.TIME;
-      if(booking.DATE && booking.DATE.includes('T')) displayDate = new Date(booking.DATE).toLocaleDateString();
-      if(booking.TIME && booking.TIME.includes('T')) displayTime = new Date(booking.TIME).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-
-      const rowNum = parseInt(booking._rowNumber);
-
-      const card = document.createElement('div');
-      card.className = 'glass-card rounded-xl shadow-xl p-6 border border-white/50 hover:shadow-2xl transition transform hover:-translate-y-1 flex flex-col';
-      card.innerHTML = `
-        <div class="flex justify-between items-start mb-4">
-          <div class="status-dropdown"><select onchange="updateStatus(${rowNum}, this.value)" class="${statusClass}">
-            <option value="Pending" ${booking.STATUS === 'Pending' ? 'selected' : ''}>Pending</option>
-            <option value="Price Sent" ${booking.STATUS === 'Price Sent' ? 'selected' : ''}>Price Sent</option>
-            <option value="Confirmed" ${booking.STATUS === 'Confirmed' ? 'selected' : ''}>Confirmed</option>
-            <option value="Completed" ${booking.STATUS === 'Completed' ? 'selected' : ''}>Completed</option>
-            <option value="Cancelled" ${booking.STATUS === 'Cancelled' ? 'selected' : ''}>Cancelled</option>
-          </select></div>
-          <span class="text-sm text-gray-500 font-mono bg-gray-100 px-2 py-1 rounded">${booking['REF CODE'] || 'N/A'}</span>
-        </div>
-        <h3 class="text-2xl font-bold text-gray-800 mb-3">${booking.NAME || 'Unknown Client'}</h3>
-        <div class="space-y-2 text-sm text-gray-700 mb-4 flex-grow">
-          <p class="flex items-center"><i class="fas fa-calendar-alt w-6 text-blue-600"></i> <span class="ml-2"><strong>Date:</strong> ${displayDate}</span></p>
-          <p class="flex items-center"><i class="fas fa-clock w-6 text-blue-600"></i> <span class="ml-2"><strong>Time:</strong> ${displayTime}</span></p>
-          <p class="flex items-start mt-3"><i class="fas fa-map-marker-alt w-6 text-red-600 mt-1"></i> <span class="ml-2 flex-grow"><strong>Pickup:</strong> ${booking['PICK UP'] || 'N/A'}</span><button onclick="copyText('${booking['PICK UP']}')" class="ml-2 text-gray-400 hover:text-blue-600"><i class="fas fa-copy"></i></button></p>
-          <p class="flex items-start"><i class="fas fa-flag-checkered w-6 text-green-600 mt-1"></i> <span class="ml-2 flex-grow"><strong>Drop-off:</strong> ${booking['DROP OFF'] || 'N/A'}</span><button onclick="copyText('${booking['DROP OFF']}')" class="ml-2 text-gray-400 hover:text-blue-600"><i class="fas fa-copy"></i></button></p>
-          <p class="flex items-center mt-3"><i class="fas fa-phone w-6 text-purple-600"></i> <a href="tel:${booking.PHONE}" class="ml-2 font-bold text-purple-700 hover:underline">${booking.PHONE || 'No Phone'}</a></p>
-          <p class="flex items-center"><i class="fas fa-envelope w-6 text-orange-600"></i> <span class="ml-2">${booking.EMAIL || 'No Email'}</span></p>
-          <div class="border-t border-gray-300 my-3"></div>
-          <p class="text-2xl font-bold text-red-600 flex items-center"><i class="fas fa-dollar-sign w-6"></i> <span>Final Price: $${booking['FINAL PRICE'] || '0.00'} TTD</span></p>
-        </div>
-        <div class="grid grid-cols-2 gap-2 mt-4">
-          <button onclick="openFareModal(${rowNum})" class="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-2 rounded text-sm font-semibold transition"><i class="fas fa-calculator mr-1"></i> Calc Price</button>
-          <button onclick="sendWhatsApp(${rowNum})" class="bg-green-500 hover:bg-green-600 text-white px-3 py-2 rounded text-sm font-semibold transition"><i class="fab fa-whatsapp mr-1"></i> WhatsApp</button>
-          <button onclick="sendEmailFromAdmin(${rowNum})" class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-2 rounded text-sm font-semibold transition col-span-2"><i class="fas fa-envelope mr-1"></i> Send Confirmation Email</button>
-          <button onclick="openEditModal(${rowNum})" class="bg-gray-600 hover:bg-gray-700 text-white px-3 py-2 rounded text-sm font-semibold transition"><i class="fas fa-edit mr-1"></i> Edit</button>
-          <button onclick="markAsCompleted(${rowNum})" class="bg-green-600 hover:bg-green-700 text-white px-3 py-2 rounded text-sm font-semibold transition"><i class="fas fa-check-circle mr-1"></i> Completed</button>
-          <button onclick="resetStatus(${rowNum})" class="bg-gray-500 hover:bg-gray-600 text-white px-3 py-2 rounded text-sm font-semibold transition col-span-2"><i class="fas fa-undo mr-1"></i> Reset to Pending</button>
-        </div>
-      `;
-      container.appendChild(card);
-    }
-
-    function copyText(text) { navigator.clipboard.writeText(text).then(() => alert('Copied!')); }
-
-    // --- WHATSAPP FIXED ---
-    function sendWhatsApp(rowNumber) {
-      const b = getBookingByRow(rowNumber);
-      if (!b || !b.PHONE) { alert('No phone number found for this booking!'); return; }
-      
-      // Convert to string first to handle both number and text types
-      let cleanPhone = String(b.PHONE).replace(/[^0-9]/g, '');
-      
-      // Ensure it has country code for Trinidad (1868)
-      if (cleanPhone.length === 7) cleanPhone = '1868' + cleanPhone;
-      if (!cleanPhone.startsWith('1')) cleanPhone = '1' + cleanPhone;
-
-      const refCode = b['REF CODE'] || 'UNKNOWN';
-      const price = b['FINAL PRICE'] || '0.00';
-      const name = b.NAME || 'Client';
-      
-      const msg = `Hello ${name}, your final price for booking ${refCode} is $${price} TTD. Please click this link to confirm: https://hkjlogisticsltdtt.vercel.app/confirm.html?code=${refCode}`;
-      
-      window.open(`https://wa.me/${cleanPhone}?text=${encodeURIComponent(msg)}`, '_blank');
-    }
-
-    function sendEmailFromAdmin(rowNumber) {
-      const b = getBookingByRow(rowNumber);
-      if(!b.EMAIL || !b.EMAIL.includes('@')) { alert('No valid email'); return; }
-      if(!confirm(`Send confirmation email to ${b.NAME}?`)) return;
-      fetch(APPS_SCRIPT_URL, { method: 'POST', body: new URLSearchParams({ action: 'sendEmail', row: rowNumber, email: b.EMAIL, name: b.NAME, refCode: b['REF CODE'], price: b['FINAL PRICE'], pickup: b['PICK UP'], dropoff: b['DROP OFF'], date: b.DATE }) })
-      .then(r => r.json()).then(d => { if(d.success) alert('✅ Email sent!'); else alert('❌ Error'); }).catch(e => alert('Network error'));
-    }
-
-    function updateStatus(rowNumber, newStatus) {
-      if(!confirm(`Change status to ${newStatus}?`)) { loadBookings(); return; }
-      fetch(APPS_SCRIPT_URL, { method: 'POST', body: new URLSearchParams({ action: 'updateStatus', row: rowNumber, status: newStatus }) })
-      .then(r => r.json()).then(d => { if(d.success) { const b = getBookingByRow(rowNumber); if(b) b.STATUS = newStatus; renderAllBookings(); } else loadBookings(); }).catch(e => loadBookings());
-    }
-
-    function renderAllBookings() { const c = document.getElementById('bookings-container'); c.innerHTML = ''; allBookings.forEach(b => renderBookingCard(b)); }
-
-    // --- EDIT MODAL ---
-    function openEditModal(rowNumber) {
-      const b = getBookingByRow(rowNumber);
-      if (!b) { alert('Booking not found!'); return; }
-      document.getElementById('edit-row').value = rowNumber;
-      let d = b.DATE; if(d && d.includes('T')) d = d.split('T')[0];
-      let t = b.TIME; if(t && t.includes('T')) { const dt = new Date(t); t = `${String(dt.getHours()).padStart(2,'0')}:${String(dt.getMinutes()).padStart(2,'0')}`; }
-      document.getElementById('edit-date').value = d || ''; document.getElementById('edit-time').value = t || '';
-      document.getElementById('edit-phone').value = b.PHONE || ''; document.getElementById('edit-pickup').value = b['PICK UP'] || ''; document.getElementById('edit-dropoff').value = b['DROP OFF'] || '';
-      document.getElementById('edit-modal').style.display = 'flex';
-    }
-    function closeEditModal() { document.getElementById('edit-modal').style.display = 'none'; }
-    function saveEdit() {
-      const row = document.getElementById('edit-row').value;
-      fetch(APPS_SCRIPT_URL, { method: 'POST', body: new URLSearchParams({ action: 'updateBooking', row: row, date: document.getElementById('edit-date').value, time: document.getElementById('edit-time').value, phone: document.getElementById('edit-phone').value, pickup: document.getElementById('edit-pickup').value, dropoff: document.getElementById('edit-dropoff').value }) })
-      .then(r => r.json()).then(d => { if(d.success) { alert('✅ Updated!'); closeEditModal(); loadBookings(); } }).catch(e => alert('Error'));
-    }
-
-    // --- FARE CALCULATOR ---
-    function openFareModal(rowNumber) {
-      const b = getBookingByRow(rowNumber);
-      if (!b) { 
-        console.error('Booking not found for row:', rowNumber);
-        console.log('Available bookings:', allBookings);
-        alert('Booking not found! Row: ' + rowNumber);
-        return; 
-      }
-      
-      document.getElementById('fare-row').value = rowNumber;
-      document.getElementById('fare-carnival').checked = (b.NOTES || '').toUpperCase().includes('CARNIVAL');
-      document.getElementById('fare-waiting').value = 0;
-      document.getElementById('fare-final').value = b['FINAL PRICE'] || '';
-      document.getElementById('fare-breakdown').innerText = 'Ready to calculate...';
-      document.getElementById('fare-modal').style.display = 'flex';
-      
-      // Auto-calculate immediately
-      calculateFare();
-    }
-    function closeFareModal() { document.getElementById('fare-modal').style.display = 'none'; }
-
-    function detectLocationHub(address) {
-      if (!address) return null;
-      const lower = address.toLowerCase();
-      const hubs = {
-        'POS': ['port of spain', 'pos', 'woodbrook', 'belmont', 'st. clair', 'st. james', 'diego martin', 'petit valley', 'four roads', 'carenage', 'chaguaramas'],
-        'EAST': ['san juan', 'barataria', 'curepe', 'st. augustine', 'tunapuna', 'el dorado', 'arima', 'sangre grande'],
-        'CENTRAL': ['chaguanas', 'couva', 'point lisas', 'california', 'caroni'],
-        'SOUTH': ['san fernando', 'marabella', 'gasparillo', 'princes town', 'debe', 'penal', 'siparia', 'fyzabad', 'point fortin'],
-        'PIARCO': ['piarco', 'airport']
-      };
-      for (const [hub, keywords] of Object.entries(hubs)) { for (const keyword of keywords) { if (lower.includes(keyword)) return hub; } }
-      return null;
-    }
-
-    function calculateDistance(pickupHub, dropoffHub) {
-      const distances = {
-        'POS': { 'POS': 0, 'EAST': 15, 'CENTRAL': 25, 'SOUTH': 55, 'PIARCO': 28 },
-        'EAST': { 'POS': 15, 'EAST': 0, 'CENTRAL': 30, 'SOUTH': 50, 'PIARCO': 15 },
-        'CENTRAL': { 'POS': 25, 'EAST': 30, 'CENTRAL': 0, 'SOUTH': 20, 'PIARCO': 38 },
-        'SOUTH': { 'POS': 55, 'EAST': 50, 'CENTRAL': 20, 'SOUTH': 0, 'PIARCO': 60 },
-        'PIARCO': { 'POS': 28, 'EAST': 15, 'CENTRAL': 38, 'SOUTH': 60, 'PIARCO': 0 }
-      };
-      if (!pickupHub || !dropoffHub) return 15; 
-      if (pickupHub === dropoffHub) return 5; 
-      return distances[pickupHub][dropoffHub] || 15;
-    }
-
-    function getBaseFareForTime(timeValue) {
-      if (!timeValue) return 30;
-      let hours = 12;
       try {
-        if (typeof timeValue === 'string') {
-          if (timeValue.includes('T')) {
-            hours = new Date(timeValue).getHours();
-          } else {
-            hours = parseInt(timeValue.split(':')[0]) || 12;
-          }
-        } else if (timeValue instanceof Date) {
-          hours = timeValue.getHours();
-        }
-      } catch(e) { hours = 12; }
-      
-      if (hours >= 22 || hours < 6) return 50;
-      if ((hours >= 7 && hours < 9) || (hours >= 16 && hours < 19)) return 40;
-      return 30;
-    }
+        const response = await fetch(APPS_SCRIPT_URL);
+        const data = await response.json();
 
-    function calculateFare() {
-      try {
-        const row = document.getElementById('fare-row').value;
-        const b = getBookingByRow(row);
-        if (!b) { document.getElementById('fare-breakdown').innerText = 'Error: Booking not found'; return; }
-
-        const pickup = b['PICK UP'] || '';
-        const dropoff = b['DROP OFF'] || '';
-        const time = b.TIME;
-        const waitingTime = parseFloat(document.getElementById('fare-waiting').value) || 0;
-        const isCarnival = document.getElementById('fare-carnival').checked;
-
-        const pickupHub = detectLocationHub(pickup);
-        const dropoffHub = detectLocationHub(dropoff);
-        const distanceKm = calculateDistance(pickupHub, dropoffHub);
-        const baseFare = getBaseFareForTime(time);
-        const waitingCost = waitingTime * 100;
-        const distanceCost = distanceKm * 5;
-
-        let total = 0;
-        let note = '';
-
-        if (pickup.toLowerCase().includes('caroni') || dropoff.toLowerCase().includes('caroni')) {
-          total = 300 + waitingCost;
-          note = 'Caroni Flat Rate applied';
+        if (data.success) {
+          renderBookings(data.bookings);
         } else {
-          total = baseFare + distanceCost + waitingCost;
-          note = `Base: $${baseFare} + Dist: ${distanceKm}km * $5 + Wait: $${waitingCost}`;
+          alert('Error loading bookings.');
         }
-
-        if (isCarnival && total < 400) {
-          total = 400;
-          note += '\nCarnival Minimum applied ($400)';
-        }
-
-        document.getElementById('fare-breakdown').innerText = `Hub: ${pickupHub || 'Unknown'} -> ${dropoffHub || 'Unknown'}\nDist: ~${distanceKm} km\n${note}\n-------------------\nCALCULATED: $${total.toFixed(2)}`;
-        document.getElementById('fare-final').value = total.toFixed(2);
       } catch (error) {
-        console.error('Calculation error:', error);
-        document.getElementById('fare-breakdown').innerText = 'Error calculating fare. Check console (F12).';
+        console.error('Error:', error);
+        alert('Network error. Please try again.');
+      } finally {
+        document.getElementById('loading').classList.add('hidden');
+        document.getElementById('bookingsGrid').classList.remove('hidden');
       }
     }
 
-    function saveFare() {
-      const row = document.getElementById('fare-row').value;
-      const price = document.getElementById('fare-final').value;
-      if (!price) { alert('Please enter a price'); return; }
-      
-      fetch(APPS_SCRIPT_URL, { method: 'POST', body: new URLSearchParams({ action: 'updatePrice', row: row, price: price }) })
-      .then(r => r.json()).then(d => { 
-        if(d.success) { alert('✅ Price saved!'); closeFareModal(); loadBookings(); } 
-        else alert('❌ Error: ' + (d.message || 'Unknown error')); 
-      }).catch(e => alert('Network error: ' + e));
+    // Smart Pricing Logic
+    function calculateSuggestedPrice(pickup, dropoff) {
+      const p = (pickup || '').toLowerCase();
+      const d = (dropoff || '').toLowerCase();
+
+      // 1. Check for Airports (Higher fare)
+      if (p.includes('piarco') || d.includes('piarco') || p.includes('airport') || d.includes('airport')) {
+        return 400;
+      }
+
+      // 2. Check for common cities to determine zones
+      const cities = ['port of spain', 'chaguanas', 'san fernando', 'arima', 'point fortin', 'scarborough', 'tobago'];
+      let pCity = cities.find(c => p.includes(c)) || 'other';
+      let dCity = cities.find(c => d.includes(c)) || 'other';
+
+      // 3. Same city = lower fare
+      if (pCity === dCity) {
+        return 200;
+      }
+
+      // 4. Different cities = standard cross-town fare
+      return 350;
     }
 
-    function markAsCompleted(rowNumber) { updateStatus(rowNumber, 'Completed'); }
-    function resetStatus(rowNumber) { updateStatus(rowNumber, 'Pending'); }
+    function renderBookings(bookings) {
+      const grid = document.getElementById('bookingsGrid');
+      grid.innerHTML = '';
+
+      // Sort by newest first
+      bookings.reverse().forEach(booking => {
+        const row = booking._rowNumber;
+        const status = (booking.STATUS || 'Pending').toLowerCase().replace(' ', '-');
+        const price = booking['FINAL PRICE'] || '';
+        
+        // Calculate suggested price for the button
+        const suggestedPrice = calculateSuggestedPrice(booking['PICK UP'], booking['DROP OFF']);
+
+        const card = document.createElement('div');
+        card.className = 'bg-white rounded-xl shadow-md p-6 border-l-4 border-blue-500';
+        card.innerHTML = `
+          <div class="flex justify-between items-start mb-4">
+            <div>
+              <h3 class="text-xl font-bold text-gray-800">${booking['REF CODE'] || 'N/A'}</h3>
+              <p class="text-sm text-gray-500">${booking.NAME || 'Unknown'}</p>
+            </div>
+            <span class="px-3 py-1 rounded-full text-xs font-bold uppercase status-${status}">
+              ${booking.STATUS || 'Pending'}
+            </span>
+          </div>
+
+          <div class="space-y-3 mb-4 text-sm">
+            <div class="flex items-start">
+              <i class="fas fa-map-marker-alt text-green-500 mt-1 mr-2"></i>
+              <div>
+                <p class="font-bold text-gray-700">Pickup:</p>
+                <p class="text-gray-600">${booking['PICK UP'] || 'N/A'}</p>
+              </div>
+            </div>
+            <div class="flex items-start">
+              <i class="fas fa-flag-checkered text-red-500 mt-1 mr-2"></i>
+              <div>
+                <p class="font-bold text-gray-700">Drop-off:</p>
+                <p class="text-gray-600">${booking['DROP OFF'] || 'N/A'}</p>
+              </div>
+            </div>
+            <div class="flex items-center text-gray-600">
+              <i class="fas fa-calendar-alt mr-2"></i> ${booking.DATE || 'N/A'} at ${booking.TIME || 'N/A'}
+            </div>
+            <div class="flex items-center text-gray-600">
+              <i class="fas fa-phone mr-2"></i> ${booking.PHONE || 'N/A'}
+            </div>
+            ${booking.NOTES ? `<div class="bg-yellow-50 p-2 rounded text-yellow-800 text-xs"><i class="fas fa-sticky-note mr-1"></i> ${booking.NOTES}</div>` : ''}
+          </div>
+
+          <!-- Pricing Section -->
+          <div class="border-t pt-4 mb-4">
+            <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Final Price (TTD)</label>
+            <div class="flex gap-2">
+              <input type="number" id="price-${row}" value="${price}" placeholder="0.00" 
+                class="flex-1 p-2 border rounded-lg focus:outline-none focus:border-blue-500">
+              <button onclick="setSuggestedPrice(${row}, ${suggestedPrice})" 
+                class="bg-gray-200 hover:bg-gray-300 text-gray-700 px-3 py-2 rounded-lg text-xs font-bold transition" title="Auto-suggest price">
+                <i class="fas fa-magic"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- Action Buttons -->
+          <div class="grid grid-cols-2 gap-2">
+            <button onclick="updatePrice(${row})" class="bg-green-600 hover:bg-green-700 text-white py-2 rounded-lg font-bold text-sm transition">
+              <i class="fas fa-paper-plane mr-1"></i> Send Price
+            </button>
+            <a href="${booking['WHATSAPP LINK'] || '#'}" target="_blank" class="bg-[#25D366] hover:bg-[#128C7E] text-white py-2 rounded-lg font-bold text-sm transition text-center flex items-center justify-center">
+              <i class="fab fa-whatsapp mr-1"></i> WhatsApp
+            </a>
+          </div>
+
+          <!-- Status Update -->
+          <div class="mt-4">
+            <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Update Status</label>
+            <select onchange="updateStatus(${row}, this.value)" class="w-full p-2 border rounded-lg focus:outline-none focus:border-blue-500">
+              <option value="Pending" ${booking.STATUS === 'Pending' ? 'selected' : ''}>Pending</option>
+              <option value="Confirmed" ${booking.STATUS === 'Confirmed' ? 'selected' : ''}>Confirmed</option>
+              <option value="Price Sent" ${booking.STATUS === 'Price Sent' ? 'selected' : ''}>Price Sent</option>
+              <option value="Completed" ${booking.STATUS === 'Completed' ? 'selected' : ''}>Completed</option>
+              <option value="Cancelled" ${booking.STATUS === 'Cancelled' ? 'selected' : ''}>Cancelled</option>
+            </select>
+          </div>
+        `;
+        grid.appendChild(card);
+      });
+    }
+
+    function setSuggestedPrice(row, price) {
+      document.getElementById(`price-${row}`).value = price;
+    }
+
+    async function updatePrice(row) {
+      const price = document.getElementById(`price-${row}`).value;
+      if (!price) return alert('Please enter a price.');
+
+      const btn = event.target;
+      const originalText = btn.innerHTML;
+      btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
+      btn.disabled = true;
+
+      try {
+        const response = await fetch(APPS_SCRIPT_URL, {
+          method: 'POST',
+          body: new URLSearchParams({
+            action: 'updatePrice',
+            row: row,
+            price: price
+          })
+        });
+        const result = await response.json();
+        if (result.success) {
+          alert('Price sent to client successfully!');
+          fetchBookings(); // Refresh to show updated status
+        } else {
+          alert('Error sending price.');
+        }
+      } catch (error) {
+        alert('Network error.');
+      } finally {
+        btn.innerHTML = originalText;
+        btn.disabled = false;
+      }
+    }
+
+    async function updateStatus(row, status) {
+      try {
+        const response = await fetch(APPS_SCRIPT_URL, {
+          method: 'POST',
+          body: new URLSearchParams({
+            action: 'updateStatus',
+            row: row,
+            status: status
+          })
+        });
+        const result = await response.json();
+        if (result.success) {
+          fetchBookings(); // Refresh to update the badge color
+        }
+      } catch (error) {
+        alert('Error updating status.');
+      }
+    }
+
+    // Load bookings on page load
+    window.addEventListener('DOMContentLoaded', fetchBookings);
   </script>
 </body>
 </html>
