@@ -472,46 +472,54 @@
     }
 
     // ==========================================
-    // IMPROVED GPS DISTANCE CALCULATOR
+    // ULTRA-ROBUST GPS DISTANCE CALCULATOR
     // ==========================================
     async function getCoordinates(address) {
       if (!address) return null;
       
-      // Strategy 1: Try the full address as-is
-      // Strategy 2: Extract just the landmark/building name
-      // Strategy 3: Use just street + "Trinidad and Tobago"
+      // Generate multiple search strategies from most specific to most general
+      const parts = address.split(',').map(p => p.trim()).filter(p => p);
       
       const strategies = [
+        // Strategy 1: Full address
         address,
-        address.split(',')[0] + ', ' + (address.split(',')[1] || '') + ', Trinidad and Tobago',
-        address.split(',')[0] + ', Trinidad',
-        address.replace(/\d{5,6}/g, '').trim() + ', Trinidad and Tobago'
+        // Strategy 2: First 2 parts + country
+        parts.slice(0, 2).join(', ') + ', Trinidad and Tobago',
+        // Strategy 3: Just the first part (landmark/street)
+        parts[0] + ', Trinidad and Tobago',
+        // Strategy 4: First part + nearest city/area
+        parts[0] + ', ' + (parts[1] || 'Trinidad'),
+        // Strategy 5: Remove numbers, try again
+        parts[0].replace(/\d+/g, '').trim() + ', Trinidad',
+        // Strategy 6: Just the area name
+        parts[parts.length - 2] || parts[0],
       ];
       
       for (let i = 0; i < strategies.length; i++) {
         const query = strategies[i].trim();
-        if (!query || query === ', Trinidad and Tobago') continue;
+        if (!query || query.length < 3) continue;
         
         try {
-          console.log(`Trying geocoding strategy ${i + 1}:`, query);
+          console.log(`🔍 Strategy ${i + 1}: "${query}"`);
           
-          // Wait between requests
-          await new Promise(resolve => setTimeout(resolve, 1500));
+          // Wait between requests (Nominatim allows 1 req/sec)
+          await new Promise(resolve => setTimeout(resolve, 1200));
           
           const response = await fetch(
-            `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=1&countrycodes=tt`,
-            { headers: { 'User-Agent': 'HKJLogistics/1.0' } }
+            `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=3&countrycodes=tt`,
+            { headers: { 'User-Agent': 'HKJLogisticsApp/2.0' } }
           );
           
           if (response.ok) {
             const data = await response.json();
             if (data && data.length > 0) {
+              // Return the first result
               console.log('✅ Found:', data[0].display_name);
               return { lat: data[0].lat, lon: data[0].lon };
             }
           }
         } catch (error) {
-          console.log(`Strategy ${i + 1} failed:`, error.message);
+          console.log(`❌ Strategy ${i + 1} failed:`, error.message);
         }
       }
       
@@ -561,7 +569,7 @@
       console.log('📍 Pickup:', pickup);
       console.log('📍 Dropoff:', dropoff);
 
-      // Get coordinates with retries
+      // Get coordinates with aggressive retries
       const startCoords = await getCoordinates(pickup);
       const endCoords = await getCoordinates(dropoff);
 
@@ -573,21 +581,21 @@
         const route = await getDrivingRoute(startCoords.lat, startCoords.lon, endCoords.lat, endCoords.lon);
         
         if (route && route.distanceKm > 0) {
-          console.log(' Distance:', route.distanceKm.toFixed(1) + 'km');
+          console.log('📏 Distance:', route.distanceKm.toFixed(1) + 'km');
           console.log('⏱️ Duration:', route.durationMins.toFixed(0) + 'mins');
           
-          // SIMPLIFIED PRICING FORMULA:
+          // PRICING FORMULA:
           // Base: $50
           // $5 per km for first 20km
           // $3 per km after 20km
           
-          let price = 50; // Base fare
+          let price = 50;
           
           if (route.distanceKm <= 20) {
             price += (route.distanceKm * 5);
           } else {
-            price += (20 * 5); // First 20km
-            price += ((route.distanceKm - 20) * 3); // Remaining km
+            price += (20 * 5);
+            price += ((route.distanceKm - 20) * 3);
           }
           
           const finalPrice = Math.round(price);
@@ -597,12 +605,20 @@
           applyAutoPrice(row, finalPrice);
           btn.innerHTML = `<i class="fas fa-check mr-1"></i>AUTO $${finalPrice} (${route.distanceKm.toFixed(1)}km)`;
         } else {
-          alert('Could not calculate route distance.\n\nDistance: ' + (route ? route.distanceKm : 'N/A') + ' km\n\nPlease enter price manually.');
+          alert('Could not calculate route distance.\n\nPlease enter price manually.');
           btn.innerHTML = originalText;
         }
       } else {
-        // Show helpful error with what we tried
-        alert(`Could not find one or both locations on the map.\n\nPickup: ${pickup.substring(0, 50)}...\nDropoff: ${dropoff.substring(0, 50)}...\n\nPlease enter price manually or use more specific addresses (e.g., "Hyatt Hotel, Port of Spain" instead of just "Wrightson Road").`);
+        // Show detailed error with suggestions
+        let errorMsg = `Could not find locations on the map.\n\n`;
+        errorMsg += `Pickup: ${pickup.substring(0, 60)}...\n`;
+        errorMsg += `Dropoff: ${dropoff.substring(0, 60)}...\n\n`;
+        errorMsg += `Please enter price manually.\n\n`;
+        errorMsg += `💡 Tip: Try editing the booking with simpler addresses like:\n`;
+        errorMsg += `• "Chaguaramas" instead of "Pier1 Chaguaramas"\n`;
+        errorMsg += `• "Grand Bazaar" instead of "Grand Bazaar Roundabout, Bamboo Settlement"`;
+        
+        alert(errorMsg);
         btn.innerHTML = originalText;
       }
       btn.disabled = false;
