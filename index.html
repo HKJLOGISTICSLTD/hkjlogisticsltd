@@ -4,60 +4,92 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>HKJ Logistics Ltd | Reliable. Safe. On Time.</title>
+  
+  <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Font Awesome -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <!-- Google Fonts: Montserrat (Headings) & Open Sans (Body) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+
   <style>
+    /* Apply Fonts */
+    body {
+      font-family: 'Open Sans', sans-serif;
+    }
+    h1, h2, h3, .font-bold, .font-extrabold, button, .nav-link {
+      font-family: 'Montserrat', sans-serif;
+    }
+
+    /* Hero Background */
     .hero-bg {
-      background: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)),
-                  url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=1920&q=80');
+      background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.7)),
+                  url('https://images.unsplash.com/photo-1449965408869-eaa3f722e40d?w=1920&q=80'); /* Changed to a more professional road/transport image */
       background-size: cover;
       background-position: center;
       background-attachment: fixed;
     }
+
+    /* Professional Booking Section Background */
+    .booking-section-bg {
+      background-color: #1e293b; /* Deep Slate Color */
+      background-image: radial-gradient(#334155 1px, transparent 1px);
+      background-size: 20px 20px; /* Subtle dot pattern for texture */
+    }
+
+    /* Custom Input Focus Ring */
+    .input-focus:focus {
+      box-shadow: 0 0 0 3px rgba(250, 204, 21, 0.3); /* Soft yellow glow */
+      border-color: #facc15;
+    }
   </style>
 </head>
-<body class="font-sans">
+<body class="font-sans antialiased text-gray-800">
 
   <!-- Navigation -->
-  <nav class="bg-black text-white py-4 border-b-4 border-yellow-400">
+  <nav class="bg-black text-white py-4 border-b-4 border-yellow-400 sticky top-0 z-50 shadow-lg">
     <div class="container mx-auto px-4">
       <div class="flex flex-col md:flex-row justify-between items-center">
         <!-- Logo -->
         <div class="flex items-center mb-4 md:mb-0">
-          <div class="w-16 h-16 bg-yellow-400 rounded-full flex items-center justify-center mr-3">
-            <span class="text-black font-bold text-xl">H.K.J</span>
+          <div class="w-14 h-14 bg-yellow-400 rounded-full flex items-center justify-center mr-3 shadow-md">
+            <span class="text-black font-extrabold text-lg tracking-tighter">H.K.J</span>
           </div>
           <div>
-            <h1 class="text-2xl font-bold">LOGISTICS <span class="text-yellow-400">LTD</span></h1>
-            <p class="text-xs text-blue-300">solving all your problems</p>
+            <h1 class="text-2xl font-extrabold tracking-wide">LOGISTICS <span class="text-yellow-400">LTD</span></h1>
+            <p class="text-xs text-blue-300 font-semibold tracking-wider uppercase">Solving all your problems</p>
           </div>
         </div>
 
         <!-- Navigation Links -->
-        <div class="flex flex-wrap justify-center gap-6">
-          <a href="#" class="text-yellow-400 font-bold hover:text-yellow-300">HOME</a>
-          <a href="#services" class="text-white font-bold hover:text-yellow-400">SERVICES</a>
-          <a href="#book" class="text-white font-bold hover:text-yellow-400">BOOK A RIDE</a>
-          <a href="confirm.html" class="text-green-400 font-bold hover:text-green-300">CONFIRM BOOKING</a>
-          <a href="#contact" class="text-white font-bold hover:text-yellow-400">CONTACT US</a>
+        <div class="flex flex-wrap justify-center gap-6 text-sm uppercase tracking-wider">
+          <a href="#" class="text-yellow-400 font-bold hover:text-white transition">Home</a>
+          <a href="#services" class="text-white font-bold hover:text-yellow-400 transition">Services</a>
+          <a href="#book" class="text-white font-bold hover:text-yellow-400 transition">Book a Ride</a>
+          <a href="confirm.html" class="text-green-400 font-bold hover:text-green-300 transition">Confirm Booking</a>
+          <a href="#contact" class="text-white font-bold hover:text-yellow-400 transition">Contact Us</a>
         </div>
       </div>
 
       <!-- Contact Info -->
       <div class="flex flex-col md:flex-row items-center justify-center md:justify-start gap-4 mt-6 pt-6 border-t border-gray-800">
         <div class="flex items-center">
-          <div class="w-12 h-12 bg-yellow-400 rounded-full flex items-center justify-center mr-3">
-            <i class="fas fa-phone text-black text-xl"></i>
+          <div class="w-10 h-10 bg-yellow-400 rounded-full flex items-center justify-center mr-3">
+            <i class="fas fa-phone text-black text-lg"></i>
           </div>
           <div>
-            <p class="text-xl font-bold">+1 (868) 780-0300</p>
-            <p class="text-xs text-yellow-400">24/7 SERVICE</p>
+            <p class="text-lg font-bold">+1 (868) 780-0300</p>
+            <p class="text-xs text-yellow-400 font-bold tracking-wider">24/7 SERVICE</p>
           </div>
         </div>
-        <a href="https://wa.me/18687800300" class="bg-yellow-400 hover:bg-yellow-500 text-black font-bold py-3 px-6 rounded-full transition">
-          <i class="fab fa-whatsapp mr-2"></i> WHATSAPP US
+        <a href="https://wa.me/18687800300" class="bg-yellow-400 hover:bg-yellow-500 text-black font-bold py-2 px-6 rounded-full transition shadow-md flex items-center">
+          <i class="fab fa-whatsapp mr-2 text-lg"></i> WHATSAPP US
         </a>
-        <button class="border-2 border-yellow-400 text-yellow-400 hover:bg-yellow-400 hover:text-black font-bold py-2 px-6 rounded-full transition">
+        <button class="border-2 border-yellow-400 text-yellow-400 hover:bg-yellow-400 hover:text-black font-bold py-2 px-6 rounded-full transition flex items-center">
           <i class="fas fa-globe mr-2"></i> EN
         </button>
       </div>
@@ -65,70 +97,74 @@
   </nav>
 
   <!-- Hero Section -->
-  <section class="hero-bg min-h-screen flex items-center justify-center text-center text-white py-20">
+  <section class="hero-bg min-h-[80vh] flex items-center justify-center text-center text-white py-20">
     <div class="container mx-auto px-4">
-      <h1 class="text-5xl md:text-7xl font-bold mb-6 leading-tight">
+      <h1 class="text-5xl md:text-7xl font-extrabold mb-6 leading-tight tracking-tight drop-shadow-lg">
         RELIABLE.<br>
         <span class="text-yellow-400">SAFE.</span><br>
         ON TIME.
       </h1>
-      <p class="text-xl md:text-2xl mb-8 max-w-3xl mx-auto">
-        Professional Taxi & Transportation Services Across the Beautiful Islands of Trinidad and Tobago
+      <p class="text-lg md:text-xl mb-8 max-w-2xl mx-auto text-gray-200 font-light">
+        Professional Taxi & Transportation Services Across the Beautiful Islands of Trinidad and Tobago.
       </p>
       <div class="flex flex-col md:flex-row justify-center gap-4">
-        <a href="#book" class="bg-yellow-400 hover:bg-yellow-500 text-black font-bold py-4 px-8 rounded-full text-lg transition transform hover:scale-105">
-          <i class="fas fa-calendar-check mr-2"></i> BOOK YOUR RIDE
+        <a href="#book" class="bg-yellow-400 hover:bg-yellow-500 text-black font-bold py-4 px-8 rounded-full text-lg transition transform hover:scale-105 shadow-xl uppercase tracking-wider">
+          <i class="fas fa-calendar-check mr-2"></i> Book Your Ride
         </a>
-        <a href="tel:+18687800300" class="border-2 border-white hover:bg-white hover:text-black font-bold py-4 px-8 rounded-full text-lg transition">
-          <i class="fas fa-phone mr-2"></i> CALL NOW
+        <a href="tel:+18687800300" class="border-2 border-white hover:bg-white hover:text-black text-white font-bold py-4 px-8 rounded-full text-lg transition uppercase tracking-wider">
+          <i class="fas fa-phone mr-2"></i> Call Now
         </a>
       </div>
     </div>
   </section>
 
-  <!-- BOOK A RIDE Section with Nice Background -->
-  <section id="book" class="py-20 bg-gradient-to-br from-gray-100 via-blue-50 to-gray-200">
+  <!-- BOOK A RIDE Section (Professional Dark Theme) -->
+  <section id="book" class="py-24 booking-section-bg">
     <div class="container mx-auto px-4 max-w-4xl">
-      <h2 class="text-4xl font-bold text-center mb-12 text-gray-800">BOOK A RIDE</h2>
+      <div class="text-center mb-12">
+        <h2 class="text-4xl md:text-5xl font-extrabold text-white mb-4 tracking-tight">BOOK A RIDE</h2>
+        <div class="w-24 h-1 bg-yellow-400 mx-auto rounded-full"></div>
+        <p class="text-gray-400 mt-4 text-lg">Fill out the form below and we will get back to you shortly.</p>
+      </div>
       
-      <form id="bookingForm" class="bg-white rounded-xl shadow-2xl p-8 md:p-12 border-t-4 border-yellow-400">
+      <form id="bookingForm" class="bg-white rounded-2xl shadow-2xl p-8 md:p-12 border-t-8 border-yellow-400">
         
         <!-- Name and Phone -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
           <div>
-            <label class="block text-gray-700 text-sm font-bold mb-2">Your Name *</label>
+            <label class="block text-gray-700 text-sm font-bold mb-2 uppercase tracking-wide">Your Name *</label>
             <input type="text" name="clientName" required
-              class="shadow appearance-none border rounded w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-yellow-400"
+              class="w-full py-3 px-4 text-gray-700 border border-gray-300 rounded-lg focus:outline-none input-focus transition"
               placeholder="Enter your full name">
           </div>
           <div>
-            <label class="block text-gray-700 text-sm font-bold mb-2">WhatsApp Number *</label>
+            <label class="block text-gray-700 text-sm font-bold mb-2 uppercase tracking-wide">WhatsApp Number *</label>
             <input type="tel" name="clientPhone" required
-              class="shadow appearance-none border rounded w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-yellow-400"
+              class="w-full py-3 px-4 text-gray-700 border border-gray-300 rounded-lg focus:outline-none input-focus transition"
               placeholder="868-XXX-XXXX">
           </div>
         </div>
 
         <!-- Email -->
         <div class="mb-6">
-          <label class="block text-gray-700 text-sm font-bold mb-2">Your Email Address (Optional)</label>
+          <label class="block text-gray-700 text-sm font-bold mb-2 uppercase tracking-wide">Your Email Address (Optional)</label>
           <input type="email" name="clientEmail"
-            class="shadow appearance-none border rounded w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-yellow-400"
+            class="w-full py-3 px-4 text-gray-700 border border-gray-300 rounded-lg focus:outline-none input-focus transition"
             placeholder="example@email.com">
         </div>
 
         <!-- Pickup Location with Auto-Detect -->
         <div class="mb-6">
-          <label class="block text-gray-700 text-sm font-bold mb-2">
-            Pickup Location * <i class="fas fa-map-marker-alt text-green-500"></i>
+          <label class="block text-gray-700 text-sm font-bold mb-2 uppercase tracking-wide">
+            Pickup Location * <i class="fas fa-map-marker-alt text-green-500 ml-1"></i>
           </label>
           <input type="text" id="pickupLocation" name="pickupAddressText" required
-            class="shadow appearance-none border rounded w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-yellow-400"
-            placeholder="Type place name (e.g., Hyatt Hotel, West Mall, Piarco Airport)"
+            class="w-full py-3 px-4 text-gray-700 border border-gray-300 rounded-lg focus:outline-none input-focus transition"
+            placeholder="Type place name (e.g., Hyatt Hotel, West Mall)"
             onblur="autoDetectLocation('pickup')">
-          <p class="text-xs text-gray-500 mt-2">💡 Type a place name - we'll auto-detect the area!</p>
-          <div id="pickupDetected" class="hidden mt-2 p-3 bg-green-100 text-green-700 rounded text-sm">
-            <i class="fas fa-check-circle"></i> <span id="pickupDetectedText"></span>
+          <p class="text-xs text-gray-500 mt-2 italic"> Type a place name - we'll auto-detect the area!</p>
+          <div id="pickupDetected" class="hidden mt-3 p-3 bg-green-50 text-green-700 rounded-lg text-sm border border-green-200 flex items-center">
+            <i class="fas fa-check-circle mr-2 text-lg"></i> <span id="pickupDetectedText"></span>
           </div>
           <input type="hidden" id="pickupArea" name="pickupArea">
           <input type="hidden" id="pickupCity" name="pickupCity">
@@ -136,16 +172,16 @@
 
         <!-- Drop-off Location with Auto-Detect -->
         <div class="mb-6">
-          <label class="block text-gray-700 text-sm font-bold mb-2">
-            Drop-off Location * <i class="fas fa-flag-checkered text-red-500"></i>
+          <label class="block text-gray-700 text-sm font-bold mb-2 uppercase tracking-wide">
+            Drop-off Location * <i class="fas fa-flag-checkered text-red-500 ml-1"></i>
           </label>
           <input type="text" id="dropoffLocation" name="dropoffAddressText" required
-            class="shadow appearance-none border rounded w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-yellow-400"
-            placeholder="Type place name (e.g., Galleria Mall, Queen's Park Hotel)"
+            class="w-full py-3 px-4 text-gray-700 border border-gray-300 rounded-lg focus:outline-none input-focus transition"
+            placeholder="Type place name (e.g., Galleria Mall, Piarco Airport)"
             onblur="autoDetectLocation('dropoff')">
-          <p class="text-xs text-gray-500 mt-2">💡 Type a place name - we'll auto-detect the area!</p>
-          <div id="dropoffDetected" class="hidden mt-2 p-3 bg-green-100 text-green-700 rounded text-sm">
-            <i class="fas fa-check-circle"></i> <span id="dropoffDetectedText"></span>
+          <p class="text-xs text-gray-500 mt-2 italic">💡 Type a place name - we'll auto-detect the area!</p>
+          <div id="dropoffDetected" class="hidden mt-3 p-3 bg-green-50 text-green-700 rounded-lg text-sm border border-green-200 flex items-center">
+            <i class="fas fa-check-circle mr-2 text-lg"></i> <span id="dropoffDetectedText"></span>
           </div>
           <input type="hidden" id="dropoffArea" name="dropoffArea">
           <input type="hidden" id="dropoffCity" name="dropoffCity">
@@ -154,22 +190,22 @@
         <!-- Date and Time -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
           <div>
-            <label class="block text-gray-700 text-sm font-bold mb-2">Date *</label>
+            <label class="block text-gray-700 text-sm font-bold mb-2 uppercase tracking-wide">Date *</label>
             <input type="date" name="bookDate" required
-              class="shadow appearance-none border rounded w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-yellow-400">
+              class="w-full py-3 px-4 text-gray-700 border border-gray-300 rounded-lg focus:outline-none input-focus transition">
           </div>
           <div>
-            <label class="block text-gray-700 text-sm font-bold mb-2">Time *</label>
+            <label class="block text-gray-700 text-sm font-bold mb-2 uppercase tracking-wide">Time *</label>
             <input type="time" name="bookTime" required
-              class="shadow appearance-none border rounded w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-yellow-400">
+              class="w-full py-3 px-4 text-gray-700 border border-gray-300 rounded-lg focus:outline-none input-focus transition">
           </div>
         </div>
 
         <!-- Vehicle Type -->
         <div class="mb-6">
-          <label class="block text-gray-700 text-sm font-bold mb-2">Vehicle Type *</label>
+          <label class="block text-gray-700 text-sm font-bold mb-2 uppercase tracking-wide">Vehicle Type *</label>
           <select name="vehicleType" required
-            class="shadow appearance-none border rounded w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-yellow-400">
+            class="w-full py-3 px-4 text-gray-700 border border-gray-300 rounded-lg focus:outline-none input-focus transition bg-white">
             <option value="">Select vehicle...</option>
             <option value="Standard Sedan (1-4 Passengers)">Standard Sedan (1-4 Passengers)</option>
             <option value="SUV (5-7 Passengers)">SUV (5-7 Passengers)</option>
@@ -180,9 +216,9 @@
 
         <!-- Service Type -->
         <div class="mb-6">
-          <label class="block text-gray-700 text-sm font-bold mb-2">Service Type *</label>
+          <label class="block text-gray-700 text-sm font-bold mb-2 uppercase tracking-wide">Service Type *</label>
           <select name="serviceType" required
-            class="shadow appearance-none border rounded w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-yellow-400">
+            class="w-full py-3 px-4 text-gray-700 border border-gray-300 rounded-lg focus:outline-none input-focus transition bg-white">
             <option value="private">Private Transfer</option>
             <option value="shared">Shared Transfer</option>
             <option value="hourly">Hourly Service</option>
@@ -191,53 +227,51 @@
 
         <!-- Waiting Time -->
         <div class="mb-6">
-          <label class="block text-gray-700 text-sm font-bold mb-2">Waiting Time (hours)</label>
+          <label class="block text-gray-700 text-sm font-bold mb-2 uppercase tracking-wide">Waiting Time (hours)</label>
           <input type="number" name="waitingTime" min="0" value="0"
-            class="shadow appearance-none border rounded w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-yellow-400"
+            class="w-full py-3 px-4 text-gray-700 border border-gray-300 rounded-lg focus:outline-none input-focus transition"
             placeholder="0">
         </div>
 
         <!-- Additional Notes -->
         <div class="mb-6">
-          <label class="block text-gray-700 text-sm font-bold mb-2">Additional Notes</label>
+          <label class="block text-gray-700 text-sm font-bold mb-2 uppercase tracking-wide">Additional Notes</label>
           <textarea name="additionalNotes" rows="3"
-            class="shadow appearance-none border rounded w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-yellow-400"
+            class="w-full py-3 px-4 text-gray-700 border border-gray-300 rounded-lg focus:outline-none input-focus transition"
             placeholder="Special requests, flight numbers, etc."></textarea>
         </div>
 
         <!-- Carnival Checkbox -->
-        <div class="mb-8">
-          <label class="flex items-center">
-            <input type="checkbox" name="isCarnival" class="form-checkbox h-5 w-5 text-yellow-600">
-            <span class="ml-2 text-gray-700">This is a Carnival Event Booking (Minimum $400 TTD)</span>
-          </label>
+        <div class="mb-8 flex items-center p-4 bg-gray-50 rounded-lg border border-gray-200">
+          <input type="checkbox" name="isCarnival" id="isCarnival" class="form-checkbox h-5 w-5 text-yellow-600 rounded focus:ring-yellow-500">
+          <label for="isCarnival" class="ml-3 text-gray-700 font-semibold">This is a Carnival Event Booking (Minimum $400 TTD)</label>
         </div>
 
         <!-- Submit Button -->
         <button type="submit" id="submitBtn"
-          class="w-full bg-yellow-400 hover:bg-yellow-500 text-black font-bold py-4 px-8 rounded-lg text-lg transition transform hover:scale-105 shadow-lg">
+          class="w-full bg-yellow-400 hover:bg-yellow-500 text-black font-extrabold py-4 px-8 rounded-lg text-lg transition transform hover:scale-[1.02] shadow-lg uppercase tracking-wider">
           <i class="fas fa-paper-plane mr-2"></i> Submit Booking Request
         </button>
 
         <!-- Loading State -->
         <div id="loading" class="hidden text-center py-8">
-          <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-black"></div>
-          <p class="mt-4 text-gray-700">Submitting your booking...</p>
+          <div class="inline-block animate-spin rounded-full h-10 w-10 border-4 border-gray-300 border-t-yellow-400 mb-4"></div>
+          <p class="text-gray-700 font-semibold">Submitting your booking...</p>
         </div>
 
         <!-- Success Message -->
         <div id="successMessage" class="hidden text-center py-8">
           <i class="fas fa-check-circle text-green-500 text-6xl mb-4"></i>
-          <h3 class="text-2xl font-bold text-gray-800 mb-4">THANK YOU!</h3>
-          <p class="text-gray-600 mb-4">Your booking request has been received!</p>
-          <p class="text-gray-700 font-bold mb-2">Your Reference Code:</p>
-          <div class="bg-black text-yellow-400 text-3xl font-bold py-4 px-8 rounded-lg mb-4 inline-block">
+          <h3 class="text-3xl font-extrabold text-gray-800 mb-4">THANK YOU!</h3>
+          <p class="text-gray-600 mb-4 text-lg">Your booking request has been received.</p>
+          <p class="text-gray-700 font-bold mb-2 uppercase tracking-wide text-sm">Your Reference Code:</p>
+          <div class="bg-black text-yellow-400 text-3xl font-extrabold py-4 px-8 rounded-lg mb-6 inline-block tracking-widest shadow-inner">
             <span id="refCodeDisplay">HKJ-XXXX</span>
           </div>
-          <p class="text-gray-600 mb-4">We'll contact you shortly with the final price.</p>
+          <p class="text-gray-600 mb-6">We'll contact you shortly with the final price.</p>
           <button type="button" onclick="location.reload()" 
-            class="bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-8 rounded-lg transition">
-            GOT IT!
+            class="bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-8 rounded-lg transition uppercase tracking-wider shadow-md">
+            Got It!
           </button>
         </div>
       </form>
@@ -245,10 +279,21 @@
   </section>
 
   <!-- Footer -->
-  <footer class="bg-black text-white py-8 border-t-4 border-yellow-400">
+  <footer class="bg-black text-white py-10 border-t-4 border-yellow-400">
     <div class="container mx-auto px-4 text-center">
-      <p class="text-yellow-400 font-bold text-xl mb-2">H.K.J LOGISTICS LTD</p>
-      <p class="text-gray-400 text-sm">© 2024 All Rights Reserved</p>
+      <div class="flex justify-center items-center mb-4">
+         <div class="w-10 h-10 bg-yellow-400 rounded-full flex items-center justify-center mr-2">
+            <span class="text-black font-bold text-sm">H.K.J</span>
+         </div>
+         <p class="text-yellow-400 font-bold text-xl tracking-wide">LOGISTICS LTD</p>
+      </div>
+      <p class="text-gray-500 text-sm mb-4">Professional Transportation Services in Trinidad & Tobago</p>
+      <div class="flex justify-center gap-4 mb-6">
+        <a href="#" class="text-gray-400 hover:text-yellow-400 transition"><i class="fab fa-facebook-f text-xl"></i></a>
+        <a href="#" class="text-gray-400 hover:text-yellow-400 transition"><i class="fab fa-instagram text-xl"></i></a>
+        <a href="#" class="text-gray-400 hover:text-yellow-400 transition"><i class="fab fa-whatsapp text-xl"></i></a>
+      </div>
+      <p class="text-gray-600 text-xs">© 2024 H.K.J Logistics Ltd. All Rights Reserved.</p>
     </div>
   </footer>
 
@@ -303,21 +348,21 @@
         const detectedDiv = document.getElementById(detectedId);
         const detectedText = document.getElementById(detectedTextId);
         
-        detectedText.textContent = '🔍 Searching...';
+        detectedText.textContent = 'Searching...';
         detectedDiv.classList.remove('hidden');
-        detectedDiv.className = 'mt-2 p-3 bg-blue-100 text-blue-700 rounded text-sm';
+        detectedDiv.className = 'mt-3 p-3 bg-blue-50 text-blue-700 rounded-lg text-sm border border-blue-200 flex items-center';
         
         const placeInfo = await searchPlace(inputValue);
         
         if (placeInfo) {
           document.getElementById(areaInputId).value = placeInfo.area;
           document.getElementById(cityInputId).value = placeInfo.city;
-          detectedText.textContent = `✓ Found: ${placeInfo.name} - ${placeInfo.area}`;
-          detectedDiv.className = 'mt-2 p-3 bg-green-100 text-green-700 rounded text-sm';
+          detectedText.textContent = `Found: ${placeInfo.name} - ${placeInfo.area}`;
+          detectedDiv.className = 'mt-3 p-3 bg-green-50 text-green-700 rounded-lg text-sm border border-green-200 flex items-center';
           document.getElementById(inputId).value = placeInfo.fullAddress;
         } else {
-          detectedText.textContent = '⚠️ Place not found. Please enter full address.';
-          detectedDiv.className = 'mt-2 p-3 bg-yellow-100 text-yellow-700 rounded text-sm';
+          detectedText.textContent = 'Place not found. Please enter full address.';
+          detectedDiv.className = 'mt-3 p-3 bg-yellow-50 text-yellow-700 rounded-lg text-sm border border-yellow-200 flex items-center';
         }
       }
     }
