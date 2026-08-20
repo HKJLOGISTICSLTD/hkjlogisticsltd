@@ -362,6 +362,23 @@
             </div>
           </div>
 
+          <!-- Payment Method -->
+          <div class="mb-8">
+            <div class="input-group">
+              <label class="block text-gray-700 text-sm font-bold mb-2">
+                <i class="fas fa-credit-card text-purple-600 mr-2"></i><span data-i18n="paymentMethod">Payment Method</span> *
+              </label>
+              <select name="paymentMethod" required
+                class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-purple-500 focus:outline-none bg-gray-50 focus:bg-white transition">
+                <option value="">Select payment method...</option>
+                <option value="Credit Card / Linx">Credit Card / Linx</option>
+                <option value="Online (WiPay)">Online (WiPay)</option>
+                <option value="Cash">Cash</option>
+                <option value="Online Transfer">Online Transfer</option>
+              </select>
+            </div>
+          </div>
+
           <!-- Additional Notes -->
           <div class="mb-8">
             <div class="input-group">
@@ -444,6 +461,7 @@
         vehicleType: 'Vehicle Type',
         serviceType: 'Service Type',
         waitingTime: 'Waiting Time',
+        paymentMethod: 'Payment Method',
         additionalNotes: 'Additional Notes',
         carnivalEvent: 'This is a Carnival Event Booking (Minimum $400 TTD)',
         submitBooking: 'Submit Booking Request',
@@ -488,6 +506,7 @@
         vehicleType: 'Tipo de Vehículo',
         serviceType: 'Tipo de Servicio',
         waitingTime: 'Tiempo de Espera',
+        paymentMethod: 'Método de Pago',
         additionalNotes: 'Notas Adicionales',
         carnivalEvent: 'Esta es una Reserva de Carnaval (Mínimo $400 TTD)',
         submitBooking: 'Enviar Solicitud de Reserva',
