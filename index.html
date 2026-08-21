@@ -647,6 +647,9 @@
       });
     });
 
+    // ==========================================
+    // COMPACT SUCCESS MODAL (ADJUSTED SIZE)
+    // ==========================================
     function showSuccessModal(refCode) {
       const existingModal = document.getElementById('successModal');
       if (existingModal) existingModal.remove();
@@ -655,25 +658,26 @@
       modal.id = 'successModal';
       modal.className = 'fixed inset-0 modal-backdrop z-50 flex items-center justify-center p-4 animate-fade-in';
       
-      modal.innerHTML = "<div class='bg-slate-900 rounded-3xl shadow-2xl max-w-md w-full p-8 transform transition-transform duration-300 border border-white/10'>" +
-        "<div class='w-24 h-24 bg-gradient-to-br from-green-400 to-green-500 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg'>" +
-        "<i class='fas fa-check text-white text-5xl'></i></div>" +
-        "<h3 class='text-3xl font-bold text-white text-center mb-4'>Booking Successful!</h3>" +
-        "<p class='text-gray-300 text-center mb-6 text-lg'>Your booking has been submitted successfully.</p>" +
-        "<div class='bg-gradient-to-r from-yellow-900/50 to-amber-900/50 border-2 border-yellow-400 rounded-xl p-5 mb-6'>" +
-        "<p class='text-sm text-gray-300 text-center mb-1 font-semibold uppercase tracking-wide'>Your Reference Code</p>" +
-        "<p class='text-4xl font-bold text-white text-center tracking-wider'>" + refCode + "</p></div>" +
+      // Smaller, more compact modal dimensions and typography
+      modal.innerHTML = "<div class='bg-slate-900 rounded-2xl shadow-2xl max-w-sm w-full p-6 transform transition-transform duration-300 border border-white/10'>" +
+        "<div class='w-16 h-16 bg-gradient-to-br from-green-400 to-green-500 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg'>" +
+        "<i class='fas fa-check text-white text-3xl'></i></div>" +
+        "<h3 class='text-2xl font-bold text-white text-center mb-3'>Booking Successful!</h3>" +
+        "<p class='text-gray-400 text-center mb-4 text-sm'>Your booking has been submitted successfully.</p>" +
+        "<div class='bg-gradient-to-r from-yellow-900/50 to-amber-900/50 border-2 border-yellow-400 rounded-xl p-3 mb-4'>" +
+        "<p class='text-xs text-gray-400 text-center mb-1 font-semibold uppercase tracking-wide'>Reference Code</p>" +
+        "<p class='text-2xl font-bold text-white text-center tracking-wider'>" + refCode + "</p></div>" +
         
-        "<div class='bg-indigo-900/30 border border-indigo-500/30 rounded-xl p-4 mb-6'>" +
-        "<h4 class='text-white font-bold mb-3 text-center text-sm'><i class='fas fa-list-ol text-yellow-500 mr-2'></i>Next Steps</h4>" +
-        "<div class='space-y-2 text-sm'>" +
-        "<div class='flex items-center'><div class='w-5 h-5 bg-blue-500 rounded-full flex items-center justify-center mr-2 flex-shrink-0'><span class='text-white text-xs font-bold'>1</span></div><p class='text-gray-300'><strong>Submit:</strong> Done ✓</p></div>" +
-        "<div class='flex items-center'><div class='w-5 h-5 bg-purple-500 rounded-full flex items-center justify-center mr-2 flex-shrink-0'><span class='text-white text-xs font-bold'>2</span></div><p class='text-gray-300'><strong>Quote:</strong> Coming to your email/WhatsApp soon</p></div>" +
-        "<div class='flex items-center'><div class='w-5 h-5 bg-green-500 rounded-full flex items-center justify-center mr-2 flex-shrink-0'><span class='text-white text-xs font-bold'>3</span></div><p class='text-gray-300'><strong>Confirm:</strong> Click the link in our message</p></div>" +
-        "<div class='flex items-center'><div class='w-5 h-5 bg-yellow-500 rounded-full flex items-center justify-center mr-2 flex-shrink-0'><span class='text-black text-xs font-bold'>4</span></div><p class='text-gray-300'><strong>Ride:</strong> Sit back and relax!</p></div>" +
+        "<div class='bg-indigo-900/30 border border-indigo-500/30 rounded-xl p-3 mb-4'>" +
+        "<h4 class='text-white font-bold mb-2 text-center text-xs'><i class='fas fa-list-ol text-yellow-500 mr-1'></i>Next Steps</h4>" +
+        "<div class='space-y-1.5 text-xs'>" +
+        "<div class='flex items-center'><div class='w-4 h-4 bg-blue-500 rounded-full flex items-center justify-center mr-2 flex-shrink-0'><span class='text-white text-[10px] font-bold'>1</span></div><p class='text-gray-300'><strong>Submit:</strong> Done ✓</p></div>" +
+        "<div class='flex items-center'><div class='w-4 h-4 bg-purple-500 rounded-full flex items-center justify-center mr-2 flex-shrink-0'><span class='text-white text-[10px] font-bold'>2</span></div><p class='text-gray-300'><strong>Quote:</strong> Coming soon</p></div>" +
+        "<div class='flex items-center'><div class='w-4 h-4 bg-green-500 rounded-full flex items-center justify-center mr-2 flex-shrink-0'><span class='text-white text-[10px] font-bold'>3</span></div><p class='text-gray-300'><strong>Confirm:</strong> Click our link</p></div>" +
+        "<div class='flex items-center'><div class='w-4 h-4 bg-yellow-500 rounded-full flex items-center justify-center mr-2 flex-shrink-0'><span class='text-black text-[10px] font-bold'>4</span></div><p class='text-gray-300'><strong>Ride:</strong> Relax!</p></div>" +
         "</div></div>" +
 
-        "<button onclick='closeSuccessModal()' class='w-full btn-gradient text-black font-bold py-4 rounded-xl shadow-lg hover:shadow-xl transition text-lg'><i class='fas fa-check mr-2'></i>Got It!</button>" +
+        "<button onclick='closeSuccessModal()' class='w-full btn-gradient text-black font-bold py-3 rounded-xl shadow-lg hover:shadow-xl transition text-sm'><i class='fas fa-check mr-2'></i>Got It!</button>" +
         "</div>";
       
       document.body.appendChild(modal);
