@@ -3,331 +3,579 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Confirm Booking - HKJ Logistics</title>
+  <meta name="description" content="HKJ Logistics - Booking Confirmation">
+  <title>HKJ Logistics - Booking Confirmation</title>
+  
+  <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Font Awesome Icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  
   <style>
-    * {
-      font-family: 'Poppins', sans-serif;
+    /* ==========================================
+       GLOBAL STYLES - MATCHES MAIN PAGE
+       ========================================== */
+    * { 
+      font-family: 'Inter', sans-serif; 
+      box-sizing: border-box;
     }
+    
     body {
-      background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
-      min-height: 100vh;
+      background: linear-gradient(135deg, rgba(15, 23, 42, 0.85), rgba(30, 41, 59, 0.95)),
+                  url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=1920&q=80') !important;
+      background-size: cover !important; 
+      background-position: center !important;
+      background-attachment: fixed !important; 
+      background-repeat: no-repeat !important;
+      min-height: 100vh !important;
+      margin: 0;
+      padding: 0;
+      color: #f8fafc;
     }
+
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar { width: 10px; }
+    ::-webkit-scrollbar-track { background: #1e293b; }
+    ::-webkit-scrollbar-thumb { background: #facc15; border-radius: 5px; }
+    ::-webkit-scrollbar-thumb:hover { background: #f59e0b; }
+    
+    /* ==========================================
+       COMPONENT STYLES
+       ========================================== */
     .glass-card {
-      background: rgba(255, 255, 255, 0.95);
+      background: rgba(30, 41, 59, 0.85);
       backdrop-filter: blur(20px);
-      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+      border: 1px solid rgba(255, 255, 255, 0.08);
     }
+    
+    .btn-gradient {
+      background: linear-gradient(135deg, #facc15, #f59e0b);
+      transition: all 0.3s ease;
+    }
+    .btn-gradient:hover {
+      background: linear-gradient(135deg, #f59e0b, #d97706);
+      transform: translateY(-2px);
+      box-shadow: 0 10px 20px rgba(245, 158, 11, 0.3);
+    }
+    
+    .input-focus:focus {
+      border-color: #facc15;
+      box-shadow: 0 0 0 3px rgba(250, 204, 21, 0.2);
+    }
+
+    .bg-dark-input {
+      background: rgba(15, 23, 42, 0.6);
+      border-color: rgba(255, 255, 255, 0.1);
+      color: #ffffff;
+    }
+    .bg-dark-input:focus {
+      border-color: #facc15;
+      background: rgba(15, 23, 42, 0.8);
+    }
+    .bg-dark-input::placeholder {
+      color: #94a3b8;
+    }
+
+    /* Status Badges */
+    .status-pending { 
+      background: linear-gradient(135deg, rgba(251, 191, 36, 0.2), rgba(245, 158, 11, 0.2)); 
+      color: #fbbf24;
+      border: 1px solid rgba(251, 191, 36, 0.3);
+    }
+    .status-price-sent { 
+      background: linear-gradient(135deg, rgba(168, 85, 247, 0.2), rgba(147, 51, 234, 0.2)); 
+      color: #d8b4fe;
+      border: 1px solid rgba(168, 85, 247, 0.3);
+    }
+    .status-confirmed { 
+      background: linear-gradient(135deg, rgba(59, 130, 246, 0.2), rgba(37, 99, 235, 0.2)); 
+      color: #93c5fd;
+      border: 1px solid rgba(59, 130, 246, 0.3);
+    }
+    .status-completed { 
+      background: linear-gradient(135deg, rgba(34, 197, 94, 0.2), rgba(22, 163, 74, 0.2)); 
+      color: #86efac;
+      border: 1px solid rgba(34, 197, 94, 0.3);
+    }
+    .status-cancelled { 
+      background: linear-gradient(135deg, rgba(239, 68, 68, 0.2), rgba(220, 38, 38, 0.2)); 
+      color: #fca5a5;
+      border: 1px solid rgba(239, 68, 68, 0.3);
+    }
+
+    /* Animations */
     @keyframes fadeIn {
       from { opacity: 0; transform: translateY(20px); }
       to { opacity: 1; transform: translateY(0); }
     }
-    .animate-fade-in {
-      animation: fadeIn 0.6s ease;
+    .animate-fade-in { 
+      animation: fadeIn 0.5s ease-out forwards; 
+    }
+    
+    @keyframes pulse-ring {
+      0% { transform: scale(0.8); opacity: 1; }
+      100% { transform: scale(1.4); opacity: 0; }
+    }
+    .pulse-ring::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: 50%;
+      background: rgba(250, 204, 21, 0.4);
+      animation: pulse-ring 1.5s ease-out infinite;
+    }
+
+    .detail-row {
+      background: rgba(15, 23, 42, 0.4);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      transition: all 0.3s ease;
+    }
+    .detail-row:hover {
+      background: rgba(15, 23, 42, 0.6);
+      border-color: rgba(250, 204, 21, 0.3);
     }
   </style>
 </head>
-<body class="py-12 px-4">
+<body class="p-4 md:p-6">
 
-  <div class="max-w-3xl mx-auto">
-    <!-- Header -->
-    <div class="text-center mb-8 animate-fade-in">
-      <div class="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-yellow-400 to-yellow-500 rounded-full mb-4 shadow-lg">
-        <i class="fas fa-truck text-black text-3xl"></i>
+  <!-- ==========================================
+       HEADER / LOGO
+       ========================================== -->
+  <div class="max-w-4xl mx-auto mb-8 text-center animate-fade-in">
+    <div class="inline-flex items-center justify-center mb-4">
+      <div class="w-16 h-16 bg-gradient-to-br from-yellow-400 to-yellow-500 rounded-full flex items-center justify-center shadow-lg relative">
+        <i class="fas fa-truck text-black text-2xl"></i>
       </div>
-      <h1 class="text-4xl font-bold text-gray-800 mb-2">
-        HKJ <span class="text-yellow-500">Logistics</span>
-      </h1>
-      <p class="text-gray-600">Booking Confirmation</p>
     </div>
+    <h1 class="text-4xl md:text-5xl font-bold text-white mb-2">HKJ <span class="text-yellow-500">Logistics</span></h1>
+    <p class="text-gray-400 text-lg">Booking Confirmation</p>
+    <div class="w-16 h-1 bg-gradient-to-r from-yellow-400 to-yellow-500 mx-auto mt-4 rounded-full"></div>
+  </div>
 
-    <!-- Loading State -->
-    <div id="loadingState" class="glass-card rounded-3xl p-12 text-center animate-fade-in">
-      <div class="inline-block animate-spin rounded-full h-16 w-16 border-4 border-yellow-400 border-t-transparent mb-4"></div>
-      <p class="text-gray-600 text-lg">Loading your booking details...</p>
-    </div>
-
-    <!-- Error State -->
-    <div id="errorState" class="hidden glass-card rounded-3xl p-12 text-center animate-fade-in">
-      <div class="w-20 h-20 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
-        <i class="fas fa-exclamation-triangle text-red-500 text-4xl"></i>
+  <!-- ==========================================
+       SEARCH SECTION
+       ========================================== -->
+  <div class="max-w-2xl mx-auto mb-8 animate-fade-in">
+    <div class="glass-card rounded-2xl shadow-2xl p-6 md:p-8">
+      <h2 class="text-2xl font-bold text-white mb-2 text-center">
+        <i class="fas fa-search text-yellow-500 mr-2"></i>Check Your Booking
+      </h2>
+      <p class="text-gray-400 text-center mb-6 text-sm">Enter your reference code (hyphens are optional)</p>
+      
+      <div class="flex flex-col sm:flex-row gap-3">
+        <input 
+          type="text" 
+          id="searchInput" 
+          class="flex-1 p-4 border-2 border-white/10 rounded-xl focus:outline-none input-focus transition bg-dark-input text-white text-lg font-semibold tracking-wider uppercase" 
+          placeholder="e.g., HKJ-8301 or hkj8301"
+          autocomplete="off"
+        >
+        <button 
+          onclick="searchBooking()" 
+          id="searchBtn"
+          class="btn-gradient text-black font-bold px-8 py-4 rounded-xl shadow-lg whitespace-nowrap flex items-center justify-center"
+        >
+          <i class="fas fa-search mr-2"></i>Check
+        </button>
       </div>
-      <h2 class="text-2xl font-bold text-gray-800 mb-2">Booking Not Found</h2>
-      <p class="text-gray-600 mb-6">We couldn't find a booking with that reference code.</p>
-      <a href="https://hkjlogisticsltdtt.vercel.app" 
-         class="inline-block bg-gradient-to-r from-yellow-400 to-yellow-500 hover:from-yellow-500 hover:to-yellow-600 text-black font-bold py-3 px-8 rounded-xl transition shadow-lg">
-        <i class="fas fa-home mr-2"></i> Return to Home
-      </a>
-    </div>
-
-    <!-- Success State - Booking Details -->
-    <div id="bookingDetails" class="hidden animate-fade-in">
-      <div class="glass-card rounded-3xl p-8 md:p-12 mb-6">
-        <div class="flex items-center justify-between mb-8 pb-6 border-b-2 border-gray-100">
-          <div>
-            <h2 class="text-3xl font-bold text-gray-800 mb-1">Booking Found!</h2>
-            <p class="text-gray-600">Reference: <span id="displayRefCode" class="font-bold text-purple-600"></span></p>
-          </div>
-          <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center">
-            <i class="fas fa-check-circle text-green-600 text-3xl"></i>
-          </div>
-        </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-          <div class="bg-gray-50 p-4 rounded-xl">
-            <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Client Name</label>
-            <p id="displayName" class="text-lg font-semibold text-gray-800"></p>
-          </div>
-          <div class="bg-gray-50 p-4 rounded-xl">
-            <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Phone</label>
-            <p id="displayPhone" class="text-lg font-semibold text-gray-800"></p>
-          </div>
-          <div class="bg-gray-50 p-4 rounded-xl">
-            <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Date</label>
-            <p id="displayDate" class="text-lg font-semibold text-gray-800"></p>
-          </div>
-          <div class="bg-gray-50 p-4 rounded-xl">
-            <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Time</label>
-            <p id="displayTime" class="text-lg font-semibold text-gray-800"></p>
-          </div>
-        </div>
-
-        <div class="mb-8">
-          <div class="bg-green-50 p-4 rounded-xl mb-4 border-l-4 border-green-500">
-            <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Pickup Address</label>
-            <p id="displayPickup" class="text-lg font-semibold text-gray-800"></p>
-          </div>
-          <div class="bg-red-50 p-4 rounded-xl border-l-4 border-red-500">
-            <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Drop-off Address</label>
-            <p id="displayDropoff" class="text-lg font-semibold text-gray-800"></p>
-          </div>
-        </div>
-
-        <!-- Price Display -->
-        <div class="bg-gradient-to-r from-yellow-50 to-orange-50 p-6 rounded-2xl border-2 border-yellow-300 mb-8">
-          <label class="block text-xs font-bold text-gray-600 uppercase mb-2">Final Price</label>
-          <p id="displayPrice" class="text-4xl font-bold text-gray-800"></p>
-          <p class="text-sm text-gray-600 mt-2">
-            <i class="fas fa-info-circle mr-1"></i> This is the confirmed price for your trip
-          </p>
-        </div>
-
-        <!-- Payment Method -->
-        <div class="mb-8">
-          <label class="block text-xs font-bold text-gray-500 uppercase mb-2">Preferred Payment Method</label>
-          <select id="paymentMethod" class="w-full p-4 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-purple-500 bg-white">
-            <option value="">Select payment method...</option>
-            <option value="Credit Card / Linx">Credit Card / Linx</option>
-            <option value="Online (WiPay)">Online (WiPay)</option>
-            <option value="Cash">Cash</option>
-            <option value="Online Transfer">Online Transfer</option>
-          </select>
-        </div>
-
-        <!-- Action Buttons -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <button onclick="confirmBooking()" 
-            class="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-bold py-4 px-8 rounded-xl transition shadow-lg flex items-center justify-center text-lg">
-            <i class="fas fa-check-circle mr-3 text-2xl"></i>
-            <div>
-              <div class="font-bold">CONFIRM BOOKING</div>
-              <div class="text-xs opacity-90">Accept and finalize</div>
-            </div>
-          </button>
-          
-          <button onclick="declineBooking()" 
-            class="bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white font-bold py-4 px-8 rounded-xl transition shadow-lg flex items-center justify-center text-lg">
-            <i class="fas fa-times-circle mr-3 text-2xl"></i>
-            <div>
-              <div class="font-bold">DECLINE</div>
-              <div class="text-xs opacity-90">Cancel this booking</div>
-            </div>
-          </button>
-        </div>
-      </div>
-
-      <!-- Contact Info -->
-      <div class="glass-card rounded-2xl p-6 text-center">
-        <p class="text-gray-600 mb-2">Need help or have questions?</p>
-        <p class="font-bold text-gray-800">
-          <i class="fas fa-phone mr-2 text-yellow-500"></i>+1 (868) 780-0300
-        </p>
-        <p class="text-sm text-gray-500 mt-2">We're available 24/7</p>
-      </div>
+      
+      <p class="text-xs text-gray-500 mt-3 text-center">
+        <i class="fas fa-info-circle mr-1"></i>
+        Works with any format: HKJ-8301, hkj8301, HKJ8301
+      </p>
     </div>
   </div>
 
+  <!-- ==========================================
+       LOADING STATE
+       ========================================== -->
+  <div id="loadingState" class="hidden max-w-2xl mx-auto mb-8">
+    <div class="glass-card rounded-2xl shadow-2xl p-8 text-center">
+      <div class="inline-block animate-spin rounded-full h-12 w-12 border-4 border-yellow-400 border-t-transparent mb-4"></div>
+      <p class="text-gray-300 font-semibold">Searching for your booking...</p>
+    </div>
+  </div>
+
+  <!-- ==========================================
+       RESULTS SECTION
+       ========================================== -->
+  <div id="resultsSection" class="hidden max-w-3xl mx-auto mb-8 animate-fade-in"></div>
+
+  <!-- ==========================================
+       FOOTER
+       ========================================== -->
+  <footer class="max-w-4xl mx-auto mt-12">
+    <div class="glass-card rounded-2xl shadow-lg p-6 text-center border-t border-white/10">
+      <div class="flex justify-center items-center mb-4">
+        <div class="w-10 h-10 bg-gradient-to-br from-yellow-400 to-yellow-500 rounded-full flex items-center justify-center mr-3">
+          <i class="fas fa-truck text-black"></i>
+        </div>
+        <span class="text-xl font-bold text-white">HKJ <span class="text-yellow-500">Logistics</span></span>
+      </div>
+      <p class="text-gray-400">&copy; 2026 HKJ Logistics Ltd. All rights reserved.</p>
+      <div class="flex justify-center gap-4 mt-4">
+        <a href="index.html" class="btn-gradient text-black font-bold px-6 py-2 rounded-lg shadow-lg inline-flex items-center">
+          <i class="fas fa-home mr-2"></i>Return to Home
+        </a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ==========================================
+       JAVASCRIPT LOGIC
+       ========================================== -->
   <script>
     // ==========================================
-    // ⚠️ REPLACE WITH YOUR APPS SCRIPT URL
+    // CONFIGURATION
     // ==========================================
     const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw1Fji0W9KckebjpfTcMLLtRNdf8fVMT_yQ_3PPrwg6kBZxsK8C-12TB-bAeCLY2ckwcg/exec';
 
-    // Get reference code from URL
-    const urlParams = new URLSearchParams(window.location.search);
-    const refCode = urlParams.get('code');
+    // ==========================================
+    // SMART REFERENCE CODE NORMALIZER
+    // ==========================================
+    // Converts any format to a standard form for comparison
+    function normalizeRefCode(code) {
+      if (!code) return '';
+      return code.toString().trim().toUpperCase().replace(/[^A-Z0-9]/g, '');
+    }
 
-    let currentBooking = null;
-
-    // Load booking details
-    async function loadBooking() {
-      if (!refCode) {
-        showError();
+    // ==========================================
+    // SEARCH BOOKING FUNCTION
+    // ==========================================
+    async function searchBooking() {
+      const input = document.getElementById('searchInput').value.trim();
+      const resultsSection = document.getElementById('resultsSection');
+      const loadingState = document.getElementById('loadingState');
+      const searchBtn = document.getElementById('searchBtn');
+      
+      if (!input) {
+        showNotFound('Please enter a reference code');
         return;
       }
+
+      // Normalize the input for comparison
+      const normalizedInput = normalizeRefCode(input);
+
+      // Show loading state
+      resultsSection.classList.add('hidden');
+      loadingState.classList.remove('hidden');
+      searchBtn.disabled = true;
+      searchBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Searching...';
 
       try {
         const response = await fetch(APPS_SCRIPT_URL);
         const data = await response.json();
 
-        if (data.success) {
-          const booking = data.bookings.find(b => b['REF CODE'] === refCode);
-          
-          if (booking) {
-            currentBooking = booking;
-            displayBooking(booking);
-          } else {
-            showError();
+        loadingState.classList.add('hidden');
+        searchBtn.disabled = false;
+        searchBtn.innerHTML = '<i class="fas fa-search mr-2"></i>Check';
+
+        if (!data.success || !data.bookings || data.bookings.length === 0) {
+          showNotFound('No bookings found in our system');
+          return;
+        }
+
+        // Find matching booking using normalized comparison
+        const booking = data.bookings.find(b => {
+          const refCode = b['REF CODE'] || b['REFCODE'] || b['REF_CODE'] || '';
+          return normalizeRefCode(refCode) === normalizedInput;
+        });
+
+        if (booking) {
+          showBookingDetails(booking);
+        } else {
+          showNotFound(`No booking found with reference code "${input}"`);
+        }
+
+      } catch (error) {
+        console.error('Error:', error);
+        loadingState.classList.add('hidden');
+        searchBtn.disabled = false;
+        searchBtn.innerHTML = '<i class="fas fa-search mr-2"></i>Check';
+        showNotFound('Unable to connect to our server. Please try again later.');
+      }
+    }
+
+    // ==========================================
+    // SHOW BOOKING DETAILS
+    // ==========================================
+    function showBookingDetails(booking) {
+      const resultsSection = document.getElementById('resultsSection');
+      
+      const refCode = booking['REF CODE'] || booking['REFCODE'] || booking['REF_CODE'] || 'N/A';
+      const name = booking.NAME || booking['CLIENT NAME'] || 'N/A';
+      const phone = booking.PHONE || booking['CLIENT PHONE'] || 'N/A';
+      const email = booking.EMAIL || booking['CLIENT EMAIL'] || 'N/A';
+      const pickup = booking['PICK UP'] || booking['PICKUP'] || 'N/A';
+      const dropoff = booking['DROP OFF'] || booking['DROPOFF'] || 'N/A';
+      const date = booking.DATE || 'N/A';
+      const time = booking.TIME || 'N/A';
+      const vehicle = booking['VEHICLE TYPE'] || 'N/A';
+      const service = booking['SERVICE TYPE'] || 'N/A';
+      const status = booking.STATUS || 'Pending';
+      const price = booking['FINAL PRICE'] || booking['FARES'] || 'TBD';
+      const notes = booking.NOTES || '';
+
+      // Format date nicely
+      let formattedDate = date;
+      if (date && date !== 'N/A') {
+        try {
+          const d = new Date(date);
+          if (!isNaN(d.getTime())) {
+            formattedDate = d.toLocaleDateString('en-US', { 
+              year: 'numeric', 
+              month: 'long', 
+              day: 'numeric' 
+            });
           }
-        } else {
-          showError();
+        } catch (e) {}
+      }
+
+      // Format time nicely
+      let formattedTime = time;
+      if (time && time !== 'N/A' && typeof time === 'string' && time.includes(':')) {
+        try {
+          const [hours, minutes] = time.split(':');
+          const h = parseInt(hours);
+          const ampm = h >= 12 ? 'PM' : 'AM';
+          const h12 = h % 12 || 12;
+          formattedTime = `${h12}:${minutes} ${ampm}`;
+        } catch (e) {}
+      }
+
+      // Determine status styling
+      const statusLower = status.toLowerCase().replace(' ', '-');
+      let statusIcon = 'fa-clock';
+      let statusText = status;
+      if (statusLower.includes('confirm')) { statusIcon = 'fa-check-circle'; statusText = 'Confirmed'; }
+      else if (statusLower.includes('complet')) { statusIcon = 'fa-check-double'; statusText = 'Completed'; }
+      else if (statusLower.includes('cancel')) { statusIcon = 'fa-times-circle'; statusText = 'Cancelled'; }
+      else if (statusLower.includes('price')) { statusIcon = 'fa-tag'; statusText = 'Price Sent'; }
+      else if (statusLower.includes('pend')) { statusIcon = 'fa-hourglass-half'; statusText = 'Pending'; }
+
+      // Build the HTML
+      let html = `
+        <div class="glass-card rounded-2xl shadow-2xl overflow-hidden">
+          <!-- Success Header -->
+          <div class="bg-gradient-to-r from-green-900/50 to-emerald-900/50 p-6 text-center border-b border-green-500/30">
+            <div class="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-green-400 to-green-500 rounded-full shadow-lg mb-4">
+              <i class="fas fa-check text-white text-4xl"></i>
+            </div>
+            <h2 class="text-3xl font-bold text-white mb-2">Booking Found!</h2>
+            <p class="text-green-300">Here are your booking details</p>
+          </div>
+
+          <!-- Status Badge -->
+          <div class="p-6 border-b border-white/10 bg-slate-800/30">
+            <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
+              <div>
+                <p class="text-sm text-gray-400 mb-1">Reference Code</p>
+                <p class="text-3xl font-bold text-yellow-500 tracking-wider">${refCode}</p>
+              </div>
+              <div class="status-${statusLower} px-6 py-3 rounded-full font-bold text-sm uppercase tracking-wide inline-flex items-center">
+                <i class="fas ${statusIcon} mr-2"></i>${statusText}
+              </div>
+            </div>
+          </div>
+
+          <!-- Booking Details Grid -->
+          <div class="p-6 space-y-3">
+            <div class="detail-row rounded-xl p-4 flex items-start">
+              <div class="w-10 h-10 bg-gradient-to-br from-blue-400 to-blue-500 rounded-full flex items-center justify-center mr-4 flex-shrink-0">
+                <i class="fas fa-user text-white"></i>
+              </div>
+              <div class="flex-1">
+                <p class="text-xs text-gray-400 uppercase tracking-wide mb-1">Client Name</p>
+                <p class="text-white font-semibold text-lg">${name}</p>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <div class="detail-row rounded-xl p-4 flex items-start">
+                <div class="w-10 h-10 bg-gradient-to-br from-green-400 to-green-500 rounded-full flex items-center justify-center mr-4 flex-shrink-0">
+                  <i class="fas fa-phone text-white"></i>
+                </div>
+                <div class="flex-1">
+                  <p class="text-xs text-gray-400 uppercase tracking-wide mb-1">Phone</p>
+                  <p class="text-white font-semibold">${phone}</p>
+                </div>
+              </div>
+
+              <div class="detail-row rounded-xl p-4 flex items-start">
+                <div class="w-10 h-10 bg-gradient-to-br from-purple-400 to-purple-500 rounded-full flex items-center justify-center mr-4 flex-shrink-0">
+                  <i class="fas fa-envelope text-white"></i>
+                </div>
+                <div class="flex-1">
+                  <p class="text-xs text-gray-400 uppercase tracking-wide mb-1">Email</p>
+                  <p class="text-white font-semibold text-sm break-all">${email}</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="detail-row rounded-xl p-4 flex items-start">
+              <div class="w-10 h-10 bg-gradient-to-br from-yellow-400 to-yellow-500 rounded-full flex items-center justify-center mr-4 flex-shrink-0">
+                <i class="fas fa-calendar-alt text-black"></i>
+              </div>
+              <div class="flex-1">
+                <p class="text-xs text-gray-400 uppercase tracking-wide mb-1">Date & Time</p>
+                <p class="text-white font-semibold">${formattedDate} at ${formattedTime}</p>
+              </div>
+            </div>
+
+            <div class="detail-row rounded-xl p-4 flex items-start">
+              <div class="w-10 h-10 bg-gradient-to-br from-emerald-400 to-emerald-500 rounded-full flex items-center justify-center mr-4 flex-shrink-0">
+                <i class="fas fa-map-marker-alt text-white"></i>
+              </div>
+              <div class="flex-1">
+                <p class="text-xs text-gray-400 uppercase tracking-wide mb-1">Pickup Location</p>
+                <p class="text-white font-semibold">${pickup}</p>
+              </div>
+            </div>
+
+            <div class="detail-row rounded-xl p-4 flex items-start">
+              <div class="w-10 h-10 bg-gradient-to-br from-red-400 to-red-500 rounded-full flex items-center justify-center mr-4 flex-shrink-0">
+                <i class="fas fa-flag-checkered text-white"></i>
+              </div>
+              <div class="flex-1">
+                <p class="text-xs text-gray-400 uppercase tracking-wide mb-1">Drop-off Location</p>
+                <p class="text-white font-semibold">${dropoff}</p>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <div class="detail-row rounded-xl p-4 flex items-start">
+                <div class="w-10 h-10 bg-gradient-to-br from-indigo-400 to-indigo-500 rounded-full flex items-center justify-center mr-4 flex-shrink-0">
+                  <i class="fas fa-car text-white"></i>
+                </div>
+                <div class="flex-1">
+                  <p class="text-xs text-gray-400 uppercase tracking-wide mb-1">Vehicle Type</p>
+                  <p class="text-white font-semibold text-sm">${vehicle}</p>
+                </div>
+              </div>
+
+              <div class="detail-row rounded-xl p-4 flex items-start">
+                <div class="w-10 h-10 bg-gradient-to-br from-pink-400 to-pink-500 rounded-full flex items-center justify-center mr-4 flex-shrink-0">
+                  <i class="fas fa-concierge-bell text-white"></i>
+                </div>
+                <div class="flex-1">
+                  <p class="text-xs text-gray-400 uppercase tracking-wide mb-1">Service Type</p>
+                  <p class="text-white font-semibold text-sm capitalize">${service}</p>
+                </div>
+              </div>
+            </div>
+
+            ${price && price !== 'TBD' && price !== '' && price !== '0' ? `
+            <div class="bg-gradient-to-r from-yellow-900/40 to-amber-900/40 border-2 border-yellow-400/50 rounded-xl p-5 mt-4">
+              <p class="text-xs text-gray-300 uppercase tracking-wide mb-1 text-center">Final Price (TTD)</p>
+              <p class="text-4xl font-bold text-white text-center">$${price}</p>
+            </div>
+            ` : `
+            <div class="bg-gradient-to-r from-blue-900/40 to-cyan-900/40 border-2 border-blue-400/50 rounded-xl p-5 mt-4 text-center">
+              <i class="fas fa-hourglass-half text-blue-400 text-2xl mb-2"></i>
+              <p class="text-blue-300 font-semibold">Price Quote Pending</p>
+              <p class="text-xs text-gray-400 mt-1">We will contact you shortly with your personalized quote</p>
+            </div>
+            `}
+
+            ${notes ? `
+            <div class="detail-row rounded-xl p-4 flex items-start mt-3">
+              <div class="w-10 h-10 bg-gradient-to-br from-orange-400 to-orange-500 rounded-full flex items-center justify-center mr-4 flex-shrink-0">
+                <i class="fas fa-sticky-note text-white"></i>
+              </div>
+              <div class="flex-1">
+                <p class="text-xs text-gray-400 uppercase tracking-wide mb-1">Notes</p>
+                <p class="text-gray-300 text-sm whitespace-pre-wrap">${notes}</p>
+              </div>
+            </div>
+            ` : ''}
+          </div>
+
+          <!-- Action Buttons -->
+          <div class="p-6 border-t border-white/10 bg-slate-800/30">
+            <div class="flex flex-col sm:flex-row gap-3">
+              <a href="tel:+18687800300" class="flex-1 btn-gradient text-black font-bold py-3 rounded-xl shadow-lg flex items-center justify-center">
+                <i class="fas fa-phone mr-2"></i>Call Us
+              </a>
+              <a href="https://wa.me/18687800300" target="_blank" class="flex-1 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-bold py-3 rounded-xl shadow-lg flex items-center justify-center transition">
+                <i class="fab fa-whatsapp mr-2"></i>WhatsApp
+              </a>
+            </div>
+          </div>
+        </div>
+      `;
+
+      resultsSection.innerHTML = html;
+      resultsSection.classList.remove('hidden');
+      resultsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    // ==========================================
+    // SHOW NOT FOUND STATE
+    // ==========================================
+    function showNotFound(message) {
+      const resultsSection = document.getElementById('resultsSection');
+      
+      const html = `
+        <div class="glass-card rounded-2xl shadow-2xl overflow-hidden animate-fade-in">
+          <div class="bg-gradient-to-r from-red-900/50 to-rose-900/50 p-8 text-center border-b border-red-500/30">
+            <div class="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-red-400 to-red-500 rounded-full shadow-lg mb-4">
+              <i class="fas fa-exclamation-triangle text-white text-4xl"></i>
+            </div>
+            <h2 class="text-3xl font-bold text-white mb-2">Booking Not Found</h2>
+            <p class="text-red-200">${message}</p>
+          </div>
+
+          <div class="p-6 space-y-4">
+            <div class="bg-slate-800/50 rounded-xl p-4 border border-white/10">
+              <h4 class="font-bold text-yellow-500 mb-2"><i class="fas fa-lightbulb mr-2"></i>Tips:</h4>
+              <ul class="text-gray-300 text-sm space-y-2">
+                <li><i class="fas fa-check text-green-500 mr-2"></i>Double-check your reference code for typos</li>
+                <li><i class="fas fa-check text-green-500 mr-2"></i>Try with or without the hyphen (HKJ-8301 or HKJ8301)</li>
+                <li><i class="fas fa-check text-green-500 mr-2"></i>Check your confirmation email for the correct code</li>
+              </ul>
+            </div>
+
+            <div class="flex flex-col sm:flex-row gap-3">
+              <button onclick="document.getElementById('searchInput').focus()" class="flex-1 btn-gradient text-black font-bold py-3 rounded-xl shadow-lg flex items-center justify-center">
+                <i class="fas fa-redo mr-2"></i>Try Again
+              </button>
+              <a href="index.html" class="flex-1 bg-slate-700 hover:bg-slate-600 text-white font-bold py-3 rounded-xl shadow-lg flex items-center justify-center transition">
+                <i class="fas fa-home mr-2"></i>Go Home
+              </a>
+            </div>
+          </div>
+        </div>
+      `;
+
+      resultsSection.innerHTML = html;
+      resultsSection.classList.remove('hidden');
+      resultsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    // ==========================================
+    // AUTO-SEARCH FROM URL PARAMETER
+    // ==========================================
+    window.addEventListener('DOMContentLoaded', function() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const codeFromUrl = urlParams.get('code');
+      
+      if (codeFromUrl) {
+        document.getElementById('searchInput').value = codeFromUrl;
+        searchBooking();
+      }
+
+      // Allow Enter key to trigger search
+      document.getElementById('searchInput').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          searchBooking();
         }
-      } catch (error) {
-        console.error('Error:', error);
-        showError();
-      }
-    }
-
-    function displayBooking(booking) {
-      document.getElementById('loadingState').classList.add('hidden');
-      document.getElementById('errorState').classList.add('hidden');
-      document.getElementById('bookingDetails').classList.remove('hidden');
-
-      document.getElementById('displayRefCode').textContent = booking['REF CODE'];
-      document.getElementById('displayName').textContent = booking.NAME || 'N/A';
-      document.getElementById('displayPhone').textContent = booking.PHONE || 'N/A';
-      
-      // Format date
-      let dateStr = booking.DATE;
-      if (dateStr && dateStr.includes('T')) {
-        const dateObj = new Date(dateStr);
-        dateStr = dateObj.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
-      }
-      document.getElementById('displayDate').textContent = dateStr || 'N/A';
-      
-      // Format time
-      let timeStr = booking.TIME;
-      if (timeStr && timeStr.includes('T')) {
-        const timeObj = new Date(timeStr);
-        timeStr = timeObj.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
-      }
-      document.getElementById('displayTime').textContent = timeStr || 'N/A';
-      
-      document.getElementById('displayPickup').textContent = booking['PICK UP'] || 'N/A';
-      document.getElementById('displayDropoff').textContent = booking['DROP OFF'] || 'N/A';
-      
-      // Display price from Column K
-      const price = booking['FINAL PRICE'] || '0';
-      document.getElementById('displayPrice').textContent = `$${price} TTD`;
-      
-      // Set payment method from booking if available
-      if (booking['PAYMENT METHOD']) {
-        document.getElementById('paymentMethod').value = booking['PAYMENT METHOD'];
-      }
-    }
-
-    function showError() {
-      document.getElementById('loadingState').classList.add('hidden');
-      document.getElementById('errorState').classList.remove('hidden');
-    }
-
-    async function confirmBooking() {
-      if (!currentBooking) return;
-      
-      const paymentMethod = document.getElementById('paymentMethod').value;
-      if (!paymentMethod) {
-        alert('Please select a payment method.');
-        return;
-      }
-
-      if (!confirm('Are you sure you want to confirm this booking?')) return;
-
-      const btn = event.target.closest('button');
-      const originalHTML = btn.innerHTML;
-      btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-3"></i> Processing...';
-      btn.disabled = true;
-
-      try {
-        const response = await fetch(APPS_SCRIPT_URL, {
-          method: 'POST',
-          body: new URLSearchParams({
-            action: 'updateStatus',
-            row: currentBooking._rowNumber,
-            status: 'Confirmed',
-            paymentMethod: paymentMethod
-          })
-        });
-
-        const result = await response.json();
-        
-        if (result.success) {
-          alert('✅ Booking confirmed successfully! We look forward to serving you.');
-          location.reload();
-        } else {
-          alert('Error confirming booking. Please try again.');
-          btn.innerHTML = originalHTML;
-          btn.disabled = false;
-        }
-      } catch (error) {
-        console.error('Error:', error);
-        alert('Network error. Please try again.');
-        btn.innerHTML = originalHTML;
-        btn.disabled = false;
-      }
-    }
-
-    async function declineBooking() {
-      if (!currentBooking) return;
-      
-      if (!confirm('Are you sure you want to decline this booking?')) return;
-
-      const btn = event.target.closest('button');
-      const originalHTML = btn.innerHTML;
-      btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-3"></i> Processing...';
-      btn.disabled = true;
-
-      try {
-        const response = await fetch(APPS_SCRIPT_URL, {
-          method: 'POST',
-          body: new URLSearchParams({
-            action: 'updateStatus',
-            row: currentBooking._rowNumber,
-            status: 'Cancelled'
-          })
-        });
-
-        const result = await response.json();
-        
-        if (result.success) {
-          alert('Booking has been cancelled.');
-          window.location.href = 'https://hkjlogisticsltdtt.vercel.app';
-        } else {
-          alert('Error declining booking. Please try again.');
-          btn.innerHTML = originalHTML;
-          btn.disabled = false;
-        }
-      } catch (error) {
-        console.error('Error:', error);
-        alert('Network error. Please try again.');
-        btn.innerHTML = originalHTML;
-        btn.disabled = false;
-      }
-    }
-
-    // Load on page load
-    window.addEventListener('DOMContentLoaded', loadBooking);
+      });
+    });
   </script>
 </body>
 </html>
