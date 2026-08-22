@@ -398,6 +398,7 @@
       <p class="text-gray-400 mt-4">Fill out the form below and we will get back to you with a quote shortly.</p>
     </div>
     
+    <!-- IMPORTANT: Ensure this form has the correct ID -->
     <form id="bookingForm" class="space-y-6 mt-8 max-w-4xl mx-auto">
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div>
@@ -431,12 +432,14 @@
       <div class="bg-slate-800/50 p-4 rounded-xl border border-white/10">
         <label class="block text-sm font-bold text-gray-300 mb-2"><i class="fas fa-map-marker-alt text-green-500 mr-2"></i>Pickup Location *</label>
         <input type="text" name="pickupAddressText" required class="w-full p-3 border rounded-xl focus:outline-none input-focus transition bg-dark-input" placeholder="Enter street name, building, or area (e.g., C3 Mall, San Fernando)">
+        <!-- Hidden field to default to Trinidad if not specified -->
         <input type="hidden" name="pickupCity" value="Trinidad">
       </div>
 
       <div class="bg-slate-800/50 p-4 rounded-xl border border-white/10">
         <label class="block text-sm font-bold text-gray-300 mb-2"><i class="fas fa-flag-checkered text-red-500 mr-2"></i>Drop-off Location *</label>
         <input type="text" name="dropoffAddressText" required class="w-full p-3 border rounded-xl focus:outline-none input-focus transition bg-dark-input" placeholder="Enter street name, building, or area (e.g., Piarco Airport)">
+        <!-- Hidden field to default to Trinidad if not specified -->
         <input type="hidden" name="dropoffCity" value="Trinidad">
       </div>
 
@@ -596,24 +599,28 @@
   </button>
 
   <!-- ==========================================
-       JAVASCRIPT LOGIC
+       JAVASCRIPT LOGIC WITH DEBUGGING
        ========================================== -->
   <script>
+    // IMPORTANT: Replace this with your actual Google Apps Script Web App URL
     const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw1Fji0W9KckebjpfTcMLLtRNdf8fVMT_yQ_3PPrwg6kBZxsK8C-12TB-bAeCLY2ckwcg/exec'; 
     const form = document.getElementById('bookingForm');
 
+    // Navigation scroll effect
     const mainNav = document.getElementById('mainNav');
     window.addEventListener('scroll', function() {
       if (window.scrollY > 100) mainNav.classList.add('nav-solid');
       else mainNav.classList.remove('nav-solid');
     });
 
+    // Mobile menu toggle
     const mobileMenuBtn = document.getElementById('mobileMenuBtn');
     const mobileMenu = document.getElementById('mobileMenu');
     mobileMenuBtn.addEventListener('click', function() { mobileMenu.classList.toggle('hidden'); });
     const mobileLinks = mobileMenu.querySelectorAll('a');
     mobileLinks.forEach(link => { link.addEventListener('click', () => { mobileMenu.classList.add('hidden'); }); });
 
+    // Scroll to top button
     const scrollToTopBtn = document.getElementById('scrollToTop');
     window.addEventListener('scroll', function() {
       if (window.scrollY > 300) scrollToTopBtn.classList.remove('hidden');
@@ -621,17 +628,46 @@
     });
     scrollToTopBtn.addEventListener('click', function() { window.scrollTo({ top: 0, behavior: 'smooth' }); });
 
+    // ==========================================
+    // FORM SUBMISSION WITH DEBUG LOGGING
+    // ==========================================
     form.addEventListener('submit', function(e) {
       e.preventDefault();
+      
+      // --- DEBUG START ---
+      console.log('=== FORM SUBMISSION DEBUG START ===');
+      const formData = new FormData(form);
+      const formDataObj = {};
+      
+      // Log every single field being sent
+      formData.forEach((value, key) => {
+        formDataObj[key] = value;
+        console.log('Field:', key, '| Value:', value);
+      });
+      console.log('=== FORM SUBMISSION DEBUG END ===');
+      // --- DEBUG END ---
+
       form.classList.add('hidden');
       document.getElementById('loadingSpinner').classList.remove('hidden');
-      const formData = new URLSearchParams(new FormData(form)).toString();
       
-      fetch(APPS_SCRIPT_URL, { method: 'POST', body: formData })
-      .then(response => response.json())
+      const formDataString = new URLSearchParams(formData).toString();
+      
+      fetch(APPS_SCRIPT_URL, { 
+        method: 'POST', 
+        body: formDataString,
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded'
+        }
+      })
+      .then(response => {
+        console.log('Response Status:', response.status);
+        return response.json();
+      })
       .then(data => {
+        console.log('Response Data:', data);
         document.getElementById('loadingSpinner').classList.add('hidden');
         form.classList.remove('hidden');
+        
         if (data.result === 'success') {
           showSuccessModal(data.refCode);
           form.reset();
@@ -640,16 +676,14 @@
         }
       })
       .catch(error => {
+        console.error('Fetch Error:', error);
         document.getElementById('loadingSpinner').classList.add('hidden');
         form.classList.remove('hidden');
-        console.error('Error:', error);
         alert('Network error. Please check your internet connection and try again.');
       });
     });
 
-    // ==========================================
-    // COMPACT SUCCESS MODAL (ADJUSTED SIZE)
-    // ==========================================
+    // Compact Success Modal
     function showSuccessModal(refCode) {
       const existingModal = document.getElementById('successModal');
       if (existingModal) existingModal.remove();
@@ -658,7 +692,6 @@
       modal.id = 'successModal';
       modal.className = 'fixed inset-0 modal-backdrop z-50 flex items-center justify-center p-4 animate-fade-in';
       
-      // Smaller, more compact modal dimensions and typography
       modal.innerHTML = "<div class='bg-slate-900 rounded-2xl shadow-2xl max-w-sm w-full p-6 transform transition-transform duration-300 border border-white/10'>" +
         "<div class='w-16 h-16 bg-gradient-to-br from-green-400 to-green-500 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg'>" +
         "<i class='fas fa-check text-white text-3xl'></i></div>" +
@@ -699,6 +732,7 @@
       window.location.href = 'confirm.html?code=' + refCode;
     }
 
+    // Prevent past dates
     const dateInput = document.querySelector('input[name="bookDate"]');
     if (dateInput) {
       const today = new Date().toISOString().split('T')[0];
