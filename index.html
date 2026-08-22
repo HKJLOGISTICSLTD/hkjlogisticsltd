@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">https://script.google.com/macros/s/AKfycbw1Fji0W9KckebjpfTcMLLtRNdf8fVMT_yQ_3PPrwg6kBZxsK8C-12TB-bAeCLY2ckwcg/exec
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -432,7 +432,7 @@
       </div>
 
       <!-- ==========================================
-           NEW LOCATION DROPDOWNS (NO API NEEDED)
+           LOCATION DROPDOWNS (NO API NEEDED)
            ========================================== -->
       <div class="bg-slate-800/50 p-4 rounded-xl border border-white/10">
         <label class="block text-sm font-bold text-gray-300 mb-2"><i class="fas fa-map-marker-alt text-green-500 mr-2"></i>Pickup Location *</label>
@@ -665,7 +665,7 @@
           </div>
         </div>
       </div>
-      <div class="bg-gradient-to-br from-purple-900/30 to-pink-900/30 p-6 rounded-xl border border-purple-700/30">
+      <div class="bg-gradient-to-br from-slate-800/50 to-slate-900/50 p-6 rounded-xl border border-white/10">
         <h4 class="text-xl font-bold text-white mb-4">Why Choose HKJ Logistics?</h4>
         <ul class="space-y-3">
           <li class="flex items-center"><i class="fas fa-check-circle text-green-500 mr-3 text-lg"></i>Professional, Licensed Drivers</li>
@@ -698,11 +698,14 @@
   </button>
 
   <!-- ==========================================
-       JAVASCRIPT LOGIC WITH DEBUGGING
+       JAVASCRIPT LOGIC
        ========================================== -->
   <script>
-    // IMPORTANT: Replace this with your actual Google Apps Script Web App URL
+    // ==========================================
+    // IMPORTANT: PASTE YOUR APPS SCRIPT URL BELOW
+    // ==========================================
     const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw1Fji0W9KckebjpfTcMLLtRNdf8fVMT_yQ_3PPrwg6kBZxsK8C-12TB-bAeCLY2ckwcg/exec'; 
+    
     const form = document.getElementById('bookingForm');
 
     // Navigation scroll effect
@@ -728,23 +731,18 @@
     scrollToTopBtn.addEventListener('click', function() { window.scrollTo({ top: 0, behavior: 'smooth' }); });
 
     // ==========================================
-    // FORM SUBMISSION WITH DEBUG LOGGING
+    // FORM SUBMISSION
     // ==========================================
     form.addEventListener('submit', function(e) {
       e.preventDefault();
       
-      // --- DEBUG START ---
+      // Debug logging
       console.log('=== FORM SUBMISSION DEBUG START ===');
       const formData = new FormData(form);
-      const formDataObj = {};
-      
-      // Log every single field being sent
       formData.forEach((value, key) => {
-        formDataObj[key] = value;
         console.log('Field:', key, '| Value:', value);
       });
       console.log('=== FORM SUBMISSION DEBUG END ===');
-      // --- DEBUG END ---
 
       form.classList.add('hidden');
       document.getElementById('loadingSpinner').classList.remove('hidden');
