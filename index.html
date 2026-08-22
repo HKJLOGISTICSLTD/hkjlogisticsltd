@@ -428,19 +428,99 @@
         </div>
       </div>
 
-      <!-- COMBINED LOCATION SEARCH FIELDS -->
+      <!-- ==========================================
+           NEW LOCATION DROPDOWNS (NO API NEEDED)
+           ========================================== -->
       <div class="bg-slate-800/50 p-4 rounded-xl border border-white/10">
         <label class="block text-sm font-bold text-gray-300 mb-2"><i class="fas fa-map-marker-alt text-green-500 mr-2"></i>Pickup Location *</label>
-        <input type="text" name="pickupAddressText" required class="w-full p-3 border rounded-xl focus:outline-none input-focus transition bg-dark-input" placeholder="Enter street name, building, or area (e.g., C3 Mall, San Fernando)">
-        <!-- Hidden field to default to Trinidad if not specified -->
+        
+        <!-- Quick Select Dropdown -->
+        <select onchange="document.getElementById('pickupAddress').value=this.value" 
+          class="w-full p-3 mb-3 border-2 border-gray-600 rounded-xl focus:outline-none bg-dark-input text-white text-sm">
+          <option value="">-- Quick Select Popular Location --</option>
+          <optgroup label="✈️ Airports">
+            <option value="Piarco International Airport, Trinidad">Piarco International Airport</option>
+            <option value="A.N.R. Robinson International Airport, Tobago">Tobago Airport</option>
+          </optgroup>
+          <optgroup label="🛍️ Malls & Shopping">
+            <option value="C3 Centre, Sir Solomon Hochoy Highway, San Fernando">C3 Centre (San Fernando)</option>
+            <option value="Grand Bazaar, West Mall, Caroni">Grand Bazaar (West Mall)</option>
+            <option value="Trincity Mall, Trincity">Trincity Mall</option>
+            <option value="Long Circular Mall, Maraval">Long Circular Mall</option>
+            <option value="Valpark Shopping Plaza, Valsayn">Valpark Plaza (Valsayn)</option>
+          </optgroup>
+          <optgroup label="🏙️ Major Areas">
+            <option value="Port of Spain, Trinidad">Port of Spain</option>
+            <option value="San Fernando, Trinidad">San Fernando</option>
+            <option value="Chaguanas, Trinidad">Chaguanas</option>
+            <option value="Arima, Trinidad">Arima</option>
+            <option value="Couva, Trinidad">Couva</option>
+            <option value="Point Fortin, Trinidad">Point Fortin</option>
+            <option value="Scarborough, Tobago">Scarborough, Tobago</option>
+          </optgroup>
+          <optgroup label="🏨 Hotels">
+            <option value="Hilton Trinidad, Conference Complex, St. Ann's">Hilton Trinidad</option>
+            <option value="Hyatt Regency Trinidad, Port of Spain">Hyatt Regency</option>
+            <option value="Courtyard by Marriott, Port of Spain">Courtyard Marriott</option>
+            <option value="The Regent Hotel, Port of Spain">The Regent Hotel</option>
+          </optgroup>
+        </select>
+        
+        <!-- Manual Input -->
+        <input type="text" id="pickupAddress" name="pickupAddressText" required 
+          class="w-full p-3 border rounded-xl focus:outline-none input-focus transition bg-dark-input" 
+          placeholder="Or type your exact address...">
         <input type="hidden" name="pickupCity" value="Trinidad">
+        <p class="text-xs text-gray-500 mt-2">
+          <i class="fas fa-info-circle text-blue-400 mr-1"></i>
+          Select from dropdown OR type manually
+        </p>
       </div>
 
       <div class="bg-slate-800/50 p-4 rounded-xl border border-white/10">
         <label class="block text-sm font-bold text-gray-300 mb-2"><i class="fas fa-flag-checkered text-red-500 mr-2"></i>Drop-off Location *</label>
-        <input type="text" name="dropoffAddressText" required class="w-full p-3 border rounded-xl focus:outline-none input-focus transition bg-dark-input" placeholder="Enter street name, building, or area (e.g., Piarco Airport)">
-        <!-- Hidden field to default to Trinidad if not specified -->
+        
+        <!-- Quick Select Dropdown -->
+        <select onchange="document.getElementById('dropoffAddress').value=this.value" 
+          class="w-full p-3 mb-3 border-2 border-gray-600 rounded-xl focus:outline-none bg-dark-input text-white text-sm">
+          <option value="">-- Quick Select Popular Location --</option>
+          <optgroup label="✈️ Airports">
+            <option value="Piarco International Airport, Trinidad">Piarco International Airport</option>
+            <option value="A.N.R. Robinson International Airport, Tobago">Tobago Airport</option>
+          </optgroup>
+          <optgroup label="🛍️ Malls & Shopping">
+            <option value="C3 Centre, Sir Solomon Hochoy Highway, San Fernando">C3 Centre (San Fernando)</option>
+            <option value="Grand Bazaar, West Mall, Caroni">Grand Bazaar (West Mall)</option>
+            <option value="Trincity Mall, Trincity">Trincity Mall</option>
+            <option value="Long Circular Mall, Maraval">Long Circular Mall</option>
+            <option value="Valpark Shopping Plaza, Valsayn">Valpark Plaza (Valsayn)</option>
+          </optgroup>
+          <optgroup label="🏙️ Major Areas">
+            <option value="Port of Spain, Trinidad">Port of Spain</option>
+            <option value="San Fernando, Trinidad">San Fernando</option>
+            <option value="Chaguanas, Trinidad">Chaguanas</option>
+            <option value="Arima, Trinidad">Arima</option>
+            <option value="Couva, Trinidad">Couva</option>
+            <option value="Point Fortin, Trinidad">Point Fortin</option>
+            <option value="Scarborough, Tobago">Scarborough, Tobago</option>
+          </optgroup>
+          <optgroup label="🏨 Hotels">
+            <option value="Hilton Trinidad, Conference Complex, St. Ann's">Hilton Trinidad</option>
+            <option value="Hyatt Regency Trinidad, Port of Spain">Hyatt Regency</option>
+            <option value="Courtyard by Marriott, Port of Spain">Courtyard Marriott</option>
+            <option value="The Regent Hotel, Port of Spain">The Regent Hotel</option>
+          </optgroup>
+        </select>
+        
+        <!-- Manual Input -->
+        <input type="text" id="dropoffAddress" name="dropoffAddressText" required 
+          class="w-full p-3 border rounded-xl focus:outline-none input-focus transition bg-dark-input" 
+          placeholder="Or type your exact address...">
         <input type="hidden" name="dropoffCity" value="Trinidad">
+        <p class="text-xs text-gray-500 mt-2">
+          <i class="fas fa-info-circle text-blue-400 mr-1"></i>
+          Select from dropdown OR type manually
+        </p>
       </div>
 
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
