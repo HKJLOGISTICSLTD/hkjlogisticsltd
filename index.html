@@ -498,7 +498,7 @@
             <option value="Long Circular Mall, Maraval">Long Circular Mall</option>
             <option value="Valpark Shopping Plaza, Valsayn">Valpark Plaza (Valsayn)</option>
           </optgroup>
-          <optgroup label="🏙️ Major Areas">
+          <optgroup label="️ Major Areas">
             <option value="Port of Spain, Trinidad">Port of Spain</option>
             <option value="San Fernando, Trinidad">San Fernando</option>
             <option value="Chaguanas, Trinidad">Chaguanas</option>
@@ -532,9 +532,9 @@
           <select name="vehicleType" required class="w-full p-3 border rounded-xl focus:outline-none input-focus transition bg-dark-input">
             <option value="">Select a vehicle...</option>
             <option value="Standard Sedan (1-4 Passengers)">Standard Sedan (1-4 Passengers)</option>
-            <option value="SUV (5-7 Passengers)">SUV (5-7 Passengers)</option>
-            <option value="Van (8-12 Passengers)">Van (8-12 Passengers)</option>
-            <option value="Luxury Vehicle">Luxury Vehicle</option>
+            <option value="SUV (5-7 Passengers) - Security Deposit Required">SUV (5-7 Passengers) <span class="text-red-500 font-bold">- Security Deposit Required</span></option>
+            <option value="Van (8-12 Passengers) - Security Deposit Required">Van (8-12 Passengers) <span class="text-red-500 font-bold">- Security Deposit Required</span></option>
+            <option value="Luxury Vehicle - Security Deposit Required">Luxury Vehicle <span class="text-red-500 font-bold">- Security Deposit Required</span></option>
           </select>
         </div>
         <div>
@@ -553,9 +553,9 @@
         <textarea name="additionalNotes" rows="3" class="w-full p-3 border rounded-xl focus:outline-none input-focus transition bg-dark-input" placeholder="Flight number, extra luggage, special instructions..."></textarea>
       </div>
 
-      <div class="flex items-center bg-yellow-900/20 p-4 rounded-xl border border-yellow-700/50">
-        <input type="checkbox" name="isCarnival" id="isCarnival" class="w-5 h-5 text-yellow-500 rounded focus:ring-yellow-500 border-gray-600 bg-slate-800">
-        <label for="isCarnival" class="ml-3 text-sm font-semibold text-gray-300">This is a Carnival event booking (Minimum $400 applies)</label>
+      <div class="flex items-center bg-red-900/30 p-4 rounded-xl border-2 border-red-500/50">
+        <input type="checkbox" name="isCarnival" id="isCarnival" class="w-5 h-5 text-red-500 rounded focus:ring-red-500 border-red-500 bg-slate-800">
+        <label for="isCarnival" class="ml-3 text-sm font-bold text-red-400"><i class="fas fa-exclamation-triangle mr-2"></i>This is a Carnival event booking (Minimum $400 applies)</label>
       </div>
 
       <button type="submit" class="w-full btn-gradient text-black font-bold py-4 rounded-xl shadow-lg text-lg flex items-center justify-center">
