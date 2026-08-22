@@ -60,8 +60,10 @@
     .price-dropdown { position: relative; display: inline-block; z-index: 100; }
     .price-dropdown-content {
       display: none; position: absolute; top: 100%; right: 0; margin-top: 0.5rem;
-      background: white; border-radius: 0.5rem; box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-      z-index: 9999; min-width: 120px; overflow: visible; border: 1px solid #e5e7eb;
+      background: white; border-radius: 0.5rem; box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+      z-index: 99999; min-width: 140px; overflow: visible; border: 1px solid #e5e7eb;
+      max-height: 400px;
+      overflow-y: auto;
     }
     .price-dropdown-content.show { display: block; animation: slideDown 0.2s ease; }
     @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
@@ -268,7 +270,7 @@
   </div>
 
   <script>
-    const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw1Fji0W9KckebjpfTcMLLtRNdf8fVMT_yQ_3PPrwg6kBZxsK8C-12TB-bAeCLY2ckwcg/exec';
+    const APPS_SCRIPT_URL = 'YOUR_APPS_SCRIPT_URL_HERE';
     const ADMIN_PASSWORD = 'hkj5762';
     let allBookings = [];
     let saveTimeout = null;
@@ -1258,15 +1260,15 @@
           
           let message = `Hello ${clientName},\n\n`;
           message += `Your HKJ Logistics booking ${refCode} is ready for review!\n\n`;
-          message += ` Date: ${date} at ${time}\n`;
+          message += `📅 Date: ${date} at ${time}\n`;
           message += `📍 Pickup: ${pickup}\n`;
-          message += `🏁 Drop-off: ${dropoff}\n`;
+          message += ` Drop-off: ${dropoff}\n`;
           message += `💰 Final Price: $${price} TTD\n\n`;
-          message += ` HOW IT WORKS:\n`;
+          message += `📋 HOW IT WORKS:\n`;
           message += `1. We received your request. ✓\n`;
           message += `2. This is your personalized quote. ✓\n`;
           message += `3. Click the link below to CONFIRM or DECLINE your booking.\n\n`;
-          message += ` Confirm or Decline here:\n`;
+          message += `👉 Confirm or Decline here:\n`;
           message += `https://hkjlogisticsltdtt.vercel.app/confirm.html?code=${refCode}\n\n`;
           message += `Thank you,\nHayden Joseph\nManaging Director, HKJ Logistics Ltd\n+1 (868) 780-0300`;
           
