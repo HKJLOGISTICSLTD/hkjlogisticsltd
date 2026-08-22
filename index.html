@@ -26,9 +26,11 @@
       scroll-behavior: smooth;
     }
     
-    /* Softened Dark Background */
+    /* ==========================================
+       BEACH BACKGROUND - ENSURED VISIBLE
+       ========================================== */
     body {
-      background: linear-gradient(135deg, rgba(15, 23, 42, 0.85), rgba(30, 41, 59, 0.95)),
+      background: linear-gradient(135deg, rgba(15, 23, 42, 0.75), rgba(30, 41, 59, 0.85)),
                   url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=1920&q=80') !important;
       background-size: cover !important; 
       background-position: center !important;
@@ -441,7 +443,7 @@
         <select onchange="document.getElementById('pickupAddress').value=this.value" 
           class="w-full p-3 mb-3 border-2 border-gray-600 rounded-xl focus:outline-none bg-dark-input text-white text-sm">
           <option value="">-- Quick Select Popular Location --</option>
-          <optgroup label="️ Airports">
+          <optgroup label="✈️ Airports">
             <option value="Piarco International Airport, Trinidad">Piarco International Airport</option>
             <option value="A.N.R. Robinson International Airport, Tobago">Tobago Airport</option>
           </optgroup>
@@ -555,7 +557,7 @@
 
       <div class="flex items-center bg-red-900/30 p-6 rounded-xl border-2 border-red-500/50">
         <input type="checkbox" name="isCarnival" id="isCarnival" class="w-6 h-6 text-red-500 rounded focus:ring-red-500 border-red-500 bg-slate-800">
-        <label for="isCarnival" class="ml-4 text-base font-bold text-red-400"><i class="fas fa-exclamation-triangle mr-2"></i>Please select this if its a carnival event</label>
+        <label for="isCarnival" class="ml-4 text-base font-bold text-red-400"><i class="fas fa-exclamation-triangle mr-2"></i>Please select this if its a carnival event - Carnival event booking (Minimum $400 applies)</label>
       </div>
 
       <button type="submit" class="w-full btn-gradient text-black font-bold py-4 rounded-xl shadow-lg text-lg flex items-center justify-center">
