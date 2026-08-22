@@ -56,7 +56,7 @@
       backdrop-filter: blur(20px);
     }
     
-    /* FIXED DROPDOWN STYLES */
+    /* FIXED DROPDOWN - Now appears on top of everything */
     .price-dropdown { position: relative; display: inline-block; z-index: 100; }
     .price-dropdown-content {
       display: none; position: absolute; top: 100%; right: 0; margin-top: 0.5rem;
@@ -268,7 +268,7 @@
   </div>
 
   <script>
-    const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzr4DHnIpxJKiMj9Ktb0nAxQrhRDfBvho573bf98S9TbNKMWZvCw8CxfceuXDsmTyPtGQ/exec';
+    const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw1Fji0W9KckebjpfTcMLLtRNdf8fVMT_yQ_3PPrwg6kBZxsK8C-12TB-bAeCLY2ckwcg/exec';
     const ADMIN_PASSWORD = 'hkj5762';
     let allBookings = [];
     let saveTimeout = null;
@@ -1187,6 +1187,8 @@
       btn.disabled = true;
 
       try {
+        console.log('Sending price email for row:', row, 'price:', price);
+        
         const response = await fetch(APPS_SCRIPT_URL, {
           method: 'POST',
           body: new URLSearchParams({
@@ -1197,16 +1199,17 @@
         });
         
         const result = await response.json();
+        console.log('Email response:', result);
         
         if (result.success) {
           alert('✅ Price email sent successfully!');
           fetchBookings();
         } else {
-          alert('Error sending email: ' + (result.message || 'Unknown error'));
+          alert(' Error sending email: ' + (result.message || 'Unknown error'));
         }
       } catch (error) {
         console.error('Error:', error);
-        alert('Network error. Please try again.');
+        alert('❌ Network error. Please try again.');
       } finally {
         btn.innerHTML = originalHTML;
         btn.disabled = false;
@@ -1255,15 +1258,15 @@
           
           let message = `Hello ${clientName},\n\n`;
           message += `Your HKJ Logistics booking ${refCode} is ready for review!\n\n`;
-          message += `📅 Date: ${date} at ${time}\n`;
+          message += ` Date: ${date} at ${time}\n`;
           message += `📍 Pickup: ${pickup}\n`;
-          message += ` Drop-off: ${dropoff}\n`;
+          message += `🏁 Drop-off: ${dropoff}\n`;
           message += `💰 Final Price: $${price} TTD\n\n`;
-          message += `📋 HOW IT WORKS:\n`;
+          message += ` HOW IT WORKS:\n`;
           message += `1. We received your request. ✓\n`;
           message += `2. This is your personalized quote. ✓\n`;
           message += `3. Click the link below to CONFIRM or DECLINE your booking.\n\n`;
-          message += `👉 Confirm or Decline here:\n`;
+          message += ` Confirm or Decline here:\n`;
           message += `https://hkjlogisticsltdtt.vercel.app/confirm.html?code=${refCode}\n\n`;
           message += `Thank you,\nHayden Joseph\nManaging Director, HKJ Logistics Ltd\n+1 (868) 780-0300`;
           
@@ -1357,7 +1360,7 @@
             `─────────────────\n` +
             `Total Bookings: ${bookings.length}\n` +
             `⏳ Pending: ${pending}\n` +
-            ` Price Sent: ${priceSent}\n` +
+            `💰 Price Sent: ${priceSent}\n` +
             `✅ Confirmed: ${confirmed}\n` +
             `✔️ Completed: ${completed}\n` +
             `❌ Cancelled: ${cancelled}\n\n` +
