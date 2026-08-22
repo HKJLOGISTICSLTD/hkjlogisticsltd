@@ -94,13 +94,6 @@
       max-width: 800px; width: 100%; max-height: 90vh; overflow-y: auto;
       animation: slideUp 0.3s ease;
     }
-    .save-indicator {
-      position: absolute; top: 10px; right: 10px;
-      background: #10b981; color: white; padding: 4px 8px;
-      border-radius: 4px; font-size: 12px; font-weight: bold;
-      opacity: 0; transition: opacity 0.3s ease;
-    }
-    .save-indicator.show { opacity: 1; }
   </style>
 </head>
 <body class="p-6">
@@ -345,22 +338,493 @@
       }, 1000);
     }
 
+    // ==========================================
+    // EXPANDED PRESET ROUTES (ALL COMMON TRINIDAD ROUTES)
+    // ==========================================
     const PRESET_ROUTES = {
-      'chaguaramas-piarco': { km: 25, price: 175 },
-      'chaguaramas-pos': { km: 15, price: 125 },
-      'grand bazaar-pos': { km: 20, price: 150 },
-      'grand bazaar-piarco': { km: 30, price: 200 },
-      'trincity-piarco': { km: 10, price: 100 },
-      'trincity-pos': { km: 20, price: 150 },
-      'san fernando-pos': { km: 50, price: 300 },
-      'san fernando-piarco': { km: 60, price: 350 },
-      'arima-pos': { km: 25, price: 175 },
-      'couva-pos': { km: 30, price: 200 },
+      // Airport Routes
+      'piarco-port of spain': { km: 20, price: 150 },
+      'piarco-pos': { km: 20, price: 150 },
+      'piarco-san fernando': { km: 60, price: 350 },
+      'piarco-chaguanas': { km: 30, price: 200 },
+      'piarco-grand bazaar': { km: 30, price: 200 },
+      'piarco-arima': { km: 25, price: 175 },
+      'piarco-couva': { km: 35, price: 225 },
+      'piarco-trincity': { km: 10, price: 100 },
+      'piarco-maraval': { km: 25, price: 175 },
+      'piarco-long circular': { km: 25, price: 175 },
+      'piarco-c3': { km: 60, price: 350 },
+      'piarco-c3 centre': { km: 60, price: 350 },
+      'piarco-st james': { km: 25, price: 175 },
+      'piarco-movie towne': { km: 25, price: 175 },
+      'piarco-diego martin': { km: 30, price: 200 },
+      'piarco-westmoorings': { km: 30, price: 200 },
+      'piarco-valsayn': { km: 15, price: 125 },
+      'piarco-curepe': { km: 15, price: 125 },
+      'piarco-st augustine': { km: 20, price: 150 },
+      'piarco-champs fleurs': { km: 20, price: 150 },
+      'piarco-laventille': { km: 25, price: 175 },
+      'piarco-belmont': { km: 25, price: 175 },
+      'piarco-cocorite': { km: 25, price: 175 },
+      'piarco-point fortin': { km: 90, price: 500 },
+      'piarco-la brea': { km: 80, price: 450 },
+      'piarco-siparia': { km: 85, price: 475 },
+      'piarco-penal': { km: 75, price: 425 },
+      'piarco-princes town': { km: 70, price: 400 },
+      'piarco-sangre grande': { km: 50, price: 300 },
+      'piarco-toco': { km: 70, price: 400 },
+      'piarco-mayaro': { km: 80, price: 450 },
+      'piarco-rio claro': { km: 75, price: 425 },
+      'piarco-scarborough': { km: 100, price: 550 },
+      'piarco-tobago': { km: 100, price: 550 },
+      
+      // Port of Spain Routes
+      'port of spain-san fernando': { km: 20, price: 175 },
+      'pos-san fernando': { km: 20, price: 175 },
+      'port of spain-chaguanas': { km: 20, price: 150 },
+      'pos-chaguanas': { km: 20, price: 150 },
+      'port of spain-grand bazaar': { km: 20, price: 150 },
+      'pos-grand bazaar': { km: 20, price: 150 },
+      'port of spain-arima': { km: 25, price: 175 },
+      'pos-arima': { km: 25, price: 175 },
+      'port of spain-couva': { km: 30, price: 200 },
+      'pos-couva': { km: 30, price: 200 },
+      'port of spain-trincity': { km: 20, price: 150 },
+      'pos-trincity': { km: 20, price: 150 },
+      'port of spain-maraval': { km: 5, price: 75 },
+      'pos-maraval': { km: 5, price: 75 },
+      'port of spain-long circular': { km: 5, price: 75 },
+      'pos-long circular': { km: 5, price: 75 },
+      'port of spain-c3': { km: 20, price: 175 },
+      'pos-c3 centre': { km: 20, price: 175 },
+      'port of spain-st james': { km: 5, price: 75 },
+      'pos-st james': { km: 5, price: 75 },
+      'port of spain-movie towne': { km: 5, price: 75 },
+      'pos-movie towne': { km: 5, price: 75 },
+      'port of spain-diego martin': { km: 10, price: 100 },
+      'pos-diego martin': { km: 10, price: 100 },
+      'port of spain-westmoorings': { km: 10, price: 100 },
+      'pos-westmoorings': { km: 10, price: 100 },
+      'port of spain-valsayn': { km: 10, price: 100 },
+      'pos-valsayn': { km: 10, price: 100 },
+      'port of spain-curepe': { km: 15, price: 125 },
+      'pos-curepe': { km: 15, price: 125 },
+      'port of spain-st augustine': { km: 15, price: 125 },
+      'pos-st augustine': { km: 15, price: 125 },
+      'port of spain-champs fleurs': { km: 15, price: 125 },
+      'pos-champs fleurs': { km: 15, price: 125 },
+      'port of spain-laventille': { km: 5, price: 75 },
+      'pos-laventille': { km: 5, price: 75 },
+      'port of spain-belmont': { km: 3, price: 60 },
+      'pos-belmont': { km: 3, price: 60 },
+      'port of spain-cocorite': { km: 5, price: 75 },
+      'pos-cocorite': { km: 5, price: 75 },
+      'port of spain-point fortin': { km: 80, price: 450 },
+      'pos-point fortin': { km: 80, price: 450 },
+      'port of spain-la brea': { km: 70, price: 400 },
+      'pos-la brea': { km: 70, price: 400 },
+      'port of spain-siparia': { km: 75, price: 425 },
+      'pos-siparia': { km: 75, price: 425 },
+      'port of spain-penal': { km: 65, price: 375 },
+      'pos-penal': { km: 65, price: 375 },
+      'port of spain-princes town': { km: 60, price: 350 },
+      'pos-princes town': { km: 60, price: 350 },
+      'port of spain-sangre grande': { km: 40, price: 250 },
+      'pos-sangre grande': { km: 40, price: 250 },
+      'port of spain-toco': { km: 60, price: 350 },
+      'pos-toco': { km: 60, price: 350 },
+      'port of spain-mayaro': { km: 70, price: 400 },
+      'pos-mayaro': { km: 70, price: 400 },
+      'port of spain-rio claro': { km: 65, price: 375 },
+      'pos-rio claro': { km: 65, price: 375 },
+      'port of spain-scarborough': { km: 90, price: 500 },
+      'pos-tobago': { km: 90, price: 500 },
+      
+      // San Fernando Routes
+      'san fernando-chaguanas': { km: 15, price: 125 },
+      'san fernando-grand bazaar': { km: 15, price: 125 },
+      'san fernando-arima': { km: 40, price: 250 },
+      'san fernando-couva': { km: 20, price: 150 },
+      'san fernando-trincity': { km: 25, price: 175 },
+      'san fernando-maraval': { km: 25, price: 200 },
+      'san fernando-long circular': { km: 25, price: 200 },
+      'san fernando-c3': { km: 5, price: 75 },
+      'san fernando-c3 centre': { km: 5, price: 75 },
+      'san fernando-st james': { km: 25, price: 200 },
+      'san fernando-movie towne': { km: 25, price: 200 },
+      'san fernando-diego martin': { km: 30, price: 225 },
+      'san fernando-westmoorings': { km: 30, price: 225 },
+      'san fernando-valsayn': { km: 25, price: 200 },
+      'san fernando-curepe': { km: 30, price: 225 },
+      'san fernando-st augustine': { km: 35, price: 250 },
+      'san fernando-champs fleurs': { km: 35, price: 250 },
+      'san fernando-laventille': { km: 25, price: 200 },
+      'san fernando-belmont': { km: 25, price: 200 },
+      'san fernando-cocorite': { km: 25, price: 200 },
+      'san fernando-point fortin': { km: 30, price: 225 },
+      'san fernando-la brea': { km: 25, price: 200 },
+      'san fernando-siparia': { km: 20, price: 175 },
+      'san fernando-penal': { km: 15, price: 125 },
+      'san fernando-princes town': { km: 20, price: 150 },
+      'san fernando-sangre grande': { km: 50, price: 300 },
+      'san fernando-toco': { km: 70, price: 400 },
+      'san fernando-mayaro': { km: 40, price: 250 },
+      'san fernando-rio claro': { km: 35, price: 225 },
+      'san fernando-scarborough': { km: 80, price: 450 },
+      'san fernando-tobago': { km: 80, price: 450 },
+      
+      // Chaguanas/Grand Bazaar Routes
+      'chaguanas-arima': { km: 30, price: 200 },
+      'grand bazaar-arima': { km: 30, price: 200 },
+      'chaguanas-couva': { km: 10, price: 100 },
+      'grand bazaar-couva': { km: 10, price: 100 },
+      'chaguanas-trincity': { km: 15, price: 125 },
+      'grand bazaar-trincity': { km: 15, price: 125 },
+      'chaguanas-maraval': { km: 20, price: 175 },
+      'grand bazaar-maraval': { km: 20, price: 175 },
+      'chaguanas-long circular': { km: 20, price: 175 },
+      'grand bazaar-long circular': { km: 20, price: 175 },
+      'chaguanas-c3': { km: 15, price: 125 },
+      'grand bazaar-c3 centre': { km: 15, price: 125 },
+      'chaguanas-st james': { km: 20, price: 175 },
+      'grand bazaar-movie towne': { km: 20, price: 175 },
+      'chaguanas-diego martin': { km: 25, price: 200 },
+      'grand bazaar-diego martin': { km: 25, price: 200 },
+      'chaguanas-westmoorings': { km: 25, price: 200 },
+      'grand bazaar-westmoorings': { km: 25, price: 200 },
+      'chaguanas-valsayn': { km: 20, price: 175 },
+      'grand bazaar-valsayn': { km: 20, price: 175 },
+      'chaguanas-curepe': { km: 20, price: 175 },
+      'grand bazaar-curepe': { km: 20, price: 175 },
+      'chaguanas-st augustine': { km: 25, price: 200 },
+      'grand bazaar-st augustine': { km: 25, price: 200 },
+      'chaguanas-champs fleurs': { km: 25, price: 200 },
+      'grand bazaar-champs fleurs': { km: 25, price: 200 },
+      'chaguanas-laventille': { km: 20, price: 175 },
+      'grand bazaar-laventille': { km: 20, price: 175 },
+      'chaguanas-belmont': { km: 20, price: 175 },
+      'grand bazaar-belmont': { km: 20, price: 175 },
+      'chaguanas-cocorite': { km: 20, price: 175 },
+      'grand bazaar-cocorite': { km: 20, price: 175 },
+      'chaguanas-point fortin': { km: 40, price: 250 },
+      'grand bazaar-point fortin': { km: 40, price: 250 },
+      'chaguanas-la brea': { km: 35, price: 225 },
+      'grand bazaar-la brea': { km: 35, price: 225 },
+      'chaguanas-siparia': { km: 30, price: 200 },
+      'grand bazaar-siparia': { km: 30, price: 200 },
+      'chaguanas-penal': { km: 25, price: 200 },
+      'grand bazaar-penal': { km: 25, price: 200 },
+      'chaguanas-princes town': { km: 30, price: 200 },
+      'grand bazaar-princes town': { km: 30, price: 200 },
+      'chaguanas-sangre grande': { km: 40, price: 250 },
+      'grand bazaar-sangre grande': { km: 40, price: 250 },
+      'chaguanas-toco': { km: 60, price: 350 },
+      'grand bazaar-toco': { km: 60, price: 350 },
+      'chaguanas-mayaro': { km: 50, price: 300 },
+      'grand bazaar-mayaro': { km: 50, price: 300 },
+      'chaguanas-rio claro': { km: 45, price: 275 },
+      'grand bazaar-rio claro': { km: 45, price: 275 },
+      'chaguanas-scarborough': { km: 70, price: 400 },
+      'grand bazaar-tobago': { km: 70, price: 400 },
+      
+      // C3 Centre Routes
+      'c3 centre-piarco': { km: 60, price: 350 },
+      'c3 centre-port of spain': { km: 20, price: 175 },
+      'c3 centre-pos': { km: 20, price: 175 },
+      'c3 centre-chaguanas': { km: 15, price: 125 },
+      'c3 centre-grand bazaar': { km: 15, price: 125 },
+      'c3 centre-arima': { km: 40, price: 250 },
+      'c3 centre-couva': { km: 20, price: 150 },
+      'c3 centre-trincity': { km: 25, price: 175 },
+      'c3 centre-maraval': { km: 25, price: 200 },
+      'c3 centre-long circular': { km: 25, price: 200 },
+      'c3 centre-st james': { km: 25, price: 200 },
+      'c3 centre-movie towne': { km: 25, price: 200 },
+      'c3 centre-diego martin': { km: 30, price: 225 },
+      'c3 centre-westmoorings': { km: 30, price: 225 },
+      'c3 centre-valsayn': { km: 25, price: 200 },
+      'c3 centre-curepe': { km: 30, price: 225 },
+      'c3 centre-st augustine': { km: 35, price: 250 },
+      'c3 centre-champs fleurs': { km: 35, price: 250 },
+      'c3 centre-laventille': { km: 25, price: 200 },
+      'c3 centre-belmont': { km: 25, price: 200 },
+      'c3 centre-cocorite': { km: 25, price: 200 },
+      'c3 centre-point fortin': { km: 30, price: 225 },
+      'c3 centre-la brea': { km: 25, price: 200 },
+      'c3 centre-siparia': { km: 20, price: 175 },
+      'c3 centre-penal': { km: 15, price: 125 },
+      'c3 centre-princes town': { km: 20, price: 150 },
+      'c3 centre-sangre grande': { km: 50, price: 300 },
+      'c3 centre-toco': { km: 70, price: 400 },
+      'c3 centre-mayaro': { km: 40, price: 250 },
+      'c3 centre-rio claro': { km: 35, price: 225 },
+      'c3 centre-scarborough': { km: 80, price: 450 },
+      'c3 centre-tobago': { km: 80, price: 450 },
+      
+      // Trincity Mall Routes
+      'trincity mall-piarco': { km: 10, price: 100 },
+      'trincity mall-port of spain': { km: 20, price: 150 },
+      'trincity mall-pos': { km: 20, price: 150 },
+      'trincity mall-san fernando': { km: 25, price: 175 },
+      'trincity mall-chaguanas': { km: 15, price: 125 },
+      'trincity mall-grand bazaar': { km: 15, price: 125 },
+      'trincity mall-arima': { km: 20, price: 150 },
+      'trincity mall-couva': { km: 25, price: 175 },
+      'trincity mall-maraval': { km: 15, price: 125 },
+      'trincity mall-long circular': { km: 15, price: 125 },
+      'trincity mall-c3': { km: 25, price: 175 },
+      'trincity mall-c3 centre': { km: 25, price: 175 },
+      'trincity mall-st james': { km: 15, price: 125 },
+      'trincity mall-movie towne': { km: 15, price: 125 },
+      'trincity mall-diego martin': { km: 20, price: 150 },
+      'trincity mall-westmoorings': { km: 20, price: 150 },
+      'trincity mall-valsayn': { km: 10, price: 100 },
+      'trincity mall-curepe': { km: 5, price: 75 },
+      'trincity mall-st augustine': { km: 10, price: 100 },
+      'trincity mall-champs fleurs': { km: 10, price: 100 },
+      'trincity mall-laventille': { km: 15, price: 125 },
+      'trincity mall-belmont': { km: 15, price: 125 },
+      'trincity mall-cocorite': { km: 15, price: 125 },
+      'trincity mall-point fortin': { km: 70, price: 400 },
+      'trincity mall-la brea': { km: 60, price: 350 },
+      'trincity mall-siparia': { km: 65, price: 375 },
+      'trincity mall-penal': { km: 55, price: 325 },
+      'trincity mall-princes town': { km: 50, price: 300 },
+      'trincity mall-sangre grande': { km: 30, price: 200 },
+      'trincity mall-toco': { km: 50, price: 300 },
+      'trincity mall-mayaro': { km: 60, price: 350 },
+      'trincity mall-rio claro': { km: 55, price: 325 },
+      'trincity mall-scarborough': { km: 80, price: 450 },
+      'trincity mall-tobago': { km: 80, price: 450 },
+      
+      // Long Circular Mall / Maraval Routes
+      'long circular mall-piarco': { km: 25, price: 175 },
+      'long circular mall-port of spain': { km: 5, price: 75 },
+      'long circular mall-pos': { km: 5, price: 75 },
+      'long circular mall-san fernando': { km: 25, price: 200 },
+      'long circular mall-chaguanas': { km: 20, price: 175 },
+      'long circular mall-grand bazaar': { km: 20, price: 175 },
+      'long circular mall-arima': { km: 30, price: 200 },
+      'long circular mall-couva': { km: 35, price: 225 },
+      'long circular mall-trincity': { km: 15, price: 125 },
+      'long circular mall-c3': { km: 25, price: 200 },
+      'long circular mall-c3 centre': { km: 25, price: 200 },
+      'long circular mall-st james': { km: 5, price: 75 },
+      'long circular mall-movie towne': { km: 5, price: 75 },
+      'long circular mall-diego martin': { km: 10, price: 100 },
+      'long circular mall-westmoorings': { km: 10, price: 100 },
+      'long circular mall-valsayn': { km: 10, price: 100 },
+      'long circular mall-curepe': { km: 20, price: 150 },
+      'long circular mall-st augustine': { km: 20, price: 150 },
+      'long circular mall-champs fleurs': { km: 20, price: 150 },
+      'long circular mall-laventille': { km: 10, price: 100 },
+      'long circular mall-belmont': { km: 10, price: 100 },
+      'long circular mall-cocorite': { km: 10, price: 100 },
+      'long circular mall-point fortin': { km: 85, price: 475 },
+      'long circular mall-la brea': { km: 75, price: 425 },
+      'long circular mall-siparia': { km: 80, price: 450 },
+      'long circular mall-penal': { km: 70, price: 400 },
+      'long circular mall-princes town': { km: 65, price: 375 },
+      'long circular mall-sangre grande': { km: 45, price: 275 },
+      'long circular mall-toco': { km: 65, price: 375 },
+      'long circular mall-mayaro': { km: 75, price: 425 },
+      'long circular mall-rio claro': { km: 70, price: 400 },
+      'long circular mall-scarborough': { km: 95, price: 525 },
+      'long circular mall-tobago': { km: 95, price: 525 },
+      
+      // St. James / MovieTowne Routes
+      'st james-piarco': { km: 25, price: 175 },
+      'movie towne-piarco': { km: 25, price: 175 },
+      'st james-san fernando': { km: 25, price: 200 },
+      'movie towne-san fernando': { km: 25, price: 200 },
+      'st james-chaguanas': { km: 20, price: 175 },
+      'movie towne-chaguanas': { km: 20, price: 175 },
+      'st james-grand bazaar': { km: 20, price: 175 },
+      'movie towne-grand bazaar': { km: 20, price: 175 },
+      'st james-arima': { km: 30, price: 200 },
+      'movie towne-arima': { km: 30, price: 200 },
+      'st james-couva': { km: 35, price: 225 },
+      'movie towne-couva': { km: 35, price: 225 },
+      'st james-trincity': { km: 15, price: 125 },
+      'movie towne-trincity': { km: 15, price: 125 },
+      'st james-maraval': { km: 5, price: 75 },
+      'movie towne-maraval': { km: 5, price: 75 },
+      'st james-long circular': { km: 5, price: 75 },
+      'movie towne-long circular': { km: 5, price: 75 },
+      'st james-c3': { km: 25, price: 200 },
+      'movie towne-c3 centre': { km: 25, price: 200 },
+      'st james-diego martin': { km: 10, price: 100 },
+      'movie towne-diego martin': { km: 10, price: 100 },
+      'st james-westmoorings': { km: 10, price: 100 },
+      'movie towne-westmoorings': { km: 10, price: 100 },
+      'st james-valsayn': { km: 10, price: 100 },
+      'movie towne-valsayn': { km: 10, price: 100 },
+      'st james-curepe': { km: 20, price: 150 },
+      'movie towne-curepe': { km: 20, price: 150 },
+      'st james-st augustine': { km: 20, price: 150 },
+      'movie towne-st augustine': { km: 20, price: 150 },
+      'st james-champs fleurs': { km: 20, price: 150 },
+      'movie towne-champs fleurs': { km: 20, price: 150 },
+      'st james-laventille': { km: 10, price: 100 },
+      'movie towne-laventille': { km: 10, price: 100 },
+      'st james-belmont': { km: 10, price: 100 },
+      'movie towne-belmont': { km: 10, price: 100 },
+      'st james-cocorite': { km: 10, price: 100 },
+      'movie towne-cocorite': { km: 10, price: 100 },
+      'st james-point fortin': { km: 85, price: 475 },
+      'movie towne-point fortin': { km: 85, price: 475 },
+      'st james-la brea': { km: 75, price: 425 },
+      'movie towne-la brea': { km: 75, price: 425 },
+      'st james-siparia': { km: 80, price: 450 },
+      'movie towne-siparia': { km: 80, price: 450 },
+      'st james-penal': { km: 70, price: 400 },
+      'movie towne-penal': { km: 70, price: 400 },
+      'st james-princes town': { km: 65, price: 375 },
+      'movie towne-princes town': { km: 65, price: 375 },
+      'st james-sangre grande': { km: 45, price: 275 },
+      'movie towne-sangre grande': { km: 45, price: 275 },
+      'st james-toco': { km: 65, price: 375 },
+      'movie towne-toco': { km: 65, price: 375 },
+      'st james-mayaro': { km: 75, price: 425 },
+      'movie towne-mayaro': { km: 75, price: 425 },
+      'st james-rio claro': { km: 70, price: 400 },
+      'movie towne-rio claro': { km: 70, price: 400 },
+      'st james-scarborough': { km: 95, price: 525 },
+      'movie towne-tobago': { km: 95, price: 525 },
+      
+      // Arima Routes
+      'arima-couva': { km: 35, price: 225 },
+      'arima-trincity': { km: 20, price: 150 },
+      'arima-maraval': { km: 30, price: 200 },
+      'arima-long circular': { km: 30, price: 200 },
+      'arima-c3': { km: 40, price: 250 },
+      'arima-c3 centre': { km: 40, price: 250 },
+      'arima-st james': { km: 30, price: 200 },
+      'arima-movie towne': { km: 30, price: 200 },
+      'arima-diego martin': { km: 35, price: 225 },
+      'arima-westmoorings': { km: 35, price: 225 },
+      'arima-valsayn': { km: 20, price: 150 },
+      'arima-curepe': { km: 10, price: 100 },
+      'arima-st augustine': { km: 15, price: 125 },
+      'arima-champs fleurs': { km: 15, price: 125 },
+      'arima-laventille': { km: 25, price: 175 },
+      'arima-belmont': { km: 25, price: 175 },
+      'arima-cocorite': { km: 25, price: 175 },
+      'arima-point fortin': { km: 80, price: 450 },
+      'arima-la brea': { km: 70, price: 400 },
+      'arima-siparia': { km: 75, price: 425 },
+      'arima-penal': { km: 65, price: 375 },
+      'arima-princes town': { km: 60, price: 350 },
+      'arima-sangre grande': { km: 25, price: 175 },
+      'arima-toco': { km: 40, price: 250 },
+      'arima-mayaro': { km: 45, price: 275 },
+      'arima-rio claro': { km: 40, price: 250 },
+      'arima-scarborough': { km: 90, price: 500 },
+      'arima-tobago': { km: 90, price: 500 },
+      
+      // Couva Routes
+      'couva-trincity': { km: 25, price: 175 },
+      'couva-maraval': { km: 35, price: 225 },
+      'couva-long circular': { km: 35, price: 225 },
+      'couva-c3': { km: 20, price: 150 },
+      'couva-c3 centre': { km: 20, price: 150 },
+      'couva-st james': { km: 35, price: 225 },
+      'couva-movie towne': { km: 35, price: 225 },
+      'couva-diego martin': { km: 40, price: 250 },
+      'couva-westmoorings': { km: 40, price: 250 },
+      'couva-valsayn': { km: 30, price: 200 },
+      'couva-curepe': { km: 30, price: 200 },
+      'couva-st augustine': { km: 35, price: 225 },
+      'couva-champs fleurs': { km: 35, price: 225 },
+      'couva-laventille': { km: 35, price: 225 },
+      'couva-belmont': { km: 35, price: 225 },
+      'couva-cocorite': { km: 35, price: 225 },
+      'couva-point fortin': { km: 50, price: 300 },
+      'couva-la brea': { km: 45, price: 275 },
+      'couva-siparia': { km: 40, price: 250 },
+      'couva-penal': { km: 35, price: 225 },
+      'couva-princes town': { km: 40, price: 250 },
+      'couva-sangre grande': { km: 45, price: 275 },
+      'couva-toco': { km: 65, price: 375 },
+      'couva-mayaro': { km: 55, price: 325 },
+      'couva-rio claro': { km: 50, price: 300 },
+      'couva-scarborough': { km: 75, price: 425 },
+      'couva-tobago': { km: 75, price: 425 },
+      
+      // Point Fortin / La Brea / Siparia / Penal / Princes Town Routes (Southern)
+      'point fortin-la brea': { km: 10, price: 100 },
+      'point fortin-siparia': { km: 15, price: 125 },
+      'point fortin-penal': { km: 20, price: 150 },
+      'point fortin-princes town': { km: 25, price: 175 },
+      'point fortin-sangre grande': { km: 70, price: 400 },
+      'point fortin-toco': { km: 90, price: 500 },
+      'point fortin-mayaro': { km: 50, price: 300 },
+      'point fortin-rio claro': { km: 45, price: 275 },
+      'point fortin-scarborough': { km: 100, price: 550 },
+      'point fortin-tobago': { km: 100, price: 550 },
+      
+      'la brea-siparia': { km: 10, price: 100 },
+      'la brea-penal': { km: 15, price: 125 },
+      'la brea-princes town': { km: 20, price: 150 },
+      'la brea-sangre grande': { km: 65, price: 375 },
+      'la brea-toco': { km: 85, price: 475 },
+      'la brea-mayaro': { km: 45, price: 275 },
+      'la brea-rio claro': { km: 40, price: 250 },
+      'la brea-scarborough': { km: 95, price: 525 },
+      'la brea-tobago': { km: 95, price: 525 },
+      
+      'siparia-penal': { km: 10, price: 100 },
+      'siparia-princes town': { km: 15, price: 125 },
+      'siparia-sangre grande': { km: 60, price: 350 },
+      'siparia-toco': { km: 80, price: 450 },
+      'siparia-mayaro': { km: 40, price: 250 },
+      'siparia-rio claro': { km: 35, price: 225 },
+      'siparia-scarborough': { km: 90, price: 500 },
+      'siparia-tobago': { km: 90, price: 500 },
+      
+      'penal-princes town': { km: 10, price: 100 },
+      'penal-sangre grande': { km: 55, price: 325 },
+      'penal-toco': { km: 75, price: 425 },
+      'penal-mayaro': { km: 35, price: 225 },
+      'penal-rio claro': { km: 30, price: 200 },
+      'penal-scarborough': { km: 85, price: 475 },
+      'penal-tobago': { km: 85, price: 475 },
+      
+      'princes town-sangre grande': { km: 50, price: 300 },
+      'princes town-toco': { km: 70, price: 400 },
+      'princes town-mayaro': { km: 30, price: 200 },
+      'princes town-rio claro': { km: 25, price: 175 },
+      'princes town-scarborough': { km: 80, price: 450 },
+      'princes town-tobago': { km: 80, price: 450 },
+      
+      // Eastern Routes
+      'sangre grande-toco': { km: 30, price: 200 },
+      'sangre grande-mayaro': { km: 40, price: 250 },
+      'sangre grande-rio claro': { km: 35, price: 225 },
+      'sangre grande-scarborough': { km: 80, price: 450 },
+      'sangre grande-tobago': { km: 80, price: 450 },
+      
+      'toco-mayaro': { km: 50, price: 300 },
+      'toco-rio claro': { km: 45, price: 275 },
+      'toco-scarborough': { km: 90, price: 500 },
+      'toco-tobago': { km: 90, price: 500 },
+      
+      'mayaro-rio claro': { km: 20, price: 150 },
+      'mayaro-scarborough': { km: 70, price: 400 },
+      'mayaro-tobago': { km: 70, price: 400 },
+      
+      'rio claro-scarborough': { km: 65, price: 375 },
+      'rio claro-tobago': { km: 65, price: 375 },
+      
+      // Tobago Routes
+      'scarborough-tobago': { km: 5, price: 50 },
     };
 
     function getPresetPrice(pickup, dropoff) {
       const p = pickup.toLowerCase();
       const d = dropoff.toLowerCase();
+      
+      // Check all preset routes
       for (let key in PRESET_ROUTES) {
         const [from, to] = key.split('-');
         if ((p.includes(from) && d.includes(to)) || (p.includes(to) && d.includes(from))) {
@@ -383,6 +847,8 @@
       const dropoff = booking['DROP OFF'];
 
       const fullText = (pickup + ' ' + dropoff).toLowerCase();
+      
+      // Check for Tobago
       if (fullText.includes('tobago') || fullText.includes('scarborough')) {
         applyAutoPrice(row, 500);
         btn.innerHTML = '<i class="fas fa-check mr-1"></i>AUTO $500 (Tobago)';
@@ -390,10 +856,11 @@
         return;
       }
 
+      // Check preset routes
       const preset = getPresetPrice(pickup, dropoff);
       if (preset) {
         applyAutoPrice(row, preset.price);
-        btn.innerHTML = `<i class="fas fa-check mr-1"></i>AUTO $${preset.price} (${preset.km}km preset)`;
+        btn.innerHTML = `<i class="fas fa-check mr-1"></i>AUTO $${preset.price} (${preset.km}km)`;
         btn.disabled = false;
         return;
       }
@@ -484,7 +951,7 @@
           <div class="border-t pt-4 mb-4 bg-gradient-to-r from-gray-50 to-gray-100 p-4 rounded-xl">
             <div class="flex items-center justify-between mb-2">
               <label class="block text-xs font-bold text-gray-600 uppercase">Final Price (TTD)</label>
-              <button id="autoBtn-${row}" onclick="calculateRealPrice(${row})" class="auto-price-badge hover:opacity-80 transition cursor-pointer" title="Click to calculate exact GPS price"><i class="fas fa-satellite mr-1"></i>GPS AUTO</button>
+              <button id="autoBtn-${row}" onclick="calculateRealPrice(${row})" class="auto-price-badge hover:opacity-80 transition cursor-pointer" title="Click to calculate price"><i class="fas fa-calculator mr-1"></i>AUTO PRICE</button>
             </div>
             <div class="flex items-center gap-2 mb-2">
               <input type="number" id="price-${row}" value="${displayPrice}" placeholder="0.00" 
@@ -501,10 +968,16 @@
                 </button>
                 
                 <div id="priceDropdown-${row}" class="price-dropdown-content">
+                  <div class="price-option" onclick="setQuickPrice(${row}, 100)"><span>$100</span><i class="fas fa-check text-green-600 opacity-0 hover:opacity-100"></i></div>
+                  <div class="price-option" onclick="setQuickPrice(${row}, 150)"><span>$150</span><i class="fas fa-check text-blue-600 opacity-0 hover:opacity-100"></i></div>
                   <div class="price-option" onclick="setQuickPrice(${row}, 200)"><span>$200</span><i class="fas fa-check text-green-600 opacity-0 hover:opacity-100"></i></div>
-                  <div class="price-option" onclick="setQuickPrice(${row}, 350)"><span>$350</span><i class="fas fa-check text-blue-600 opacity-0 hover:opacity-100"></i></div>
+                  <div class="price-option" onclick="setQuickPrice(${row}, 250)"><span>$250</span><i class="fas fa-check text-purple-600 opacity-0 hover:opacity-100"></i></div>
+                  <div class="price-option" onclick="setQuickPrice(${row}, 300)"><span>$300</span><i class="fas fa-check text-blue-600 opacity-0 hover:opacity-100"></i></div>
+                  <div class="price-option" onclick="setQuickPrice(${row}, 350)"><span>$350</span><i class="fas fa-check text-green-600 opacity-0 hover:opacity-100"></i></div>
                   <div class="price-option" onclick="setQuickPrice(${row}, 400)"><span>$400</span><i class="fas fa-check text-purple-600 opacity-0 hover:opacity-100"></i></div>
+                  <div class="price-option" onclick="setQuickPrice(${row}, 450)"><span>$450</span><i class="fas fa-check text-blue-600 opacity-0 hover:opacity-100"></i></div>
                   <div class="price-option" onclick="setQuickPrice(${row}, 500)"><span>$500</span><i class="fas fa-check text-red-600 opacity-0 hover:opacity-100"></i></div>
+                  <div class="price-option" onclick="setQuickPrice(${row}, 550)"><span>$550</span><i class="fas fa-check text-purple-600 opacity-0 hover:opacity-100"></i></div>
                 </div>
               </div>
             </div>
@@ -712,17 +1185,6 @@
       btn.disabled = true;
 
       try {
-        // First save the price
-        await fetch(APPS_SCRIPT_URL, {
-          method: 'POST',
-          body: new URLSearchParams({
-            action: 'updatePrice',
-            row: row,
-            price: price
-          })
-        });
-        
-        // Then send the email
         const response = await fetch(APPS_SCRIPT_URL, {
           method: 'POST',
           body: new URLSearchParams({
@@ -762,7 +1224,6 @@
       btn.disabled = true;
 
       try {
-        // First save the price
         await fetch(APPS_SCRIPT_URL, {
           method: 'POST',
           body: new URLSearchParams({
@@ -790,7 +1251,6 @@
             phone = '1' + phone;
           }
           
-          // Build WhatsApp message with confirm/decline options
           let message = `Hello ${clientName},\n\n`;
           message += `Your HKJ Logistics booking ${refCode} is ready for review!\n\n`;
           message += `📅 Date: ${date} at ${time}\n`;
@@ -811,14 +1271,13 @@
           const newWindow = window.open(whatsappUrl, '_blank');
           
           if (!newWindow || newWindow.closed || typeof newWindow.closed == 'undefined') {
-            alert('️ WhatsApp popup was blocked!');
+            alert('⚠️ WhatsApp popup was blocked!');
           } else {
             setTimeout(() => {
               alert('✅ WhatsApp opened! Client can now confirm or decline.');
             }, 1000);
           }
           
-          // Update status to Price Sent
           await fetch(APPS_SCRIPT_URL, {
             method: 'POST',
             body: new URLSearchParams({
@@ -910,16 +1369,6 @@
         alert('Error generating report.');
       }
     }
-
-    const style = document.createElement('style');
-    style.textContent = `
-      @keyframes shake {
-        0%, 100% { transform: translateX(0); }
-        25% { transform: translateX(-10px); }
-        75% { transform: translateX(10px); }
-      }
-    `;
-    document.head.appendChild(style);
 
     window.addEventListener('DOMContentLoaded', () => {
       // Login screen is shown by default
