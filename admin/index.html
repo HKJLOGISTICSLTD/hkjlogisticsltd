@@ -305,22 +305,16 @@
       location.reload();
     }
 
-    // ==========================================
-    // AUTO-SAVE PRICE FUNCTION
-    // ==========================================
     function autoSavePrice(row, price) {
-      // Clear any existing timeout
       if (saveTimeout) {
         clearTimeout(saveTimeout);
       }
       
-      // Show saving indicator
       const priceInput = document.getElementById(`price-${row}`);
       if (priceInput) {
         priceInput.style.borderColor = '#fbbf24';
       }
       
-      // Debounce: wait 1 second after user stops typing
       saveTimeout = setTimeout(() => {
         fetch(APPS_SCRIPT_URL, {
           method: 'POST',
@@ -333,7 +327,6 @@
         .then(response => response.json())
         .then(data => {
           if (data.success) {
-            // Show saved indicator
             if (priceInput) {
               priceInput.style.borderColor = '#10b981';
               setTimeout(() => {
@@ -352,9 +345,6 @@
       }, 1000);
     }
 
-    // ==========================================
-    // PRESET ROUTES FOR GPS AUTO
-    // ==========================================
     const PRESET_ROUTES = {
       'chaguaramas-piarco': { km: 25, price: 175 },
       'chaguaramas-pos': { km: 15, price: 125 },
@@ -537,7 +527,7 @@
               <option value="Price Sent" ${booking.STATUS === 'Price Sent' ? 'selected' : ''}>💰 Price Sent</option>
               <option value="Confirmed" ${booking.STATUS === 'Confirmed' ? 'selected' : ''}>✅ Confirmed</option>
               <option value="Completed" ${booking.STATUS === 'Completed' ? 'selected' : ''}>✔️ Completed</option>
-              <option value="Cancelled" ${booking.STATUS === 'Cancelled' ? 'selected' : ''}> Cancelled</option>
+              <option value="Cancelled" ${booking.STATUS === 'Cancelled' ? 'selected' : ''}>❌ Cancelled</option>
             </select>
           </div>
 
@@ -722,7 +712,8 @@
       btn.disabled = true;
 
       try {
-        const response = await fetch(APPS_SCRIPT_URL, {
+        // First save the price
+        await fetch(APPS_SCRIPT_URL, {
           method: 'POST',
           body: new URLSearchParams({
             action: 'updatePrice',
@@ -730,15 +721,28 @@
             price: price
           })
         });
+        
+        // Then send the email
+        const response = await fetch(APPS_SCRIPT_URL, {
+          method: 'POST',
+          body: new URLSearchParams({
+            action: 'sendPriceEmail',
+            row: row,
+            price: price
+          })
+        });
+        
         const result = await response.json();
+        
         if (result.success) {
           alert('✅ Price email sent successfully!');
           fetchBookings();
         } else {
-          alert('Error sending email.');
+          alert('Error sending email: ' + (result.message || 'Unknown error'));
         }
       } catch (error) {
-        alert('Network error.');
+        console.error('Error:', error);
+        alert('Network error. Please try again.');
       } finally {
         btn.innerHTML = originalHTML;
         btn.disabled = false;
@@ -758,7 +762,8 @@
       btn.disabled = true;
 
       try {
-        const saveResponse = await fetch(APPS_SCRIPT_URL, {
+        // First save the price
+        await fetch(APPS_SCRIPT_URL, {
           method: 'POST',
           body: new URLSearchParams({
             action: 'updatePrice',
@@ -766,14 +771,6 @@
             price: price
           })
         });
-        const saveResult = await saveResponse.json();
-        
-        if (!saveResult.success) {
-          alert('Error saving price to sheet.');
-          btn.innerHTML = originalHTML;
-          btn.disabled = false;
-          return;
-        }
 
         const response = await fetch(APPS_SCRIPT_URL);
         const data = await response.json();
@@ -793,17 +790,19 @@
             phone = '1' + phone;
           }
           
+          // Build WhatsApp message with confirm/decline options
           let message = `Hello ${clientName},\n\n`;
-          message += `Your HKJ Logistics booking ${refCode} is ready for review!\n`;
+          message += `Your HKJ Logistics booking ${refCode} is ready for review!\n\n`;
           message += `📅 Date: ${date} at ${time}\n`;
           message += `📍 Pickup: ${pickup}\n`;
           message += `🏁 Drop-off: ${dropoff}\n`;
-          message += `💰 Final Price: $${price} TTD\n\n`;
+          message += ` Final Price: $${price} TTD\n\n`;
           message += `📋 HOW IT WORKS:\n`;
-          message += `1. We received your request.\n`;
-          message += `2. This is your personalized quote.\n`;
-          message += `3. Click the link below to accept and confirm!\n\n`;
-          message += `Confirm here: https://hkjlogisticsltdtt.vercel.app/confirm.html?code=${refCode}\n\n`;
+          message += `1. We received your request. ✓\n`;
+          message += `2. This is your personalized quote. ✓\n`;
+          message += `3. Click the link below to CONFIRM or DECLINE your booking.\n\n`;
+          message += `👉 Confirm or Decline here:\n`;
+          message += `https://hkjlogisticsltdtt.vercel.app/confirm.html?code=${refCode}\n\n`;
           message += `Thank you,\nHKJ Logistics Ltd\n+1 (868) 780-0300`;
           
           const encodedMessage = encodeURIComponent(message);
@@ -812,13 +811,14 @@
           const newWindow = window.open(whatsappUrl, '_blank');
           
           if (!newWindow || newWindow.closed || typeof newWindow.closed == 'undefined') {
-            alert('⚠️ WhatsApp popup was blocked!');
+            alert('️ WhatsApp popup was blocked!');
           } else {
             setTimeout(() => {
-              alert('✅ WhatsApp opened!');
+              alert('✅ WhatsApp opened! Client can now confirm or decline.');
             }, 1000);
           }
           
+          // Update status to Price Sent
           await fetch(APPS_SCRIPT_URL, {
             method: 'POST',
             body: new URLSearchParams({
