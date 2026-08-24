@@ -337,7 +337,7 @@
             <p id="finalPriceUSD" class="text-5xl md:text-6xl font-bold text-blue-400"></p>
           </div>
         </div>
-        <p class="text-xs text-gray-500 mt-2">Exchange Rate: 1 USD = 6.80 TTD</p>
+        <p class="text-xs text-gray-500 mt-2">Exchange Rate: 1 USD = 6.80 TTD<br><i>(USD rounded to nearest whole dollar)</i></p>
       </div>
     </div>
 
@@ -530,10 +530,10 @@
     let currentRow = null;
 
     // ==========================================
-    // CURRENCY CONVERSION
+    // CURRENCY CONVERSION (ROUNDED to nearest whole dollar)
     // ==========================================
     function convertTTDtoUSD(ttdAmount) {
-      return (parseFloat(ttdAmount) / EXCHANGE_RATE).toFixed(2);
+      return Math.round(parseFloat(ttdAmount) / EXCHANGE_RATE);
     }
 
     // ==========================================
