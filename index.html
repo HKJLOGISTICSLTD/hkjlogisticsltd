@@ -196,6 +196,24 @@
       filter: invert(1) sepia(1) saturate(5) hue-rotate(0deg);
       cursor: pointer;
     }
+    
+    /* ==========================================
+       BOLD AM/PM FOR TIME INPUT
+       ========================================== */
+    input[type="time"] {
+      font-weight: 700;
+      font-size: 1.1em;
+    }
+    input[type="time"]::-webkit-datetime-edit-ampm-field {
+      font-weight: 900;
+      font-size: 1.2em;
+      color: #facc15;
+      text-transform: uppercase;
+    }
+    input[type="time"]::-webkit-datetime-edit-hour-field,
+    input[type="time"]::-webkit-datetime-edit-minute-field {
+      font-weight: 700;
+    }
   </style>
 </head>
 <body class="p-4 md:p-6">
@@ -214,11 +232,14 @@
       </div>
     </div>
     
-    <!-- Language Toggle Button -->
-    <button onclick="toggleLanguage()" class="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white px-4 py-2 rounded-lg font-semibold transition shadow-lg flex items-center gap-2">
-      <i class="fas fa-globe"></i>
-      <span id="langButton">ESPAÑOL</span>
-    </button>
+    <!-- Language Selection Dropdown -->
+    <div class="flex items-center gap-2">
+      <span class="text-white text-sm font-semibold" data-en="Language Selection" data-es="Selección de Idioma">Language Selection</span>
+      <select onchange="toggleLanguage()" class="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white px-4 py-2 rounded-lg font-semibold transition shadow-lg cursor-pointer">
+        <option value="en" id="langEn">English</option>
+        <option value="es" id="langEs">Español</option>
+      </select>
+    </div>
     
     <!-- Desktop Menu -->
     <div class="hidden md:flex flex-wrap justify-center gap-2">
@@ -459,6 +480,8 @@
             <option value="Trincity Mall, Trincity">Trincity Mall</option>
             <option value="Long Circular Mall, Maraval">Long Circular Mall</option>
             <option value="Valpark Shopping Plaza, Valsayn">Valpark Plaza (Valsayn)</option>
+            <option value="South Park Mall, San Fernando">South Park Mall, San Fernando</option>
+            <option value="Gulf City Mall, La Romain">Gulf City Mall, La Romain</option>
           </optgroup>
           <optgroup label="🏙️ Major Areas">
             <option value="Port of Spain, Trinidad">Port of Spain</option>
@@ -505,8 +528,10 @@
             <option value="Trincity Mall, Trincity">Trincity Mall</option>
             <option value="Long Circular Mall, Maraval">Long Circular Mall</option>
             <option value="Valpark Shopping Plaza, Valsayn">Valpark Plaza (Valsayn)</option>
+            <option value="South Park Mall, San Fernando">South Park Mall, San Fernando</option>
+            <option value="Gulf City Mall, La Romain">Gulf City Mall, La Romain</option>
           </optgroup>
-          <optgroup label="️ Major Areas">
+          <optgroup label="🏙️ Major Areas">
             <option value="Port of Spain, Trinidad">Port of Spain</option>
             <option value="San Fernando, Trinidad">San Fernando</option>
             <option value="Chaguanas, Trinidad">Chaguanas</option>
@@ -736,14 +761,15 @@
     let currentLang = 'en';
     
     function toggleLanguage() {
-      currentLang = currentLang === 'en' ? 'es' : 'en';
+      const select = document.querySelector('select[onchange="toggleLanguage()"]');
+      currentLang = select.value;
       translatePage();
     }
     
     function translatePage() {
-      // Update button text
-      const langButton = document.getElementById('langButton');
-      langButton.textContent = currentLang === 'en' ? 'ESPAÑOL' : 'ENGLISH';
+      // Update dropdown selection
+      const select = document.querySelector('select[onchange="toggleLanguage()"]');
+      select.value = currentLang;
       
       // Update all elements with data-en and data-es attributes
       const elements = document.querySelectorAll('[data-en][data-es]');
