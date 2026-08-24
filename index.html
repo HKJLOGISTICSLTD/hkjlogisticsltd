@@ -495,18 +495,18 @@
         <select onchange="document.getElementById('dropoffAddress').value=this.value" 
           class="w-full p-3 mb-3 border-2 border-gray-600 rounded-xl focus:outline-none bg-dark-input text-white text-sm">
           <option value="">-- Quick Select Popular Location --</option>
-          <optgroup label="✈️ Airports">
+          <optgroup label="️ Airports">
             <option value="Piarco International Airport, Trinidad">Piarco International Airport</option>
             <option value="A.N.R. Robinson International Airport, Tobago">Tobago Airport</option>
           </optgroup>
-          <optgroup label="️ Malls & Shopping">
+          <optgroup label="🛍️ Malls & Shopping">
             <option value="C3 Centre, Sir Solomon Hochoy Highway, San Fernando">C3 Centre (San Fernando)</option>
             <option value="Grand Bazaar, West Mall, Caroni">Grand Bazaar (West Mall)</option>
             <option value="Trincity Mall, Trincity">Trincity Mall</option>
             <option value="Long Circular Mall, Maraval">Long Circular Mall</option>
             <option value="Valpark Shopping Plaza, Valsayn">Valpark Plaza (Valsayn)</option>
           </optgroup>
-          <optgroup label="🏙️ Major Areas">
+          <optgroup label="️ Major Areas">
             <option value="Port of Spain, Trinidad">Port of Spain</option>
             <option value="San Fernando, Trinidad">San Fernando</option>
             <option value="Chaguanas, Trinidad">Chaguanas</option>
@@ -554,6 +554,20 @@
             <option value="hourly" data-en="Hourly Service" data-es="Servicio por Hora">Hourly Service</option>
           </select>
         </div>
+      </div>
+
+      <!-- ==========================================
+           PAYMENT METHOD SECTION (MANDATORY)
+           ========================================== -->
+      <div>
+        <label class="block text-sm font-bold text-gray-300 mb-2"><i class="fas fa-credit-card text-yellow-400 mr-2"></i><span data-en="Payment Method" data-es="Método de Pago">Payment Method</span> *</label>
+        <select name="paymentMethod" required class="w-full p-3 border rounded-xl focus:outline-none input-focus transition bg-dark-input">
+          <option value="" data-en="Select a payment method..." data-es="Selecciona un método de pago...">Select a payment method...</option>
+          <option value="Cash" data-en="Cash" data-es="Efectivo">Cash</option>
+          <option value="Credit Card / Linx" data-en="Credit Card / Linx" data-es="Tarjeta de Crédito / Linx">Credit Card / Linx</option>
+          <option value="Online Payment" data-en="Online Payment" data-es="Pago en Línea">Online Payment</option>
+          <option value="Bank Transfer" data-en="Bank Transfer" data-es="Transferencia Bancaria">Bank Transfer</option>
+        </select>
       </div>
 
       <div>
