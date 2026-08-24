@@ -197,9 +197,7 @@
       cursor: pointer;
     }
     
-    /* ==========================================
-       BOLD AM/PM FOR TIME INPUT
-       ========================================== */
+    /* Bold AM/PM for Time Input */
     input[type="time"] {
       font-weight: 700;
       font-size: 1.1em;
@@ -232,13 +230,14 @@
       </div>
     </div>
     
-    <!-- Language Selection Dropdown -->
-    <div class="flex items-center gap-2">
-      <span class="text-white text-sm font-semibold" data-en="Language Selection" data-es="Selección de Idioma">Language Selection</span>
-      <select onchange="toggleLanguage()" class="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white px-4 py-2 rounded-lg font-semibold transition shadow-lg cursor-pointer">
-        <option value="en" id="langEn">English</option>
-        <option value="es" id="langEs">Español</option>
+    <!-- Language Selection Dropdown (Fixed Visibility) -->
+    <div class="flex items-center gap-2 relative">
+      <span class="text-white text-sm font-semibold hidden md:block" data-en="Language Selection" data-es="Selección de Idioma">Language Selection</span>
+      <select id="languageSelect" onchange="toggleLanguage()" class="bg-slate-800 text-white border border-slate-600 px-4 py-2 rounded-lg font-semibold transition shadow-lg cursor-pointer appearance-none pr-8 w-32 focus:outline-none focus:ring-2 focus:ring-yellow-500">
+        <option value="en" style="background-color: #1e40af; color: white; font-weight: bold;">English</option>
+        <option value="es" style="background-color: #b91c1c; color: white; font-weight: bold;">Español</option>
       </select>
+      <i class="fas fa-chevron-down text-white text-xs absolute right-12 pointer-events-none"></i>
     </div>
     
     <!-- Desktop Menu -->
@@ -761,15 +760,17 @@
     let currentLang = 'en';
     
     function toggleLanguage() {
-      const select = document.querySelector('select[onchange="toggleLanguage()"]');
-      currentLang = select.value;
-      translatePage();
+      const select = document.getElementById('languageSelect');
+      if (select) {
+        currentLang = select.value;
+        translatePage();
+      }
     }
     
     function translatePage() {
       // Update dropdown selection
-      const select = document.querySelector('select[onchange="toggleLanguage()"]');
-      select.value = currentLang;
+      const select = document.getElementById('languageSelect');
+      if (select) select.value = currentLang;
       
       // Update all elements with data-en and data-es attributes
       const elements = document.querySelectorAll('[data-en][data-es]');
