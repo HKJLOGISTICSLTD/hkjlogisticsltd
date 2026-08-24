@@ -230,14 +230,16 @@
       </div>
     </div>
     
-    <!-- Language Selection Dropdown (Fixed Visibility) -->
-    <div class="flex items-center gap-2 relative">
+    <!-- Language Selection Dropdown (Fixed Visibility & Icon Position) -->
+    <div class="flex items-center gap-2">
       <span class="text-white text-sm font-semibold hidden md:block" data-en="Language Selection" data-es="Selección de Idioma">Language Selection</span>
-      <select id="languageSelect" onchange="toggleLanguage()" class="bg-slate-800 text-white border border-slate-600 px-4 py-2 rounded-lg font-semibold transition shadow-lg cursor-pointer appearance-none pr-8 w-32 focus:outline-none focus:ring-2 focus:ring-yellow-500">
-        <option value="en" style="background-color: #1e40af; color: white; font-weight: bold;">English</option>
-        <option value="es" style="background-color: #b91c1c; color: white; font-weight: bold;">Español</option>
-      </select>
-      <i class="fas fa-chevron-down text-white text-xs absolute right-12 pointer-events-none"></i>
+      <div class="relative">
+        <select id="languageSelect" onchange="toggleLanguage()" class="bg-slate-800 text-white border border-slate-600 px-4 py-2 pr-10 rounded-lg font-semibold transition shadow-lg cursor-pointer appearance-none w-32 focus:outline-none focus:ring-2 focus:ring-yellow-500">
+          <option value="en" style="background-color: #1e40af; color: white; font-weight: bold;">English</option>
+          <option value="es" style="background-color: #b91c1c; color: white; font-weight: bold;">Español</option>
+        </select>
+        <i class="fas fa-chevron-down text-white text-xs absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none"></i>
+      </div>
     </div>
     
     <!-- Desktop Menu -->
@@ -482,7 +484,7 @@
             <option value="South Park Mall, San Fernando">South Park Mall, San Fernando</option>
             <option value="Gulf City Mall, La Romain">Gulf City Mall, La Romain</option>
           </optgroup>
-          <optgroup label="🏙️ Major Areas">
+          <optgroup label="️ Major Areas">
             <option value="Port of Spain, Trinidad">Port of Spain</option>
             <option value="San Fernando, Trinidad">San Fernando</option>
             <option value="Chaguanas, Trinidad">Chaguanas</option>
@@ -491,7 +493,7 @@
             <option value="Point Fortin, Trinidad">Point Fortin</option>
             <option value="Scarborough, Tobago">Scarborough, Tobago</option>
           </optgroup>
-          <optgroup label="🏨 Hotels">
+          <optgroup label=" Hotels">
             <option value="Hilton Trinidad, Conference Complex, St. Ann's">Hilton Trinidad</option>
             <option value="Hyatt Regency Trinidad, Port of Spain">Hyatt Regency</option>
             <option value="Courtyard by Marriott, Port of Spain">Courtyard Marriott</option>
