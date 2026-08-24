@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="HKJ Logistics - Confirm or decline your booking">
+  <meta name="keywords" content="HKJ Logistics, booking confirmation, Trinidad transport, Tobago taxi">
   <title>HKJ Logistics - Booking Confirmation</title>
   
   <!-- Tailwind CSS -->
@@ -124,7 +125,9 @@
       100% { transform: scale(1.4); opacity: 0; }
     }
     
-    /* Status badges */
+    /* ==========================================
+       STATUS BADGES
+       ========================================== */
     .status-pending { 
       background: linear-gradient(135deg, rgba(251, 191, 36, 0.2), rgba(245, 158, 11, 0.2)); 
       color: #fbbf24;
@@ -151,6 +154,9 @@
       border: 1px solid rgba(239, 68, 68, 0.3);
     }
     
+    /* ==========================================
+       DETAIL ROWS
+       ========================================== */
     .detail-row {
       background: rgba(15, 23, 42, 0.4);
       border: 1px solid rgba(255, 255, 255, 0.05);
@@ -159,6 +165,12 @@
     .detail-row:hover {
       background: rgba(15, 23, 42, 0.6);
       border-color: rgba(250, 204, 21, 0.3);
+    }
+    
+    /* Currency Display */
+    .currency-box {
+      background: linear-gradient(135deg, rgba(59, 130, 246, 0.15), rgba(6, 182, 212, 0.15));
+      border: 2px solid rgba(59, 130, 246, 0.3);
     }
   </style>
 </head>
@@ -287,6 +299,17 @@
       </div>
     </div>
 
+    <!-- Payment Method -->
+    <div class="glass-card rounded-2xl shadow-lg p-6 mb-6 flex items-center">
+      <div class="w-14 h-14 bg-gradient-to-br from-yellow-400 to-yellow-500 rounded-full flex items-center justify-center mr-4 shadow-md">
+        <i class="fas fa-credit-card text-black text-xl"></i>
+      </div>
+      <div>
+        <p class="text-sm text-gray-400 uppercase tracking-wide">Payment Method</p>
+        <p id="paymentMethod" class="text-lg font-bold text-white"></p>
+      </div>
+    </div>
+
     <!-- Notes (if any) -->
     <div id="notesCard" class="hidden glass-card rounded-2xl shadow-lg p-6 mb-6">
       <div class="flex items-start">
@@ -300,11 +323,21 @@
       </div>
     </div>
 
-    <!-- Price Card -->
+    <!-- Price Card with Dual Currency -->
     <div id="priceCard" class="hidden glass-card rounded-2xl shadow-lg p-6 mb-6 border-2 border-yellow-400/50">
       <div class="text-center">
-        <p class="text-sm text-gray-400 uppercase tracking-wide mb-2 font-semibold">Final Price (TTD)</p>
-        <p id="finalPrice" class="text-5xl md:text-6xl font-bold text-white"></p>
+        <p class="text-sm text-gray-400 uppercase tracking-wide mb-2 font-semibold">Final Price</p>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+          <div class="currency-box p-4 rounded-xl">
+            <p class="text-sm text-gray-300 mb-1">TTD Amount</p>
+            <p id="finalPriceTTD" class="text-5xl md:text-6xl font-bold text-white"></p>
+          </div>
+          <div class="currency-box p-4 rounded-xl bg-gradient-to-br from-blue-900/30 to-cyan-900/30 border-blue-500/30">
+            <p class="text-sm text-blue-300 mb-1">USD Equivalent</p>
+            <p id="finalPriceUSD" class="text-5xl md:text-6xl font-bold text-blue-400"></p>
+          </div>
+        </div>
+        <p class="text-xs text-gray-500 mt-2">Exchange Rate: 1 USD = 6.80 TTD</p>
       </div>
     </div>
 
@@ -492,8 +525,16 @@
     // ==========================================
     // IMPORTANT: Replace this with your actual Google Apps Script Web App URL
     const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw1Fji0W9KckebjpfTcMLLtRNdf8fVMT_yQ_3PPrwg6kBZxsK8C-12TB-bAeCLY2ckwcg/exec';
+    const EXCHANGE_RATE = 6.80; // 1 USD = 6.80 TTD
     let currentBooking = null;
     let currentRow = null;
+
+    // ==========================================
+    // CURRENCY CONVERSION
+    // ==========================================
+    function convertTTDtoUSD(ttdAmount) {
+      return (parseFloat(ttdAmount) / EXCHANGE_RATE).toFixed(2);
+    }
 
     // ==========================================
     // PAGE LOAD - Extract reference code from URL
@@ -564,6 +605,7 @@
       document.getElementById('dropoffLocation').textContent = booking['DROP OFF'] || 'N/A';
       document.getElementById('vehicleType').textContent = booking['VEHICLE TYPE'] || 'N/A';
       document.getElementById('serviceType').textContent = booking['SERVICE TYPE'] || 'N/A';
+      document.getElementById('paymentMethod').textContent = booking['PAYMENT METHOD'] || 'Not specified';
 
       // Show notes if they exist
       if (booking.NOTES && booking.NOTES.trim() !== '') {
@@ -571,49 +613,72 @@
         document.getElementById('bookingNotes').textContent = booking.NOTES;
       }
 
-      // Format date and time
+      // Format date and time - FIXED VERSION
       const date = booking.DATE;
       const time = booking.TIME;
       let formattedDateTime = 'N/A';
+      
       if (date && time) {
         try {
           const dateObj = new Date(date);
           if (!isNaN(dateObj.getTime())) {
+            // Format the date nicely
             const dateStr = dateObj.toLocaleDateString('en-US', { 
               year: 'numeric', 
               month: 'long', 
               day: 'numeric' 
             });
-            const timeStr = time.toString().includes(':') ? time : time + ':00';
-            const timeObj = new Date(`2000-01-01T${timeStr}`);
-            const timeFormatted = timeObj.toLocaleTimeString('en-US', { 
-              hour: '2-digit', 
-              minute: '2-digit' 
-            });
-            formattedDateTime = `${dateStr} at ${timeFormatted}`;
+            
+            // CRITICAL FIX: Convert time to string first
+            // Google Sheets may return time as Date object, number, or string
+            let timeStr = time.toString();
+            
+            // If it's a full datetime string, extract just the time portion
+            if (timeStr.includes('T')) {
+              timeStr = timeStr.split('T')[1] || '';
+            }
+            
+            // Format the time
+            if (timeStr.includes(':')) {
+              const timeObj = new Date(`2000-01-01T${timeStr}`);
+              const timeFormatted = timeObj.toLocaleTimeString('en-US', { 
+                hour: '2-digit', 
+                minute: '2-digit' 
+              });
+              formattedDateTime = `${dateStr} at ${timeFormatted}`;
+            } else {
+              // If no colon, just use the raw string
+              formattedDateTime = `${dateStr} at ${timeStr}`;
+            }
           } else {
+            // If date is invalid, show raw values
             formattedDateTime = `${date} at ${time}`;
           }
         } catch (e) {
+          // Fallback to raw values on any error
+          console.error('Date/time formatting error:', e);
           formattedDateTime = `${date} at ${time}`;
         }
       }
       document.getElementById('bookingDateTime').textContent = formattedDateTime;
 
-      // Handle status and price
+      // ==========================================
+      // HANDLE STATUS AND PRICE DISPLAY WITH DUAL CURRENCY
+      // ==========================================
       const status = booking.STATUS || 'Pending';
       const price = booking['FINAL PRICE'] || booking['FARES'];
       const hasPrice = price && price !== 0 && price !== '0' && price !== '0.00' && price !== '';
 
       const statusText = document.getElementById('bookingStatus');
       const priceCard = document.getElementById('priceCard');
-      const finalPriceText = document.getElementById('finalPrice');
+      const finalPriceTTDText = document.getElementById('finalPriceTTD');
+      const finalPriceUSDText = document.getElementById('finalPriceUSD');
       const actionButtons = document.getElementById('actionButtons');
       const alreadyConfirmed = document.getElementById('alreadyConfirmed');
       const alreadyDeclined = document.getElementById('alreadyDeclined');
       const noPriceYet = document.getElementById('noPriceYet');
 
-      // Set status color
+      // Set status color based on current status
       let statusColor = 'text-yellow-500';
       if (status === 'Confirmed') statusColor = 'text-blue-500';
       else if (status === 'Completed') statusColor = 'text-green-500';
@@ -630,7 +695,9 @@
         noPriceYet.classList.add('hidden');
         if (hasPrice) {
           priceCard.classList.remove('hidden');
-          finalPriceText.textContent = `$${price}`;
+          const usdAmount = convertTTDtoUSD(price);
+          finalPriceTTDText.textContent = `$${parseFloat(price).toFixed(2)} TTD`;
+          finalPriceUSDText.textContent = `$${usdAmount} USD`;
         }
       } else if (status === 'Cancelled') {
         alreadyDeclined.classList.remove('hidden');
@@ -638,7 +705,9 @@
         noPriceYet.classList.add('hidden');
       } else if (hasPrice) {
         priceCard.classList.remove('hidden');
-        finalPriceText.textContent = `$${price}`;
+        const usdAmount = convertTTDtoUSD(price);
+        finalPriceTTDText.textContent = `$${parseFloat(price).toFixed(2)} TTD`;
+        finalPriceUSDText.textContent = `$${usdAmount} USD`;
         actionButtons.classList.remove('hidden');
         noPriceYet.classList.add('hidden');
         alreadyConfirmed.classList.add('hidden');
