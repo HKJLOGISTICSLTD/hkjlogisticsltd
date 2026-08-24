@@ -303,9 +303,9 @@
       location.reload();
     }
 
-    // Currency conversion: 1 USD = 6.80 TTD
+    // Currency conversion: 1 USD = 6.80 TTD (ROUNDED to nearest whole dollar)
     function convertTTDtoUSD(ttdAmount) {
-      return (parseFloat(ttdAmount) / 6.80).toFixed(2);
+      return Math.round(parseFloat(ttdAmount) / 6.80);
     }
 
     function autoSavePrice(row, price) {
@@ -995,7 +995,7 @@
             ${hasRealPrice ? `<div class="currency-display p-3 rounded-lg mt-2 text-center">
               <p class="text-sm text-gray-600 mb-1">USD Equivalent</p>
               <p class="text-2xl font-bold text-blue-600">$${usdPrice} USD</p>
-              <p class="text-xs text-gray-500">1 USD = 6.80 TTD</p>
+              <p class="text-xs text-gray-500">1 USD = 6.80 TTD<br><i>(USD rounded to nearest whole dollar)</i></p>
             </div>` : ''}
             <p class="text-xs text-blue-600 font-medium mt-2"><i class="fas fa-info-circle mr-1"></i> Price auto-saves when you type</p>
           </div>
@@ -1276,7 +1276,7 @@
           message += `📅 Date: ${date} at ${time}\n`;
           message += `📍 Pickup: ${pickup}\n`;
           message += ` Drop-off: ${dropoff}\n`;
-          message += `💰 Final Price: $${price} TTD ($${usdPrice} USD)\n\n`;
+          message += ` Final Price: $${price} TTD ($${usdPrice} USD)\n\n`;
           message += `📋 HOW IT WORKS:\n`;
           message += `1. We received your request. ✓\n`;
           message += `2. This is your personalized quote. ✓\n`;
@@ -1370,20 +1370,20 @@
             }
           });
           
-          const totalUSD = (totalRevenue / 6.80).toFixed(2);
+          const totalUSD = Math.round(totalRevenue / 6.80);
           
-          const report = `📊 HKJ Logistics Report\n\n` +
+          const report = ` HKJ Logistics Report\n\n` +
             `📈 BOOKING STATUS:\n` +
             `─────────────────\n` +
             `Total Bookings: ${bookings.length}\n` +
             ` Pending: ${pending}\n` +
-            `💰 Price Sent: ${priceSent}\n` +
+            ` Price Sent: ${priceSent}\n` +
             `✅ Confirmed: ${confirmed}\n` +
             `✔️ Completed: ${completed}\n` +
             `❌ Cancelled: ${cancelled}\n\n` +
             `💵 TOTAL REVENUE:\n` +
             `   $${totalRevenue.toFixed(2)} TTD\n` +
-            `   $${totalUSD} USD\n` +
+            `   $${totalUSD} USD (rounded)\n` +
             `─────────────────\n` +
             `Exchange Rate: 1 USD = 6.80 TTD\n` +
             `Generated: ${new Date().toLocaleString()}`;
