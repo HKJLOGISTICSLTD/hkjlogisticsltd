@@ -462,6 +462,27 @@
       </div>
 
       <!-- ==========================================
+           WAITING TIME DROPDOWN (OPTION 3 - HYBRID)
+           ========================================== -->
+      <div>
+        <label class="block text-sm font-bold text-gray-300 mb-2">
+          <i class="fas fa-clock text-orange-400 mr-2"></i>
+          <span data-en="Do You Need Extra Waiting Time? (Optional)" data-es="¿Necesitas tiempo de espera adicional? (Opcional)">Do You Need Extra Waiting Time? (Optional)</span>
+        </label>
+        <select name="waitingTime" class="w-full p-3 border rounded-xl focus:outline-none input-focus transition bg-dark-input">
+          <option value="0" data-en="No - I'll be ready on time" data-es="No - Estaré listo a tiempo">No - I'll be ready on time</option>
+          <option value="15" data-en="Yes - 15 minutes" data-es="Sí - 15 minutos">Yes - 15 minutes</option>
+          <option value="30" data-en="Yes - 30 minutes" data-es="Sí - 30 minutos">Yes - 30 minutes</option>
+          <option value="45" data-en="Yes - 45 minutes" data-es="Sí - 45 minutos">Yes - 45 minutes</option>
+          <option value="60" data-en="Yes - 1 hour" data-es="Sí - 1 hora">Yes - 1 hour</option>
+        </select>
+        <p class="text-xs text-gray-500 mt-1">
+          <i class="fas fa-info-circle text-blue-400 mr-1"></i>
+          <span data-en="15 min grace period included. Additional waiting: $10 TTD per 15 min." data-es="Período de gracia de 15 min incluido. Espera adicional: $10 TTD por cada 15 min.">15 min grace period included. Additional waiting: $10 TTD per 15 min.</span>
+        </p>
+      </div>
+
+      <!-- ==========================================
            LOCATION DROPDOWNS (NO API NEEDED)
            ========================================== -->
       <div class="bg-slate-800/50 p-4 rounded-xl border border-white/10">
@@ -475,7 +496,7 @@
             <option value="Piarco International Airport, Trinidad">Piarco International Airport</option>
             <option value="A.N.R. Robinson International Airport, Tobago">Tobago Airport</option>
           </optgroup>
-          <optgroup label="🛍️ Malls & Shopping">
+          <optgroup label="️ Malls & Shopping">
             <option value="C3 Centre, Sir Solomon Hochoy Highway, San Fernando">C3 Centre (San Fernando)</option>
             <option value="Grand Bazaar, West Mall, Caroni">Grand Bazaar (West Mall)</option>
             <option value="Trincity Mall, Trincity">Trincity Mall</option>
@@ -484,7 +505,7 @@
             <option value="South Park Mall, San Fernando">South Park Mall, San Fernando</option>
             <option value="Gulf City Mall, La Romain">Gulf City Mall, La Romain</option>
           </optgroup>
-          <optgroup label="🏙️ Major Areas">
+          <optgroup label="️ Major Areas">
             <option value="Port of Spain, Trinidad">Port of Spain</option>
             <option value="San Fernando, Trinidad">San Fernando</option>
             <option value="Chaguanas, Trinidad">Chaguanas</option>
@@ -588,7 +609,7 @@
         <select onchange="document.getElementById('dropoffAddress').value=this.value" 
           class="w-full p-3 mb-3 border-2 border-gray-600 rounded-xl focus:outline-none bg-dark-input text-white text-sm">
           <option value="">-- Quick Select Popular Location --</option>
-          <optgroup label="✈️ Airports">
+          <optgroup label="️ Airports">
             <option value="Piarco International Airport, Trinidad">Piarco International Airport</option>
             <option value="A.N.R. Robinson International Airport, Tobago">Tobago Airport</option>
           </optgroup>
@@ -612,7 +633,7 @@
           </optgroup>
           
           <!-- CATEGORIZED HOTEL LIST -->
-          <optgroup label=" Port of Spain / St. Clair / St. Ann's / Cascade">
+          <optgroup label="🏨 Port of Spain / St. Clair / St. Ann's / Cascade">
             <option value="Hyatt Regency Trinidad — Port of Spain">Hyatt Regency Trinidad — Port of Spain</option>
             <option value="Hilton Trinidad & Conference Centre — Port of Spain">Hilton Trinidad & Conference Centre — Port of Spain</option>
             <option value="Courtyard by Marriott Port of Spain — Port of Spain">Courtyard by Marriott Port of Spain — Port of Spain</option>
@@ -652,7 +673,7 @@
             <option value="HADCO Experiences at Asa Wright Nature Centre — Arima">HADCO Experiences at Asa Wright Nature Centre — Arima</option>
           </optgroup>
           
-          <optgroup label="🏨 Central Trinidad">
+          <optgroup label=" Central Trinidad">
             <option value="Metro Hotel — Couva">Metro Hotel — Couva</option>
             <option value="Hacienda Jacana — Talparo">Hacienda Jacana — Talparo</option>
             <option value="Ramel's Tropical Suites — Cunupia">Ramel's Tropical Suites — Cunupia</option>
@@ -679,7 +700,7 @@
             <option value="Blanchisseuse Beach Facilities — Blanchisseuse">Blanchisseuse Beach Facilities — Blanchisseuse</option>
           </optgroup>
           
-          <optgroup label=" Other Notable Accommodation">
+          <optgroup label="🏨 Other Notable Accommodation">
             <option value="Pax Guest House — Mount St. Benedict, Tunapuna">Pax Guest House — Mount St. Benedict, Tunapuna</option>
             <option value="La Mamre Resort — Maraval">La Mamre Resort — Maraval</option>
             <option value="The Blue Cottage — Diego Martin">The Blue Cottage — Diego Martin</option>
