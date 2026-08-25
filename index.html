@@ -538,7 +538,7 @@
           <optgroup label="🏨 Central Trinidad">
             <option value="Metro Hotel — Couva">Metro Hotel — Couva</option>
             <option value="Hacienda Jacana — Talparo">Hacienda Jacana — Talparo</option>
-            <option value="Ramel’s Tropical Suites — Cunupia">Ramel’s Tropical Suites — Cunupia</option>
+            <option value="Ramel's Tropical Suites — Cunupia">Ramel's Tropical Suites — Cunupia</option>
           </optgroup>
           
           <optgroup label="🏨 South Trinidad">
@@ -592,7 +592,7 @@
             <option value="Piarco International Airport, Trinidad">Piarco International Airport</option>
             <option value="A.N.R. Robinson International Airport, Tobago">Tobago Airport</option>
           </optgroup>
-          <optgroup label="️ Malls & Shopping">
+          <optgroup label="🛍️ Malls & Shopping">
             <option value="C3 Centre, Sir Solomon Hochoy Highway, San Fernando">C3 Centre (San Fernando)</option>
             <option value="Grand Bazaar, West Mall, Caroni">Grand Bazaar (West Mall)</option>
             <option value="Trincity Mall, Trincity">Trincity Mall</option>
@@ -612,7 +612,7 @@
           </optgroup>
           
           <!-- CATEGORIZED HOTEL LIST -->
-          <optgroup label="🏨 Port of Spain / St. Clair / St. Ann's / Cascade">
+          <optgroup label=" Port of Spain / St. Clair / St. Ann's / Cascade">
             <option value="Hyatt Regency Trinidad — Port of Spain">Hyatt Regency Trinidad — Port of Spain</option>
             <option value="Hilton Trinidad & Conference Centre — Port of Spain">Hilton Trinidad & Conference Centre — Port of Spain</option>
             <option value="Courtyard by Marriott Port of Spain — Port of Spain">Courtyard by Marriott Port of Spain — Port of Spain</option>
@@ -655,7 +655,7 @@
           <optgroup label="🏨 Central Trinidad">
             <option value="Metro Hotel — Couva">Metro Hotel — Couva</option>
             <option value="Hacienda Jacana — Talparo">Hacienda Jacana — Talparo</option>
-            <option value="Ramel’s Tropical Suites — Cunupia">Ramel’s Tropical Suites — Cunupia</option>
+            <option value="Ramel's Tropical Suites — Cunupia">Ramel's Tropical Suites — Cunupia</option>
           </optgroup>
           
           <optgroup label="🏨 South Trinidad">
@@ -679,7 +679,7 @@
             <option value="Blanchisseuse Beach Facilities — Blanchisseuse">Blanchisseuse Beach Facilities — Blanchisseuse</option>
           </optgroup>
           
-          <optgroup label="🏨 Other Notable Accommodation">
+          <optgroup label=" Other Notable Accommodation">
             <option value="Pax Guest House — Mount St. Benedict, Tunapuna">Pax Guest House — Mount St. Benedict, Tunapuna</option>
             <option value="La Mamre Resort — Maraval">La Mamre Resort — Maraval</option>
             <option value="The Blue Cottage — Diego Martin">The Blue Cottage — Diego Martin</option>
@@ -742,6 +742,26 @@
       <div class="flex items-center bg-red-900/30 p-6 rounded-xl border-2 border-red-500/50">
         <input type="checkbox" name="isCarnival" id="isCarnival" class="w-6 h-6 text-red-500 rounded focus:ring-red-500 border-red-500 bg-slate-800">
         <label for="isCarnival" class="ml-4 text-base font-bold text-red-400"><i class="fas fa-exclamation-triangle mr-2"></i><span data-en="Please select this if its a carnival event - Carnival event booking (Minimum $400 applies)" data-es="Por favor selecciona esto si es un evento de carnaval - Reserva de evento de carnaval (Mínimo $400 aplica)">Please select this if its a carnival event - Carnival event booking (Minimum $400 applies)</span></label>
+      </div>
+
+      <!-- ==========================================
+           SURCHARGE NOTICE (NEW)
+           ========================================== -->
+      <div class="bg-orange-900/30 p-6 rounded-xl border-2 border-orange-500/50">
+        <div class="flex items-start">
+          <i class="fas fa-info-circle text-orange-400 text-xl mr-3 mt-1"></i>
+          <div>
+            <h4 class="text-lg font-bold text-orange-400 mb-2"><span data-en="Important Notice: Time-Based Surcharges" data-es="Aviso Importante: Recargos por Horario">Important Notice: Time-Based Surcharges</span></h4>
+            <p class="text-orange-200 text-sm mb-3" data-en="Additional fees apply for certain pickup times:" data-es="Se aplican tarifas adicionales para ciertos horarios de recogida:">Additional fees apply for certain pickup times:</p>
+            <ul class="text-orange-100 text-sm space-y-1 ml-4">
+              <li><i class="fas fa-clock text-orange-400 mr-2"></i><span data-en="Peak Hours (6:00 AM - 9:00 AM): +$50 TTD" data-es="Horas Pico (6:00 AM - 9:00 AM): +$50 TTD">Peak Hours (6:00 AM - 9:00 AM): +$50 TTD</span></li>
+              <li><i class="fas fa-moon text-orange-400 mr-2"></i><span data-en="Late Night (10:00 PM - 12:00 AM): +15% of base fare" data-es="Noche Tardía (10:00 PM - 12:00 AM): +15% de la tarifa base">Late Night (10:00 PM - 12:00 AM): +15% of base fare</span></li>
+              <li><i class="fas fa-sun text-orange-400 mr-2"></i><span data-en="Early Morning (12:00 AM - 6:00 AM): +20% of base fare" data-es="Madrugada (12:00 AM - 6:00 AM): +20% de la tarifa base">Early Morning (12:00 AM - 6:00 AM): +20% of base fare</span></li>
+              <li><i class="fas fa-calendar-alt text-orange-400 mr-2"></i><span data-en="Public Holidays: +25% of base fare" data-es="Días Festivos: +25% de la tarifa base">Public Holidays: +25% of base fare</span></li>
+            </ul>
+            <p class="text-orange-200 text-xs mt-3 italic" data-en="*Your final quote will include any applicable surcharges." data-es="*Su cotización final incluirá cualquier recargo aplicable.">*Your final quote will include any applicable surcharges.</p>
+          </div>
+        </div>
       </div>
 
       <button type="submit" class="w-full btn-gradient text-black font-bold py-4 rounded-xl shadow-lg text-lg flex items-center justify-center" data-en="Submit Booking Request" data-es="Enviar Solicitud de Reserva">
