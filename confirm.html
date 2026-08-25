@@ -1,751 +1,907 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="HKJ Logistics - Confirm or decline your booking">
-  <meta name="keywords" content="HKJ Logistics, booking confirmation, Trinidad transport, Tobago taxi">
-  <title>HKJ Logistics - Booking Confirmation</title>
+// =====================================================================
+// HKJ LOGISTICS - COMPLETE APPS SCRIPT (VERSION 6.0 - WITH WAITING TIME)
+// =====================================================================
+// Exchange Rate: 1 USD = 6.80 TTD (USD rounded to nearest whole dollar)
+// Surcharges: Peak +$50, Late Night +15%, Early Morning +20%, Holiday +25%
+// Waiting Time: First 15 min free, then $10 TTD per 15 min
+// =====================================================================
+
+const ADMIN_EMAIL = 'hkjlogisticsltd@gmail.com';
+const EXCHANGE_RATE = 6.80;
+const WAITING_RATE_PER_15MIN = 10;
+
+// =====================================================================
+// 1. MENU & INITIALIZATION
+// =====================================================================
+
+/**
+ * Creates a custom menu in the Google Sheet when the spreadsheet is opened.
+ * This allows manual triggering of specific functions from the spreadsheet UI.
+ */
+function onOpen() {
+  var ui = SpreadsheetApp.getUi();
+  ui.createMenu('🚗 HKJ Logistics')
+    .addItem('📧 Send Price Email', 'sendPriceEmail')
+    .addItem('💬 Send WhatsApp', 'sendWhatsApp')
+    .addSeparator()
+    .addItem('✅ Mark as Confirmed', 'markConfirmed')
+    .addItem('✔️ Mark as Completed', 'markCompleted')
+    .addItem('🔄 Return to Pending', 'markPending')
+    .addSeparator()
+    .addItem('🧹 Clean Duplicate Addresses', 'cleanExistingAddresses')
+    .addSeparator()
+    .addItem('📊 Generate Report', 'generateReport')
+    .addToUi();
+}
+
+// =====================================================================
+// 2. HELPER: ENSURE HEADERS EXIST (FIXES MISSING COLUMNS)
+// =====================================================================
+
+/**
+ * Automatically checks if SURCHARGE and WAITING columns exist.
+ * If they don't exist, it creates them automatically.
+ * This fixes the issue where the WAITING column is missing from the sheet.
+ */
+function ensureHeaders(sheet) {
+  const lastCol = sheet.getLastColumn();
+  const headers = sheet.getRange(1, 1, 1, lastCol).getValues()[0];
   
-  <!-- Tailwind CSS -->
-  <script src="https://cdn.tailwindcss.com"></script>
+  // Check for SURCHARGE header (Column O / 15)
+  if (!headers.includes('SURCHARGE')) {
+    sheet.getRange(1, lastCol + 1).setValue('SURCHARGE');
+    Logger.log('Added SURCHARGE column');
+    headers.push('SURCHARGE');
+  }
   
-  <!-- Font Awesome Icons -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  
-  <!-- Google Fonts -->
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
-  
-  <style>
-    * { 
-      font-family: 'Inter', sans-serif; 
-      box-sizing: border-box;
-      scroll-behavior: smooth;
-    }
+  // Check for WAITING header (Column P / 16)
+  if (!headers.includes('WAITING')) {
+    sheet.getRange(1, headers.length + 1).setValue('WAITING');
+    Logger.log('Added WAITING column');
+    headers.push('WAITING');
+  }
+  return headers;
+}
+
+// =====================================================================
+// 3. WEB APP: GET REQUEST (Admin Dashboard Data)
+// =====================================================================
+
+/**
+ * Handles GET requests to the Web App.
+ * Used by the Admin Dashboard to fetch all current bookings from the sheet.
+ * 
+ * @param {Object} e - The event parameter from the GET request.
+ * @returns {ContentService.TextOutput} JSON object containing all bookings.
+ */
+function doGet(e) {
+  try {
+    const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Sheet1");
+    if (!sheet) throw new Error("Sheet1 not found. Please check your spreadsheet tabs.");
     
-    body {
-      background: linear-gradient(135deg, rgba(15, 23, 42, 0.85), rgba(30, 41, 59, 0.95)),
-                  url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=1920&q=80') !important;
-      background-size: cover !important; 
-      background-position: center !important;
-      background-attachment: fixed !important; 
-      background-repeat: no-repeat !important;
-      min-height: 100vh !important;
-      margin: 0;
-      padding: 0;
-      color: #f8fafc;
-    }
-
-    ::-webkit-scrollbar { width: 10px; }
-    ::-webkit-scrollbar-track { background: #1e293b; }
-    ::-webkit-scrollbar-thumb { background: #facc15; border-radius: 5px; }
-    ::-webkit-scrollbar-thumb:hover { background: #f59e0b; }
+    // Ensure headers exist before reading data
+    const headers = ensureHeaders(sheet);
+    const data = sheet.getDataRange().getValues();
     
-    .glass-card {
-      background: rgba(30, 41, 59, 0.85);
-      backdrop-filter: blur(20px);
-      border: 1px solid rgba(255, 255, 255, 0.08);
+    // If there are no bookings yet (only headers or empty sheet)
+    if (data.length < 2) {
+      return ContentService.createTextOutput(JSON.stringify({ success: true, bookings: [] })).setMimeType(ContentService.MimeType.JSON);
     }
+
+    const rows = [];
     
-    .btn-confirm {
-      background: linear-gradient(135deg, #22c55e, #16a34a);
-      transition: all 0.3s ease;
-    }
-    .btn-confirm:hover {
-      background: linear-gradient(135deg, #16a34a, #15803d);
-      transform: translateY(-2px);
-      box-shadow: 0 10px 20px rgba(34, 197, 94, 0.3);
-    }
-    
-    .btn-decline {
-      background: linear-gradient(135deg, #ef4444, #dc2626);
-      transition: all 0.3s ease;
-    }
-    .btn-decline:hover {
-      background: linear-gradient(135deg, #dc2626, #b91c1c);
-      transform: translateY(-2px);
-      box-shadow: 0 10px 20px rgba(239, 68, 68, 0.3);
-    }
-    
-    .btn-gradient {
-      background: linear-gradient(135deg, #facc15, #f59e0b);
-      transition: all 0.3s ease;
-    }
-    .btn-gradient:hover {
-      background: linear-gradient(135deg, #f59e0b, #d97706);
-      transform: translateY(-2px);
-      box-shadow: 0 10px 20px rgba(245, 158, 11, 0.3);
-    }
-    
-    .section-title {
-      position: relative;
-      display: inline-block;
-      margin-bottom: 2rem;
-    }
-    .section-title::after {
-      content: '';
-      position: absolute;
-      bottom: -10px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 60px;
-      height: 4px;
-      background: linear-gradient(90deg, #facc15, #f59e0b);
-      border-radius: 2px;
-    }
-    
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(20px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-    .animate-fade-in { 
-      animation: fadeIn 0.5s ease-out forwards; 
-    }
-    
-    @keyframes spin {
-      to { transform: rotate(360deg); }
-    }
-    .animate-spin {
-      animation: spin 1s linear infinite;
-    }
-    
-    .status-pending { 
-      background: linear-gradient(135deg, rgba(251, 191, 36, 0.2), rgba(245, 158, 11, 0.2)); 
-      color: #fbbf24;
-      border: 1px solid rgba(251, 191, 36, 0.3);
-    }
-    .status-price-sent { 
-      background: linear-gradient(135deg, rgba(168, 85, 247, 0.2), rgba(147, 51, 234, 0.2)); 
-      color: #d8b4fe;
-      border: 1px solid rgba(168, 85, 247, 0.3);
-    }
-    .status-confirmed { 
-      background: linear-gradient(135deg, rgba(59, 130, 246, 0.2), rgba(37, 99, 235, 0.2)); 
-      color: #93c5fd;
-      border: 1px solid rgba(59, 130, 246, 0.3);
-    }
-    .status-completed { 
-      background: linear-gradient(135deg, rgba(34, 197, 94, 0.2), rgba(22, 163, 74, 0.2)); 
-      color: #86efac;
-      border: 1px solid rgba(34, 197, 94, 0.3);
-    }
-    .status-cancelled { 
-      background: linear-gradient(135deg, rgba(239, 68, 68, 0.2), rgba(220, 38, 38, 0.2)); 
-      color: #fca5a5;
-      border: 1px solid rgba(239, 68, 68, 0.3);
-    }
-    
-    .currency-box {
-      background: linear-gradient(135deg, rgba(59, 130, 246, 0.15), rgba(6, 182, 212, 0.15));
-      border: 2px solid rgba(59, 130, 246, 0.3);
-    }
-    
-    .surcharge-box {
-      background: linear-gradient(135deg, rgba(249, 115, 22, 0.15), rgba(234, 88, 12, 0.15));
-      border: 2px solid rgba(249, 115, 22, 0.3);
-    }
-    
-    .total-box {
-      background: linear-gradient(135deg, rgba(34, 197, 94, 0.15), rgba(16, 185, 129, 0.15));
-      border: 2px solid rgba(34, 197, 94, 0.3);
-    }
-  </style>
-</head>
-<body class="p-4 md:p-6">
-
-  <div class="max-w-4xl mx-auto mb-8 text-center animate-fade-in">
-    <div class="inline-flex items-center justify-center mb-4">
-      <div class="w-20 h-20 bg-gradient-to-br from-yellow-400 to-yellow-500 rounded-full flex items-center justify-center shadow-lg relative">
-        <i class="fas fa-truck text-black text-3xl"></i>
-      </div>
-    </div>
-    <h1 class="text-4xl md:text-5xl font-bold text-white mb-2">HKJ <span class="text-yellow-500">Logistics</span></h1>
-    <p class="text-gray-400 text-lg">Booking Confirmation</p>
-    <div class="w-16 h-1 bg-gradient-to-r from-yellow-400 to-yellow-500 mx-auto mt-4 rounded-full"></div>
-  </div>
-
-  <div id="loadingState" class="max-w-3xl mx-auto mb-8">
-    <div class="glass-card rounded-2xl shadow-2xl p-12 text-center">
-      <div class="inline-block animate-spin rounded-full h-16 w-16 border-4 border-yellow-400 border-t-transparent mb-4"></div>
-      <p class="text-gray-300 text-lg font-semibold">Loading booking details...</p>
-      <p class="text-gray-500 text-sm mt-2">Please wait while we retrieve your booking information.</p>
-    </div>
-  </div>
-
-  <div id="bookingDetails" class="hidden max-w-3xl mx-auto mb-8 animate-fade-in">
-    
-    <div class="glass-card rounded-2xl shadow-lg p-6 mb-6">
-      <div class="text-center">
-        <p class="text-sm text-gray-400 uppercase tracking-wide mb-2 font-semibold">Reference Code</p>
-        <p id="refCode" class="text-4xl md:text-5xl font-bold text-yellow-500 tracking-wider"></p>
-      </div>
-    </div>
-
-    <div id="statusCard" class="glass-card rounded-2xl shadow-lg p-6 mb-6">
-      <div class="text-center">
-        <p class="text-sm text-gray-400 uppercase tracking-wide mb-2 font-semibold">Booking Status</p>
-        <p id="bookingStatus" class="text-2xl font-bold"></p>
-      </div>
-    </div>
-
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-      <div class="glass-card rounded-2xl shadow-lg p-6 flex items-center">
-        <div class="w-14 h-14 bg-gradient-to-br from-green-400 to-green-500 rounded-full flex items-center justify-center mr-4 shadow-md">
-          <i class="fas fa-phone text-white text-xl"></i>
-        </div>
-        <div>
-          <p class="text-sm text-gray-400 uppercase tracking-wide">Phone</p>
-          <p id="clientPhone" class="text-xl font-bold text-white"></p>
-        </div>
-      </div>
-      <div class="glass-card rounded-2xl shadow-lg p-6 flex items-center">
-        <div class="w-14 h-14 bg-gradient-to-br from-purple-400 to-purple-500 rounded-full flex items-center justify-center mr-4 shadow-md">
-          <i class="fas fa-envelope text-white text-xl"></i>
-        </div>
-        <div class="flex-1 min-w-0">
-          <p class="text-sm text-gray-400 uppercase tracking-wide">Email</p>
-          <p id="clientEmail" class="text-lg font-bold text-white break-all"></p>
-        </div>
-      </div>
-    </div>
-
-    <div class="glass-card rounded-2xl shadow-lg p-6 mb-6 flex items-center">
-      <div class="w-14 h-14 bg-gradient-to-br from-yellow-400 to-yellow-500 rounded-full flex items-center justify-center mr-4 shadow-md">
-        <i class="fas fa-calendar-alt text-black text-xl"></i>
-      </div>
-      <div>
-        <p class="text-sm text-gray-400 uppercase tracking-wide">Date & Time</p>
-        <p id="bookingDateTime" class="text-xl font-bold text-white"></p>
-      </div>
-    </div>
-
-    <div class="glass-card rounded-2xl shadow-lg p-6 mb-6 flex items-start">
-      <div class="w-14 h-14 bg-gradient-to-br from-green-400 to-green-500 rounded-full flex items-center justify-center mr-4 shadow-md flex-shrink-0">
-        <i class="fas fa-map-marker-alt text-white text-xl"></i>
-      </div>
-      <div>
-        <p class="text-sm text-gray-400 uppercase tracking-wide">Pickup Location</p>
-        <p id="pickupLocation" class="text-xl font-bold text-white"></p>
-      </div>
-    </div>
-
-    <div class="glass-card rounded-2xl shadow-lg p-6 mb-6 flex items-start">
-      <div class="w-14 h-14 bg-gradient-to-br from-red-400 to-red-500 rounded-full flex items-center justify-center mr-4 shadow-md flex-shrink-0">
-        <i class="fas fa-flag-checkered text-white text-xl"></i>
-      </div>
-      <div>
-        <p class="text-sm text-gray-400 uppercase tracking-wide">Drop-off Location</p>
-        <p id="dropoffLocation" class="text-xl font-bold text-white"></p>
-      </div>
-    </div>
-
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-      <div class="glass-card rounded-2xl shadow-lg p-6 flex items-center">
-        <div class="w-14 h-14 bg-gradient-to-br from-blue-400 to-blue-500 rounded-full flex items-center justify-center mr-4 shadow-md">
-          <i class="fas fa-car text-white text-xl"></i>
-        </div>
-        <div>
-          <p class="text-sm text-gray-400 uppercase tracking-wide">Vehicle Type</p>
-          <p id="vehicleType" class="text-lg font-bold text-white"></p>
-        </div>
-      </div>
-      <div class="glass-card rounded-2xl shadow-lg p-6 flex items-center">
-        <div class="w-14 h-14 bg-gradient-to-br from-pink-400 to-pink-500 rounded-full flex items-center justify-center mr-4 shadow-md">
-          <i class="fas fa-concierge-bell text-white text-xl"></i>
-        </div>
-        <div>
-          <p class="text-sm text-gray-400 uppercase tracking-wide">Service Type</p>
-          <p id="serviceType" class="text-lg font-bold text-white capitalize"></p>
-        </div>
-      </div>
-    </div>
-
-    <div class="glass-card rounded-2xl shadow-lg p-6 mb-6 flex items-center">
-      <div class="w-14 h-14 bg-gradient-to-br from-yellow-400 to-yellow-500 rounded-full flex items-center justify-center mr-4 shadow-md">
-        <i class="fas fa-credit-card text-black text-xl"></i>
-      </div>
-      <div>
-        <p class="text-sm text-gray-400 uppercase tracking-wide">Payment Method</p>
-        <p id="paymentMethod" class="text-lg font-bold text-white"></p>
-      </div>
-    </div>
-
-    <div id="notesCard" class="hidden glass-card rounded-2xl shadow-lg p-6 mb-6">
-      <div class="flex items-start">
-        <div class="w-14 h-14 bg-gradient-to-br from-orange-400 to-orange-500 rounded-full flex items-center justify-center mr-4 shadow-md flex-shrink-0">
-          <i class="fas fa-sticky-note text-white text-xl"></i>
-        </div>
-        <div>
-          <p class="text-sm text-gray-400 uppercase tracking-wide">Additional Notes</p>
-          <p id="bookingNotes" class="text-white whitespace-pre-wrap"></p>
-        </div>
-      </div>
-    </div>
-
-    <!-- Price Card with Surcharge Support -->
-    <div id="priceCard" class="hidden glass-card rounded-2xl shadow-lg p-6 mb-6 border-2 border-yellow-400/50">
-      <div class="text-center">
-        <p class="text-sm text-gray-400 uppercase tracking-wide mb-4 font-semibold">Price Breakdown</p>
-        
-        <!-- Base Price -->
-        <div class="currency-box p-4 rounded-xl mb-3">
-          <p class="text-sm text-blue-300 mb-1">Base Price</p>
-          <p id="basePriceTTD" class="text-3xl md:text-4xl font-bold text-white"></p>
-          <p id="basePriceUSD" class="text-lg text-blue-300 mt-1"></p>
-        </div>
-        
-        <!-- Surcharge (if applicable) -->
-        <div id="surchargeBox" class="hidden surcharge-box p-4 rounded-xl mb-3">
-          <p class="text-sm text-orange-300 mb-1">⚠️ Surcharge Applied</p>
-          <p id="surchargeAmount" class="text-2xl md:text-3xl font-bold text-orange-400"></p>
-          <p id="surchargeReason" class="text-sm text-orange-300 mt-1"></p>
-        </div>
-        
-        <!-- Total Final Price -->
-        <div class="total-box p-4 rounded-xl">
-          <p class="text-sm text-green-300 mb-1 font-bold">💵 TOTAL FINAL PRICE</p>
-          <p id="totalPriceTTD" class="text-4xl md:text-5xl font-bold text-white"></p>
-          <p id="totalPriceUSD" class="text-xl text-green-300 mt-1"></p>
-        </div>
-        
-        <p class="text-xs text-gray-500 mt-3">Exchange Rate: 1 USD = 6.80 TTD (USD rounded to nearest whole dollar)</p>
-      </div>
-    </div>
-
-    <div id="actionButtons" class="hidden glass-card rounded-2xl shadow-lg p-6 mb-6">
-      <div class="text-center mb-6">
-        <div class="w-16 h-16 bg-gradient-to-br from-yellow-400 to-yellow-500 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
-          <i class="fas fa-question text-black text-2xl"></i>
-        </div>
-        <h2 class="text-2xl font-bold text-white mb-2">Please Confirm Your Booking</h2>
-        <p class="text-gray-300">Review the details above and choose an option below.</p>
-      </div>
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <button onclick="confirmBooking()" class="btn-confirm text-white font-bold py-4 px-6 rounded-xl shadow-lg text-lg flex items-center justify-center">
-          <i class="fas fa-check-circle mr-2 text-xl"></i>
-          <div class="text-left">
-            <div class="font-bold">Confirm Booking</div>
-            <div class="text-xs opacity-90">Accept this price and finalize</div>
-          </div>
-        </button>
-        <button onclick="declineBooking()" class="btn-decline text-white font-bold py-4 px-6 rounded-xl shadow-lg text-lg flex items-center justify-center">
-          <i class="fas fa-times-circle mr-2 text-xl"></i>
-          <div class="text-left">
-            <div class="font-bold">Decline Booking</div>
-            <div class="text-xs opacity-90">Cancel this booking request</div>
-          </div>
-        </button>
-      </div>
-    </div>
-
-    <div id="alreadyConfirmed" class="hidden glass-card rounded-2xl shadow-lg p-8 mb-6 border-2 border-green-500/50">
-      <div class="text-center">
-        <div class="w-20 h-20 bg-gradient-to-br from-green-400 to-green-500 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
-          <i class="fas fa-check text-white text-4xl"></i>
-        </div>
-        <h2 class="text-3xl font-bold text-white mb-3">Booking Confirmed!</h2>
-        <p class="text-gray-300 text-lg mb-4">Your booking has been confirmed. We will contact you shortly with further details about your ride.</p>
-        <div class="bg-green-900/30 rounded-xl p-4 border border-green-500/30">
-          <p class="text-green-300"><i class="fas fa-info-circle mr-2"></i>A confirmation email has been sent to your email address.</p>
-        </div>
-      </div>
-    </div>
-
-    <div id="alreadyDeclined" class="hidden glass-card rounded-2xl shadow-lg p-8 mb-6 border-2 border-red-500/50">
-      <div class="text-center">
-        <div class="w-20 h-20 bg-gradient-to-br from-red-400 to-red-500 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
-          <i class="fas fa-times text-white text-4xl"></i>
-        </div>
-        <h2 class="text-3xl font-bold text-white mb-3">Booking Declined</h2>
-        <p class="text-gray-300 text-lg mb-4">This booking has been declined. If you change your mind, please contact us directly.</p>
-        <a href="tel:+18687800300" class="inline-block btn-gradient text-black font-bold py-3 px-8 rounded-xl shadow-lg">
-          <i class="fas fa-phone mr-2"></i>Contact Us
-        </a>
-      </div>
-    </div>
-
-    <div id="noPriceYet" class="hidden glass-card rounded-2xl shadow-lg p-8 mb-6 border-2 border-blue-500/50">
-      <div class="text-center">
-        <div class="w-20 h-20 bg-gradient-to-br from-blue-400 to-blue-500 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
-          <i class="fas fa-clock text-white text-4xl"></i>
-        </div>
-        <h2 class="text-3xl font-bold text-white mb-3">Price Quote Pending</h2>
-        <p class="text-gray-300 text-lg mb-4">We are calculating the best price for your route. You will receive a quote via email and/or WhatsApp shortly.</p>
-        <div class="bg-blue-900/30 rounded-xl p-4 border border-blue-500/30">
-          <p class="text-blue-300"><i class="fas fa-info-circle mr-2"></i>Once we send the price, you can return here to confirm or decline.</p>
-        </div>
-      </div>
-    </div>
-
-    <div class="glass-card rounded-2xl shadow-lg p-6 mb-6">
-      <div class="text-center mb-6">
-        <h3 class="text-2xl font-bold text-white section-title">How It Works</h3>
-      </div>
-      <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <div class="bg-gradient-to-br from-blue-600 to-blue-700 rounded-xl p-4 text-center">
-          <div class="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-2">
-            <span class="text-2xl font-bold text-white">1</span>
-          </div>
-          <h4 class="text-sm font-bold text-white mb-1">Submit</h4>
-          <p class="text-blue-100 text-xs">Fill out the booking form</p>
-        </div>
-        <div class="bg-gradient-to-br from-purple-600 to-purple-700 rounded-xl p-4 text-center">
-          <div class="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-2">
-            <span class="text-2xl font-bold text-white">2</span>
-          </div>
-          <h4 class="text-sm font-bold text-white mb-1">Quote</h4>
-          <p class="text-purple-100 text-xs">Receive your personalized price</p>
-        </div>
-        <div class="bg-gradient-to-br from-green-600 to-green-700 rounded-xl p-4 text-center">
-          <div class="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-2">
-            <span class="text-2xl font-bold text-white">3</span>
-          </div>
-          <h4 class="text-sm font-bold text-white mb-1">Confirm</h4>
-          <p class="text-green-100 text-xs">Accept the price to finalize</p>
-        </div>
-        <div class="bg-gradient-to-br from-yellow-500 to-yellow-600 rounded-xl p-4 text-center">
-          <div class="w-12 h-12 bg-black/20 rounded-full flex items-center justify-center mx-auto mb-2">
-            <span class="text-2xl font-bold text-black">4</span>
-          </div>
-          <h4 class="text-sm font-bold text-black mb-1">Ride</h4>
-          <p class="text-yellow-900 text-xs">Sit back and relax!</p>
-        </div>
-      </div>
-    </div>
-
-    <div class="glass-card rounded-2xl shadow-lg p-6 mb-6">
-      <div class="text-center mb-4">
-        <h3 class="text-xl font-bold text-white">Need Help?</h3>
-        <p class="text-gray-400 text-sm">Contact us directly if you have any questions</p>
-      </div>
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <a href="tel:+18687800300" class="bg-gradient-to-r from-yellow-900/30 to-amber-900/30 p-4 rounded-xl border border-yellow-700/30 flex items-center hover:border-yellow-500/50 transition">
-          <div class="w-12 h-12 bg-gradient-to-br from-yellow-400 to-yellow-500 rounded-full flex items-center justify-center mr-4 shadow-md">
-            <i class="fas fa-phone text-black text-lg"></i>
-          </div>
-          <div>
-            <p class="text-sm text-gray-400">Call Us</p>
-            <p class="text-white font-bold">+1 (868) 780-0300</p>
-          </div>
-        </a>
-        <a href="https://wa.me/18687800300" target="_blank" class="bg-gradient-to-r from-green-900/30 to-emerald-900/30 p-4 rounded-xl border border-green-700/30 flex items-center hover:border-green-500/50 transition">
-          <div class="w-12 h-12 bg-gradient-to-br from-green-400 to-green-500 rounded-full flex items-center justify-center mr-4 shadow-md">
-            <i class="fab fa-whatsapp text-white text-lg"></i>
-          </div>
-          <div>
-            <p class="text-sm text-gray-400">WhatsApp</p>
-            <p class="text-white font-bold">+1 (868) 780-0300</p>
-          </div>
-        </a>
-      </div>
-    </div>
-  </div>
-
-  <div id="notFound" class="hidden max-w-3xl mx-auto mb-8 animate-fade-in">
-    <div class="glass-card rounded-2xl shadow-2xl p-12 text-center">
-      <div class="w-20 h-20 bg-gradient-to-br from-red-400 to-red-500 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
-        <i class="fas fa-exclamation-triangle text-white text-4xl"></i>
-      </div>
-      <h2 class="text-3xl font-bold text-white mb-4">Booking Not Found</h2>
-      <p class="text-gray-300 mb-6 text-lg">We couldn't find a booking with that reference code.</p>
-      <div class="bg-red-900/30 rounded-xl p-4 border border-red-500/30 mb-6">
-        <p class="text-red-300 text-sm"><i class="fas fa-info-circle mr-2"></i>Please double-check the reference code from your email or contact us for assistance.</p>
-      </div>
-      <a href="index.html" class="inline-block btn-gradient text-black font-bold py-3 px-8 rounded-xl shadow-lg hover:shadow-xl transition">
-        <i class="fas fa-home mr-2"></i>Return to Home
-      </a>
-    </div>
-  </div>
-
-  <footer class="max-w-4xl mx-auto mt-6">
-    <div class="glass-card rounded-2xl shadow-lg p-6 text-center border-t border-white/10">
-      <div class="flex justify-center items-center mb-4">
-        <div class="w-10 h-10 bg-gradient-to-br from-yellow-400 to-yellow-500 rounded-full flex items-center justify-center mr-3">
-          <i class="fas fa-truck text-black"></i>
-        </div>
-        <span class="text-xl font-bold text-white">HKJ <span class="text-yellow-500">Logistics</span></span>
-      </div>
-      <p class="text-gray-400">&copy; 2026 HKJ Logistics Ltd. All rights reserved.</p>
-      <p class="text-sm text-gray-500 mt-2">Serving Trinidad and Tobago with pride and professionalism.</p>
-      <div class="mt-4">
-        <a href="index.html" class="text-yellow-500 hover:text-yellow-400 font-semibold transition">
-          <i class="fas fa-arrow-left mr-2"></i>Back to Main Site
-        </a>
-      </div>
-    </div>
-  </footer>
-
-  <script>
-    const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw1Fji0W9KckebjpfTcMLLtRNdf8fVMT_yQ_3PPrwg6kBZxsK8C-12TB-bAeCLY2ckwcg/exec';
-    const EXCHANGE_RATE = 6.80;
-    let currentBooking = null;
-    let currentRow = null;
-
-    function convertTTDtoUSD(ttdAmount) {
-      return Math.round(parseFloat(ttdAmount) / EXCHANGE_RATE);
-    }
-
-    function calculateSurcharge(basePrice, surchargeType) {
-      if (!surchargeType || surchargeType === 'none') return 0;
-      const base = parseFloat(basePrice) || 0;
-      switch(surchargeType) {
-        case 'peak': return 50;
-        case 'lateNight': return Math.round(base * 0.15);
-        case 'earlyMorning': return Math.round(base * 0.20);
-        case 'holiday': return Math.round(base * 0.25);
-        default: return 0;
-      }
-    }
-
-    function getSurchargeLabel(surchargeType) {
-      switch(surchargeType) {
-        case 'peak': return 'Peak Hours (6-9 AM): +$50 TTD';
-        case 'lateNight': return 'Late Night (10 PM-12 AM): +15%';
-        case 'earlyMorning': return 'Early Morning (12-6 AM): +20%';
-        case 'holiday': return 'Public Holiday: +25%';
-        default: return '';
-      }
-    }
-
-    window.addEventListener('DOMContentLoaded', function() {
-      const urlParams = new URLSearchParams(window.location.search);
-      const refCode = urlParams.get('code');
+    // Loop through all data rows, skipping the header
+    for (let i = 1; i < data.length; i++) {
+      // Skip completely empty rows
+      if (data[i][0] === '' && data[i][3] === '') continue;
       
-      if (!refCode) {
-        document.getElementById('loadingState').classList.add('hidden');
-        document.getElementById('notFound').classList.remove('hidden');
-        return;
-      }
-
-      loadBooking(refCode);
-    });
-
-    async function loadBooking(refCode) {
-      try {
-        const response = await fetch(APPS_SCRIPT_URL);
-        const data = await response.json();
-        
-        if (!data.success) {
-          document.getElementById('loadingState').classList.add('hidden');
-          document.getElementById('notFound').classList.remove('hidden');
-          return;
-        }
-
-        const normalizedRef = refCode.toUpperCase().replace(/[^A-Z0-9]/g, '');
-        const booking = data.bookings.find(b => {
-          const bookingRef = (b['REF CODE'] || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
-          return bookingRef === normalizedRef;
-        });
-
-        if (!booking) {
-          document.getElementById('loadingState').classList.add('hidden');
-          document.getElementById('notFound').classList.remove('hidden');
-          return;
-        }
-
-        currentBooking = booking;
-        currentRow = booking._rowNumber;
-        
-        displayBooking(booking);
-      } catch (error) {
-        console.error('Error loading booking:', error);
-        document.getElementById('loadingState').classList.add('hidden');
-        document.getElementById('notFound').classList.remove('hidden');
-      }
+      const row = {};
+      headers.forEach((header, idx) => { 
+        row[header] = data[i][idx]; 
+        // Handle potential duplicate header names for price
+        if (header === 'FARES') row['FINAL PRICE'] = data[i][idx];
+        if (header === 'FINAL PRICE') row['FARES'] = data[i][idx];
+      });
+      
+      // Add the actual sheet row number for admin actions
+      row._rowNumber = i + 1;
+      
+      // Set defaults if columns are empty
+      if (!row['SURCHARGE']) row['SURCHARGE'] = 'none';
+      if (!row['WAITING']) row['WAITING'] = '0';
+      
+      rows.push(row);
     }
+    
+    return ContentService.createTextOutput(JSON.stringify({ success: true, bookings: rows })).setMimeType(ContentService.MimeType.JSON);
+  } catch (error) {
+    Logger.log('GET request error: ' + error.toString());
+    return ContentService.createTextOutput(JSON.stringify({ success: false, message: error.toString() })).setMimeType(ContentService.MimeType.JSON);
+  }
+}
 
-    function displayBooking(booking) {
-      document.getElementById('loadingState').classList.add('hidden');
-      document.getElementById('bookingDetails').classList.remove('hidden');
+// =====================================================================
+// 4. WEB APP: POST REQUEST (New Bookings & Admin Actions)
+// =====================================================================
 
-      document.getElementById('refCode').textContent = booking['REF CODE'] || 'N/A';
-      document.getElementById('clientPhone').textContent = booking.PHONE || 'N/A';
-      document.getElementById('clientEmail').textContent = booking.EMAIL || 'N/A';
-      document.getElementById('pickupLocation').textContent = booking['PICK UP'] || 'N/A';
-      document.getElementById('dropoffLocation').textContent = booking['DROP OFF'] || 'N/A';
-      document.getElementById('vehicleType').textContent = booking['VEHICLE TYPE'] || 'N/A';
-      document.getElementById('serviceType').textContent = booking['SERVICE TYPE'] || 'N/A';
-      document.getElementById('paymentMethod').textContent = booking['PAYMENT METHOD'] || 'Not specified';
+/**
+ * Handles POST requests to the Web App.
+ * This is triggered when a client submits the booking form on the website,
+ * or when the admin performs an action (update price, send email, etc.).
+ * 
+ * @param {Object} e - The event parameter from the POST request.
+ * @returns {ContentService.TextOutput} JSON object indicating success or failure.
+ */
+function doPost(e) {
+  Logger.log('=== doPost START ===');
+  Logger.log('Raw post data received: ' + JSON.stringify(e));
+  
+  try {
+    // Check if this is an admin action from the dashboard
+    if (e.parameter && e.parameter.action) {
+      Logger.log('Routing to Admin Action Handler: ' + e.parameter.action);
+      return handleAdminAction(e);
+    }
+    
+    // If not an admin action, it's a new client booking submission
+    var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Sheet1");
+    if (!sheet) {
+      Logger.log('ERROR: Sheet1 not found');
+      throw new Error("Sheet1 not found");
+    }
+    
+    // Ensure headers exist for new rows
+    ensureHeaders(sheet);
+    
+    // Extract parameters from the form submission
+    var p = e.parameter;
+    
+    // Log all received parameters for debugging
+    Logger.log('Received form parameters:');
+    for (var key in p) {
+      Logger.log('  - ' + key + ': ' + p[key]);
+    }
+    
+    // Generate a unique reference code if one isn't provided
+    var refCode = p.referenceCode || "HKJ-" + Math.floor(1000 + Math.random() * 9000);
+    Logger.log('Generated/Received refCode: ' + refCode);
+    
+    // Clean and format addresses
+    var pickupCity = p.pickupCity || 'Trinidad';
+    var dropoffCity = p.dropoffCity || 'Trinidad';
+    var pickup = cleanAddress(p.pickupAddressText, pickupCity);
+    var dropoff = cleanAddress(p.dropoffAddressText, dropoffCity);
+    
+    Logger.log('Cleaned Pickup: ' + pickup);
+    Logger.log('Cleaned Dropoff: ' + dropoff);
+    
+    // Build the notes string from various form fields
+    var notes = p.additionalNotes || "";
+    if (p.vehicleType) notes += "\nVehicle Requested: " + p.vehicleType;
+    if (p.serviceType) notes += "\nService Type: " + p.serviceType;
+    if (p.waitingTime && p.waitingTime !== "0") notes += "\nWaiting Time Requested: " + p.waitingTime + " minutes";
+    if (p.paymentMethod) notes += "\nPayment Method: " + p.paymentMethod;
+    if (p.isCarnival === "on" || p.isCarnival === "true") notes += "\n*** CARNIVAL EVENT BOOKING - $400 MINIMUM ***";
 
-      if (booking.NOTES && booking.NOTES.trim() !== '') {
-        document.getElementById('notesCard').classList.remove('hidden');
-        document.getElementById('bookingNotes').textContent = booking.NOTES;
+    // Create the new row array. MUST match the column order in Sheet1.
+    // Columns: A=Date, B=Time, C=RefCode, D=Name, E=Phone, F=Pickup, G=Dropoff, 
+    // H=Empty, I=Notes, J=Status, K=Price, L=Empty, M=Email, N=WhatsApp, O=Surcharge, P=Waiting
+    var newRow = [
+      p.bookDate || '',           // Column A: Date
+      p.bookTime || '',           // Column B: Time
+      refCode,                    // Column C: Reference Code
+      p.clientName || '',         // Column D: Client Name
+      p.clientPhone || '',        // Column E: Phone
+      pickup,                     // Column F: Pickup Address
+      dropoff,                    // Column G: Drop-off Address
+      "",                         // Column H: (Empty)
+      notes,                      // Column I: Notes
+      "Pending",                  // Column J: Status
+      "",                         // Column K: Fares/Price
+      "",                         // Column L: (Empty)
+      p.clientEmail || '',        // Column M: Email
+      "",                         // Column N: WhatsApp Formula
+      "none",                     // Column O: Surcharge (default: none)
+      "0"                         // Column P: Waiting time (default: 0)
+    ];
+    
+    Logger.log('Preparing to add row to sheet...');
+    
+    // Add row to sheet
+    sheet.appendRow(newRow);
+    var rowNum = sheet.getLastRow();
+    Logger.log('Row successfully added at row number: ' + rowNum);
+    
+    // Add WhatsApp Quick Chat formula to column N
+    var whatsappFormula = '=IF(E' + rowNum + '="","",HYPERLINK("https://wa.me/1"&REGEXREPLACE(TO_TEXT(E' + rowNum + '),"[^0-9]",""),"💬 Quick Chat"))';
+    sheet.getRange(rowNum, 14).setFormula(whatsappFormula);
+    Logger.log('WhatsApp formula added to column N');
+    
+    // Send initial notification emails (wrapped in try-catch so errors don't break the save)
+    try {
+      Logger.log('Sending admin notification email...');
+      sendAdminNotificationEmail(newRow, refCode, rowNum);
+      Logger.log('Admin email sent successfully');
+    } catch (emailError) {
+      Logger.log('WARNING: Admin email failed: ' + emailError.toString());
+    }
+    
+    try {
+      if (p.clientEmail && p.clientEmail.trim() !== '') {
+        Logger.log('Sending client initial email to: ' + p.clientEmail);
+        sendClientInitialEmail(newRow, refCode);
+        Logger.log('Client email sent successfully');
       }
+    } catch (clientEmailError) {
+      Logger.log('WARNING: Client email failed: ' + clientEmailError.toString());
+    }
+    
+    Logger.log('=== doPost SUCCESS ===');
+    
+    // Return success response to the website frontend
+    return ContentService.createTextOutput(JSON.stringify({ 
+      "result": "success", 
+      "refCode": refCode 
+    })).setMimeType(ContentService.MimeType.JSON);
+    
+  } catch (error) {
+    Logger.log('=== doPost FATAL ERROR ===');
+    Logger.log('Error: ' + error.toString());
+    Logger.log('Stack trace: ' + error.stack);
+    
+    // Return error response to the website frontend
+    return ContentService.createTextOutput(JSON.stringify({ 
+      "result": "error", 
+      "message": error.toString() 
+    })).setMimeType(ContentService.MimeType.JSON);
+  }
+}
 
-      const date = booking.DATE;
-      const time = booking.TIME;
-      let formattedDateTime = 'N/A';
+// =====================================================================
+// 5. ADMIN DASHBOARD ACTIONS HANDLER
+// =====================================================================
+
+/**
+ * Handles specific actions triggered by the Admin Dashboard.
+ * This function strictly separates saving data from sending communications.
+ * 
+ * @param {Object} e - The event parameter containing the action type and row data.
+ * @returns {ContentService.TextOutput} JSON object indicating success or failure.
+ */
+function handleAdminAction(e) {
+  try {
+    const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Sheet1");
+    ensureHeaders(sheet); // Ensure columns exist
+    const action = e.parameter.action;
+    const row = parseInt(e.parameter.row);
+    
+    Logger.log('Processing admin action: "' + action + '" for row: ' + row);
+
+    // ACTION 1: UPDATE PRICE (DOES NOT SEND EMAIL)
+    if (action === 'updatePrice') {
+      const price = parseFloat(e.parameter.price);
       
-      if (date && time) {
-        try {
-          const dateObj = new Date(date);
-          if (!isNaN(dateObj.getTime())) {
-            const dateStr = dateObj.toLocaleDateString('en-US', { 
-              year: 'numeric', 
-              month: 'long', 
-              day: 'numeric' 
-            });
-            
-            let timeStr = time.toString();
-            
-            if (timeStr.includes('T')) {
-              timeStr = timeStr.split('T')[1] || '';
-            }
-            
-            if (timeStr.includes(':')) {
-              const timeObj = new Date(`2000-01-01T${timeStr}`);
-              const timeFormatted = timeObj.toLocaleTimeString('en-US', { 
-                hour: '2-digit', 
-                minute: '2-digit' 
-              });
-              formattedDateTime = `${dateStr} at ${timeFormatted}`;
-            } else {
-              formattedDateTime = `${dateStr} at ${timeStr}`;
-            }
-          } else {
-            formattedDateTime = `${date} at ${time}`;
-          }
-        } catch (e) {
-          console.error('Date/time formatting error:', e);
-          formattedDateTime = `${date} at ${time}`;
-        }
-      }
-      document.getElementById('bookingDateTime').textContent = formattedDateTime;
-
-      const status = booking.STATUS || 'Pending';
-      const price = booking['FINAL PRICE'] || booking['FARES'];
-      const surchargeType = booking['SURCHARGE'] || 'none';
-      const hasPrice = price && price !== 0 && price !== '0' && price !== '0.00' && price !== '';
-
-      const statusText = document.getElementById('bookingStatus');
-      const priceCard = document.getElementById('priceCard');
-      const actionButtons = document.getElementById('actionButtons');
-      const alreadyConfirmed = document.getElementById('alreadyConfirmed');
-      const alreadyDeclined = document.getElementById('alreadyDeclined');
-      const noPriceYet = document.getElementById('noPriceYet');
-
-      let statusColor = 'text-yellow-500';
-      if (status === 'Confirmed') statusColor = 'text-blue-500';
-      else if (status === 'Completed') statusColor = 'text-green-500';
-      else if (status === 'Cancelled') statusColor = 'text-red-500';
-      else if (status === 'Price Sent') statusColor = 'text-purple-500';
-      
-      statusText.className = `text-2xl font-bold ${statusColor}`;
-      statusText.textContent = status;
-
-      if (status === 'Confirmed') {
-        alreadyConfirmed.classList.remove('hidden');
-        actionButtons.classList.add('hidden');
-        noPriceYet.classList.add('hidden');
-        if (hasPrice) {
-          priceCard.classList.remove('hidden');
-          displayPriceBreakdown(price, surchargeType);
-        }
-      } else if (status === 'Cancelled') {
-        alreadyDeclined.classList.remove('hidden');
-        actionButtons.classList.add('hidden');
-        noPriceYet.classList.add('hidden');
-      } else if (hasPrice) {
-        priceCard.classList.remove('hidden');
-        displayPriceBreakdown(price, surchargeType);
-        actionButtons.classList.remove('hidden');
-        noPriceYet.classList.add('hidden');
-        alreadyConfirmed.classList.add('hidden');
-        alreadyDeclined.classList.add('hidden');
+      if (!isNaN(price)) {
+        // ONLY update the price in Column K (11)
+        sheet.getRange(row, 11).setValue(price);
+        Logger.log('Price updated to: ' + price + ' at row ' + row);
       } else {
-        noPriceYet.classList.remove('hidden');
-        actionButtons.classList.add('hidden');
-        priceCard.classList.add('hidden');
-        alreadyConfirmed.classList.add('hidden');
-        alreadyDeclined.classList.add('hidden');
-      }
-    }
-
-    function displayPriceBreakdown(price, surchargeType) {
-      const basePrice = parseFloat(price);
-      const surchargeAmount = calculateSurcharge(price, surchargeType);
-      const totalPrice = basePrice + surchargeAmount;
-      
-      const baseUSD = convertTTDtoUSD(basePrice);
-      const totalUSD = convertTTDtoUSD(totalPrice);
-      
-      document.getElementById('basePriceTTD').textContent = `$${basePrice.toFixed(2)} TTD`;
-      document.getElementById('basePriceUSD').textContent = `$${baseUSD} USD`;
-      
-      const surchargeBox = document.getElementById('surchargeBox');
-      if (surchargeAmount > 0) {
-        surchargeBox.classList.remove('hidden');
-        document.getElementById('surchargeAmount').textContent = `+$${surchargeAmount} TTD`;
-        document.getElementById('surchargeReason').textContent = getSurchargeLabel(surchargeType);
-      } else {
-        surchargeBox.classList.add('hidden');
+        Logger.log('Invalid price value provided: ' + e.parameter.price);
       }
       
-      document.getElementById('totalPriceTTD').textContent = `$${totalPrice.toFixed(2)} TTD`;
-      document.getElementById('totalPriceUSD').textContent = `$${totalUSD} USD`;
-    }
-
-    async function confirmBooking() {
-      if (!currentRow) return;
-
-      if (!confirm('Are you sure you want to confirm this booking? This action cannot be undone.')) {
-        return;
-      }
-
+      // DO NOT change status. DO NOT send email.
+      return ContentService.createTextOutput(JSON.stringify({ success: true, message: "Price saved" })).setMimeType(ContentService.MimeType.JSON);
+      
+    } 
+    // ACTION 2: UPDATE SURCHARGE
+    else if (action === 'updateSurcharge') {
+      const surcharge = e.parameter.surcharge || 'none';
+      sheet.getRange(row, 15).setValue(surcharge);
+      Logger.log('Surcharge updated to: ' + surcharge + ' at row ' + row);
+      return ContentService.createTextOutput(JSON.stringify({ success: true, message: "Surcharge saved" })).setMimeType(ContentService.MimeType.JSON);
+      
+    } 
+    // ACTION 3: UPDATE WAITING TIME
+    else if (action === 'updateWaiting') {
+      const waiting = e.parameter.waiting || '0';
+      sheet.getRange(row, 16).setValue(waiting);
+      Logger.log('Waiting time updated to: ' + waiting + ' at row ' + row);
+      return ContentService.createTextOutput(JSON.stringify({ success: true, message: "Waiting time saved" })).setMimeType(ContentService.MimeType.JSON);
+      
+    } 
+    // ACTION 4: SEND PRICE EMAIL (ONLY RUNS WHEN EMAIL BUTTON IS CLICKED)
+    else if (action === 'sendPriceEmail') {
       try {
-        const response = await fetch(APPS_SCRIPT_URL, {
-          method: 'POST',
-          body: new URLSearchParams({
-            action: 'updateStatus',
-            row: currentRow,
-            status: 'Confirmed'
-          })
-        });
+        const price = e.parameter.price;
+        const rowData = sheet.getRange(row, 1, 1, 16).getValues()[0];
+        
+        Logger.log('Attempting to send price email for row ' + row);
+        Logger.log('Price: ' + price);
+        Logger.log('Email: ' + rowData[12]);
+        
+        // Send the actual email
+        sendAdminPriceQuoteEmail(rowData, row, price);
+        
+        // Update status to "Price Sent"
+        sheet.getRange(row, 10).setValue('Price Sent');
+        Logger.log('Price email sent and status updated to "Price Sent" for row ' + row);
+        
+        return ContentService.createTextOutput(JSON.stringify({ success: true, message: "Email sent" })).setMimeType(ContentService.MimeType.JSON);
+      } catch (emailError) {
+        Logger.log('ERROR sending price email: ' + emailError.toString());
+        Logger.log('Error stack: ' + emailError.stack);
+        return ContentService.createTextOutput(JSON.stringify({ success: false, message: "Email failed: " + emailError.toString() })).setMimeType(ContentService.MimeType.JSON);
+      }
+      
+    } 
+    // ACTION 5: UPDATE STATUS (SENDS ALERT EMAIL TO ADMIN)
+    else if (action === 'updateStatus') {
+      const status = e.parameter.status;
+      sheet.getRange(row, 10).setValue(status);
+      
+      // Get the booking details
+      const rowData = sheet.getRange(row, 1, 1, 16).getValues()[0];
+      
+      // If they Confirmed or Completed, send email with Google Calendar link
+      if (status === 'Confirmed' || status === 'Completed') {
+        sendAdminStatusUpdateEmail(rowData, status);
+        Logger.log('Admin notified with calendar link for status: ' + status);
+      } 
+      // If they Declined (Cancelled), email you immediately (no calendar link)
+      else if (status === 'Cancelled') {
+        sendAdminStatusUpdateEmail(rowData, status);
+        Logger.log('Admin notified of cancellation');
+      }
+      
+      Logger.log('Status updated to: ' + status + ' at row ' + row);
+      return ContentService.createTextOutput(JSON.stringify({ success: true, message: "Status updated" })).setMimeType(ContentService.MimeType.JSON);
+    }
+    
+    // Unknown action
+    Logger.log('Unknown admin action requested: ' + action);
+    return ContentService.createTextOutput(JSON.stringify({ success: false, message: "Unknown action" })).setMimeType(ContentService.MimeType.JSON);
+    
+  } catch (error) {
+    Logger.log('Error in handleAdminAction: ' + error.toString());
+    return ContentService.createTextOutput(JSON.stringify({ success: false, message: error.toString() })).setMimeType(ContentService.MimeType.JSON);
+  }
+}
 
-        const result = await response.json();
+// =====================================================================
+// 6. HELPER: CLEAN ADDRESSES
+// =====================================================================
 
-        if (result.success) {
-          alert('✅ Booking confirmed successfully! We will contact you shortly with further details.');
-          location.reload();
-        } else {
-          alert('Error confirming booking. Please try again.\n\nError: ' + (result.message || 'Unknown error'));
-        }
-      } catch (error) {
-        console.error('Error:', error);
-        alert('Network error. Please check your internet connection and try again.');
+/**
+ * Cleans and formats address strings to prevent duplication of "Trinidad and Tobago"
+ * and ensures proper formatting for the sheet.
+ * 
+ * @param {string} fullAddress - The street/building address.
+ * @param {string} city - The city or area.
+ * @returns {string} The cleaned and formatted address string.
+ */
+function cleanAddress(fullAddress, city) {
+  if (!fullAddress) fullAddress = "";
+  if (!city) city = "";
+  
+  var combined = fullAddress + ", " + city;
+  var isTobago = combined.toLowerCase().includes('tobago') && !combined.toLowerCase().includes('trinidad');
+  
+  // Remove common duplicates and postal codes
+  combined = combined.replace(/,?\s*Trinidad and Tobago/gi, '');
+  combined = combined.replace(/,?\s*\d{5,6}/g, '');
+  combined = combined.replace(/,\s*$/, '').trim();
+  
+  // Re-add country if missing
+  if (combined) {
+    if (isTobago && !combined.toLowerCase().includes('tobago')) {
+      combined += ', Tobago';
+    } else if (!isTobago && !combined.toLowerCase().includes('trinidad')) {
+      combined += ', Trinidad';
+    }
+  }
+  return combined;
+}
+
+/**
+ * Manual function to clean up existing addresses in the sheet.
+ * Triggered from the custom menu.
+ */
+function cleanExistingAddresses() {
+  var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Sheet1");
+  if (!sheet) return;
+  
+  var lastRow = sheet.getLastRow();
+  var cleanedCount = 0;
+  
+  for (var i = 2; i <= lastRow; i++) {
+    var pickup = sheet.getRange(i, 6).getValue();
+    var dropoff = sheet.getRange(i, 7).getValue();
+    
+    if (pickup) {
+      var cleanPickup = cleanAddress(pickup.toString(), "");
+      if (cleanPickup !== pickup.toString()) { 
+        sheet.getRange(i, 6).setValue(cleanPickup); 
+        cleanedCount++; 
       }
     }
-
-    async function declineBooking() {
-      if (!currentRow) return;
-
-      if (!confirm('Are you sure you want to decline this booking? This action cannot be undone.')) {
-        return;
-      }
-
-      try {
-        const response = await fetch(APPS_SCRIPT_URL, {
-          method: 'POST',
-          body: new URLSearchParams({
-            action: 'updateStatus',
-            row: currentRow,
-            status: 'Cancelled'
-          })
-        });
-
-        const result = await response.json();
-
-        if (result.success) {
-          alert('Booking declined. Thank you for letting us know. If you change your mind, please contact us directly.');
-          location.reload();
-        } else {
-          alert('Error declining booking. Please try again.\n\nError: ' + (result.message || 'Unknown error'));
-        }
-      } catch (error) {
-        console.error('Error:', error);
-        alert('Network error. Please check your internet connection and try again.');
+    if (dropoff) {
+      var cleanDropoff = cleanAddress(dropoff.toString(), "");
+      if (cleanDropoff !== dropoff.toString()) { 
+        sheet.getRange(i, 7).setValue(cleanDropoff); 
+        cleanedCount++; 
       }
     }
-  </script>
-</body>
-</html>
+  }
+  SpreadsheetApp.getUi().alert('✅ Cleaned up ' + cleanedCount + ' address fields!');
+}
+
+// =====================================================================
+// 7. CALCULATION FUNCTIONS
+// =====================================================================
+
+/**
+ * Calculates the surcharge amount based on the surcharge type.
+ * 
+ * @param {number} basePrice - The base price in TTD.
+ * @param {string} surchargeType - The type of surcharge (peak, lateNight, earlyMorning, holiday).
+ * @returns {number} The surcharge amount in TTD.
+ */
+function calculateSurcharge(basePrice, surchargeType) {
+  if (!surchargeType || surchargeType === 'none') return 0;
+  const base = parseFloat(basePrice) || 0;
+  switch(surchargeType) {
+    case 'peak': return 50;
+    case 'lateNight': return Math.round(base * 0.15);
+    case 'earlyMorning': return Math.round(base * 0.20);
+    case 'holiday': return Math.round(base * 0.25);
+    default: return 0;
+  }
+}
+
+/**
+ * Returns a human-readable label for the surcharge type.
+ * 
+ * @param {string} surchargeType - The type of surcharge.
+ * @returns {string} The label for the surcharge.
+ */
+function getSurchargeLabel(surchargeType) {
+  switch(surchargeType) {
+    case 'peak': return 'Peak Hours (6-9 AM): +$50 TTD';
+    case 'lateNight': return 'Late Night (10 PM-12 AM): +15%';
+    case 'earlyMorning': return 'Early Morning (12-6 AM): +20%';
+    case 'holiday': return 'Public Holiday: +25%';
+    default: return '';
+  }
+}
+
+/**
+ * Calculates the waiting time fee.
+ * First 15 minutes are free, then $10 TTD per 15 minutes.
+ * 
+ * @param {number} minutes - The total waiting time in minutes.
+ * @returns {number} The waiting fee in TTD.
+ */
+function calculateWaitingTime(minutes) {
+  const mins = parseInt(minutes) || 0;
+  if (mins <= 15) return 0; // First 15 minutes free
+  const extraMinutes = mins - 15;
+  const blocks = Math.ceil(extraMinutes / 15);
+  return blocks * WAITING_RATE_PER_15MIN;
+}
+
+/**
+ * Returns a human-readable label for the waiting time.
+ * 
+ * @param {number} minutes - The waiting time in minutes.
+ * @returns {string} The label for the waiting time.
+ */
+function getWaitingLabel(minutes) {
+  const mins = parseInt(minutes) || 0;
+  if (mins === 0) return 'No waiting time';
+  if (mins <= 15) return '15 min (Free grace period)';
+  return mins + ' min waiting';
+}
+
+// =====================================================================
+// 8. EMAIL FUNCTIONS
+// =====================================================================
+
+/**
+ * Sends the initial confirmation email to the client when a booking is submitted.
+ * Informs them that their request was received and explains the next steps.
+ * 
+ * @param {Array} row - The array of data for the new booking row.
+ * @param {string} refCode - The reference code for the booking.
+ */
+function sendClientInitialEmail(row, refCode) {
+  const clientEmail = row[12];
+  if (!clientEmail || clientEmail.toString().trim() === '') {
+    Logger.log('No client email found, skipping initial email');
+    return;
+  }
+  
+  const clientName = row[3];
+  const pickup = row[5];
+  const dropoff = row[6];
+  const date = row[0] instanceof Date ? Utilities.formatDate(row[0], Session.getScriptTimeZone(), "MMMM d, yyyy") : row[0];
+  const time = row[1];
+  
+  const subject = `✅ Request Received: HKJ Logistics Booking ${refCode}`;
+  const htmlBody = `
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; color: #333;">
+      <h2 style="color: #2563eb;">Request Received!</h2>
+      <p>Hello <strong>${clientName}</strong>,</p>
+      <p>Thank you for choosing HKJ Logistics. We have successfully received your booking request.</p>
+      
+      <div style="background-color: #f3f4f6; padding: 15px; border-radius: 8px; margin: 15px 0;">
+        <p style="margin: 5px 0;"><strong>Reference Code:</strong> <span style="color: #dc2626; font-size: 1.2em;">${refCode}</span></p>
+        <p style="margin: 5px 0;"><strong>Trip:</strong> ${pickup} ➔ ${dropoff}</p>
+        <p style="margin: 5px 0;"><strong>Date & Time:</strong> ${date} at ${time}</p>
+      </div>
+
+      <div style="background-color: #eff6ff; padding: 20px; border-radius: 8px; border-left: 4px solid #2563eb; margin: 20px 0;">
+        <h3 style="color: #1e40af; margin-top: 0;">📋 How Your Booking Works:</h3>
+        <ol style="margin: 0; padding-left: 20px; color: #4b5563; line-height: 1.8;">
+          <li><strong style="color: #2563eb;">Submit Request:</strong> You've completed this step! ✓</li>
+          <li><strong style="color: #7c3aed;">Receive Quote:</strong> We're calculating the best price for your route. You'll receive a personalized quote shortly.</li>
+          <li><strong style="color: #059669;">Confirm Booking:</strong> Click the link in our next email/WhatsApp to accept the price and finalize your ride.</li>
+          <li><strong style="color: #d97706;">Enjoy Your Ride:</strong> We'll pick you up on time. Sit back and relax!</li>
+        </ol>
+      </div>
+
+      <div style="background-color: #fef3c7; padding: 15px; border-radius: 8px; margin: 15px 0; border: 1px solid #f59e0b;">
+        <p style="margin: 0; color: #92400e;"><strong>👉 What's Next?</strong> We will contact you within 24 hours with your price quote. Please keep your reference code handy.</p>
+      </div>
+
+      <p style="margin-top: 20px; padding-top: 20px; border-top: 2px solid #e5e7eb;">Best regards,<br><strong>HKJ Logistics Ltd</strong><br> +1 (868) 780-0300<br>✉️ hkjlogisticsltd@gmail.com</p>
+    </div>
+  `;
+  
+  try {
+    MailApp.sendEmail({ to: clientEmail, subject: subject, htmlBody: htmlBody });
+    Logger.log('Client initial email sent successfully to: ' + clientEmail);
+  } catch (emailError) {
+    Logger.log('ERROR sending client initial email: ' + emailError.toString());
+    throw emailError;
+  }
+}
+
+/**
+ * Sends a notification email to the Admin when a new booking is submitted.
+ * Includes quick action links to confirm, complete, or cancel the booking.
+ * 
+ * @param {Array} row - The array of data for the new booking row.
+ * @param {string} refCode - The reference code for the booking.
+ * @param {number} rowNum - The row number in the spreadsheet.
+ */
+function sendAdminNotificationEmail(row, refCode, rowNum) {
+  const date = row[0] instanceof Date ? Utilities.formatDate(row[0], Session.getScriptTimeZone(), "MMMM d, yyyy") : row[0];
+  const time = row[1];
+  const name = row[3];
+  const phone = row[4];
+  const pickup = row[5];
+  const dropoff = row[6];
+  const notes = row[8];
+  const email = row[12];
+  
+  const WEB_APP_URL = ScriptApp.getService().getUrl();
+  const confirmUrl = `${WEB_APP_URL}?action=updateStatus&row=${rowNum}&status=Confirmed&ref=${refCode}`;
+  const completeUrl = `${WEB_APP_URL}?action=updateStatus&row=${rowNum}&status=Completed&ref=${refCode}`;
+  const cancelUrl = `${WEB_APP_URL}?action=updateStatus&row=${rowNum}&status=Cancelled&ref=${refCode}`;
+  
+  const cleanPhone = phone.toString().replace(/\D/g, '');
+  const whatsappLink = `https://wa.me/1${cleanPhone}?text=Hello ${name}, we received your booking ${refCode} for ${date}. We will send you a price quote shortly.`;
+  
+  const subject = `🚗 NEW BOOKING REQUEST - ${refCode}`;
+  const htmlBody = `
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+      <h2 style="color: #2563eb; border-bottom: 3px solid #2563eb; padding-bottom: 10px;"> NEW BOOKING REQUEST</h2>
+      <div style="background-color: #f3f4f6; padding: 20px; border-radius: 8px; margin: 20px 0;">
+        <p><strong>Reference Code:</strong> <span style="color: #dc2626; font-size: 1.2em;">${refCode}</span></p>
+        <p><strong>Name:</strong> ${name}</p>
+        <p><strong>Phone:</strong> <a href="tel:${phone}">${phone}</a></p>
+        ${email ? `<p><strong>Email:</strong> <a href="mailto:${email}">${email}</a></p>` : '<p><strong>Email:</strong> Not provided</p>'}
+      </div>
+      <div style="background-color: #dbeafe; padding: 15px; border-radius: 8px;">
+        <h3 style="color: #1e40af; margin-top: 0;">📋 Details</h3>
+        <p><strong>📅 Date:</strong> ${date}</p>
+        <p><strong>🕐 Time:</strong> ${time}</p>
+        <p><strong>📍 Pickup:</strong> ${pickup}</p>
+        <p><strong>🏁 Drop-off:</strong> ${dropoff}</p>
+      </div>
+      ${notes ? `<div style="background-color: #fef3c7; padding: 15px; border-radius: 8px; margin-top: 15px;"><strong>📝 Notes:</strong><br><pre style="margin:0; white-space: pre-wrap;">${notes}</pre></div>` : ''}
+      
+      <div style="text-align: center; margin: 30px 0;">
+        <a href="${whatsappLink}" style="display: inline-block; padding: 15px 30px; background-color: #25D366; color: white; text-decoration: none; border-radius: 8px; font-weight: bold; font-size: 16px;">
+          💬 WhatsApp Client Now
+        </a>
+      </div>
+
+      <div style="margin: 25px 0; padding: 20px; background-color: #f0fdf4; border-radius: 8px; border: 2px solid #22c55e;">
+        <h3 style="text-align: center; color: #15803d;">Quick Actions</h3>
+        <table style="width: 100%;">
+          <tr>
+            <td style="padding: 5px; text-align: center;"><a href="${confirmUrl}" style="display: block; padding: 10px; background: #3b82f6; color: white; text-decoration: none; border-radius: 5px;">✅ Confirm</a></td>
+            <td style="padding: 5px; text-align: center;"><a href="${completeUrl}" style="display: block; padding: 10px; background: #22c55e; color: white; text-decoration: none; border-radius: 5px;">✓ Complete</a></td>
+          </tr>
+          <tr>
+            <td style="padding: 5px; text-align: center;"><a href="${cancelUrl}" style="display: block; padding: 10px; background: #ef4444; color: white; text-decoration: none; border-radius: 5px;">❌ Cancel</a></td>
+            <td style="padding: 5px; text-align: center;"><a href="https://hkjlogisticsltdtt.vercel.app/admin" style="display: block; padding: 10px; background: #6b7280; color: white; text-decoration: none; border-radius: 5px;">⚙️ Admin Panel</a></td>
+          </tr>
+        </table>
+      </div>
+    </div>
+  `;
+  
+  try {
+    MailApp.sendEmail({ to: ADMIN_EMAIL, replyTo: email || ADMIN_EMAIL, subject: subject, htmlBody: htmlBody });
+    Logger.log('Admin notification email sent successfully');
+  } catch (emailError) {
+    Logger.log('ERROR sending admin notification email: ' + emailError.toString());
+    throw emailError;
+  }
+}
+
+/**
+ * Sends the price quote email to the client when the admin clicks the "Email" button.
+ * Includes the final price in both TTD and USD, with surcharge and waiting time breakdown.
+ * 
+ * @param {Array} rowData - The array of data for the booking row.
+ * @param {number} rowNum - The row number in the spreadsheet.
+ * @param {number|string} price - The final price to quote in TTD.
+ */
+function sendAdminPriceQuoteEmail(rowData, rowNum, price) {
+  const email = rowData[12];
+  if (!email || email.toString().trim() === '') {
+    Logger.log('ERROR: Cannot send price email - No email address found for row ' + rowNum);
+    throw new Error('No email address found for this booking');
+  }
+  
+  const refCode = rowData[2];
+  const clientName = rowData[3];
+  const pickup = rowData[5];
+  const dropoff = rowData[6];
+  const date = rowData[0] instanceof Date ? Utilities.formatDate(rowData[0], Session.getScriptTimeZone(), "MMMM d, yyyy") : rowData[0];
+  const time = rowData[1];
+  const surchargeType = rowData[14] || 'none';
+  const waitingMins = parseInt(rowData[15]) || 0;
+  const surchargeAmount = calculateSurcharge(price, surchargeType);
+  const waitingFee = calculateWaitingTime(waitingMins);
+  const totalPrice = parseFloat(price) + surchargeAmount + waitingFee;
+  const usdPrice = Math.round(parseFloat(price) / EXCHANGE_RATE);
+  const totalUSD = Math.round(totalPrice / EXCHANGE_RATE);
+  
+  Logger.log('Preparing price quote email for: ' + email);
+  Logger.log('RefCode: ' + refCode);
+  Logger.log('Price TTD: ' + price);
+  Logger.log('Surcharge: ' + surchargeType);
+  Logger.log('Waiting: ' + waitingMins);
+  Logger.log('Total: ' + totalPrice);
+  
+  const subject = `💰 Price Quote: HKJ Logistics Booking ${refCode}`;
+  
+  let breakdownHTML = '';
+  if (surchargeAmount > 0) {
+    breakdownHTML += `<div style="background-color: #ffedd5; padding: 10px; border-radius: 6px; margin-top: 10px;">
+      <p style="margin: 0; font-size: 0.9em; color: #9a3412;"><strong>⚠️ Surcharge:</strong> +$${surchargeAmount} TTD (${getSurchargeLabel(surchargeType)})</p>
+    </div>`;
+  }
+  if (waitingFee > 0) {
+    breakdownHTML += `<div style="background-color: #f3e8ff; padding: 10px; border-radius: 6px; margin-top: 10px;">
+      <p style="margin: 0; font-size: 0.9em; color: #6b21a8;"><strong>⏳ Waiting Time (${waitingMins} min):</strong> +$${waitingFee} TTD</p>
+    </div>`;
+  }
+  
+  const htmlBody = `
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; color: #333;">
+      <h2 style="color: #2563eb;">Your Price Quote is Ready!</h2>
+      <p>Hello <strong>${clientName}</strong>,</p>
+      
+      <div style="background-color: #fef3c7; padding: 25px; border-radius: 8px; margin: 15px 0; text-align: center; border: 2px solid #f59e0b;">
+        <p style="margin: 0; font-size: 1.1em; color: #92400e;">Final Price for your trip:</p>
+        <div style="margin: 15px 0;">
+          <p style="margin: 5px 0; color: #DC2626; font-size: 3em; font-weight: bold;">$${totalPrice.toFixed(2)} TTD</p>
+          <p style="margin: 5px 0; color: #2563eb; font-size: 2em; font-weight: bold;">$${totalUSD} USD</p>
+        </div>
+        ${breakdownHTML}
+        <p style="margin: 10px 0 0 0; font-size: 0.9em; color: #6b7280;">*USD prices are rounded to the nearest whole dollar.</p>
+      </div>
+
+      <div style="background-color: #f3f4f6; padding: 15px; border-radius: 8px; margin: 15px 0;">
+        <p style="margin: 5px 0;"><strong>Reference Code:</strong> ${refCode}</p>
+        <p style="margin: 5px 0;"><strong>Date & Time:</strong> ${date} at ${time}</p>
+        <p style="margin: 5px 0;"><strong>Route:</strong> ${pickup} ➔ ${dropoff}</p>
+      </div>
+
+      <div style="background-color: #eff6ff; padding: 20px; border-radius: 8px; border-left: 4px solid #2563eb; margin: 20px 0;">
+        <h3 style="color: #1e40af; margin-top: 0;">📋 How Our Booking Works:</h3>
+        <ol style="margin: 0; padding-left: 20px; color: #4b5563; line-height: 1.8;">
+          <li><strong style="color: #2563eb;">Submit Request:</strong> Completed ✓</li>
+          <li><strong style="color: #7c3aed;">Receive Quote:</strong> Completed ✓ (You're here!)</li>
+          <li><strong style="color: #059669;">Confirm Booking:</strong> Click the button below to accept the price and finalize your ride.</li>
+          <li><strong style="color: #d97706;">Enjoy Your Ride:</strong> We'll pick you up on time!</li>
+        </ol>
+      </div>
+
+      <div style="text-align: center; margin: 30px 0;">
+        <a href="https://hkjlogisticsltdtt.vercel.app/confirm.html?code=${refCode}" 
+           style="display: inline-block; padding: 15px 40px; background: #22c55e; color: white; text-decoration: none; border-radius: 8px; font-weight: bold; font-size: 1.1em;">
+          ✅ CONFIRM BOOKING & ACCEPT PRICE
+        </a>
+      </div>
+
+      <p style="margin-top: 20px; padding-top: 20px; border-top: 2px solid #e5e7eb;">
+        Thank you,<br>
+        <strong>Hayden Joseph</strong><br>
+        Managing Director, HKJ Logistics Ltd<br>
+         +1 (868) 780-0300
+      </p>
+    </div>
+  `;
+  
+  try {
+    Logger.log('Sending price quote email via MailApp...');
+    MailApp.sendEmail({ to: email, subject: subject, htmlBody: htmlBody });
+    Logger.log('✅ Price quote email sent successfully to: ' + email);
+  } catch (emailError) {
+    Logger.log('❌ FAILED to send price quote email: ' + emailError.toString());
+    Logger.log('Error stack: ' + emailError.stack);
+    throw new Error('Failed to send email: ' + emailError.toString());
+  }
+}
+
+/**
+ * Sends an alert email to the Admin when a client confirms or declines a booking.
+ * Includes a Google Calendar link for manual addition (only for confirmed bookings).
+ * Includes surcharge and waiting time breakdown.
+ * 
+ * @param {Array} rowData - The array of data for the booking row.
+ * @param {string} status - The new status (Confirmed, Completed, or Cancelled).
+ */
+function sendAdminStatusUpdateEmail(rowData, status) {
+  const refCode = rowData[2];
+  const clientName = rowData[3];
+  const phone = rowData[4];
+  const pickup = rowData[5];
+  const dropoff = rowData[6];
+  const price = rowData[10] || 'TBD';
+  const date = rowData[0] instanceof Date ? Utilities.formatDate(rowData[0], Session.getScriptTimeZone(), "yyyy-MM-dd") : rowData[0];
+  const time = rowData[1];
+  const surchargeType = rowData[14] || 'none';
+  const waitingMins = parseInt(rowData[15]) || 0;
+  const surchargeAmount = price !== 'TBD' ? calculateSurcharge(price, surchargeType) : 0;
+  const waitingFee = price !== 'TBD' ? calculateWaitingTime(waitingMins) : 0;
+  const totalPrice = price !== 'TBD' ? (parseFloat(price) + surchargeAmount + waitingFee) : 'TBD';
+  const usdPrice = price !== 'TBD' ? Math.round(parseFloat(price) / EXCHANGE_RATE) : 'N/A';
+  const totalUSD = totalPrice !== 'TBD' ? Math.round(totalPrice / EXCHANGE_RATE) : 'N/A';
+  
+  const isConfirmed = (status === 'Confirmed' || status === 'Completed');
+  const subject = `🔔 Booking Update: ${status} - ${refCode}`;
+  const color = isConfirmed ? '#22c55e' : '#ef4444';
+  const icon = isConfirmed ? '✅' : '❌';
+  const actionWord = isConfirmed ? 'confirmed' : 'declined/cancelled';
+  
+  // Create Google Calendar link (only for confirmed bookings)
+  let calendarLink = '';
+  if (isConfirmed) {
+    // Format time for Google Calendar (YYYYMMDDTHHMMSS)
+    const dateTimeStr = date.replace(/-/g, '') + 'T' + time.toString().replace(':', '').substring(0, 4) + '00';
+    const endTimeStr = date.replace(/-/g, '') + 'T' + (parseInt(time.toString().split(':')[0]) + 1).toString().padStart(2, '0') + time.toString().split(':')[1] + '00';
+    
+    const calendarText = encodeURIComponent(`HKJ Logistics: ${clientName} (${refCode})`);
+    const calendarDetails = encodeURIComponent(`Pickup: ${pickup}\nDrop-off: ${dropoff}\nPhone: ${phone}\nPrice: $${totalPrice} TTD ($${totalUSD} USD)\n\nReference: ${refCode}`);
+    const calendarLocation = encodeURIComponent(pickup);
+    
+    calendarLink = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${calendarText}&dates=${dateTimeStr}/${endTimeStr}&details=${calendarDetails}&location=${calendarLocation}&sf=true&output=xml`;
+  }
+  
+  let breakdownHTML = '';
+  if (surchargeAmount > 0) {
+    breakdownHTML += `<p style="margin: 5px 0; color: #ea580c;"><strong>Surcharge:</strong> +$${surchargeAmount} TTD (${getSurchargeLabel(surchargeType)})</p>`;
+  }
+  if (waitingFee > 0) {
+    breakdownHTML += `<p style="margin: 5px 0; color: #6b21a8;"><strong>Waiting Time (${waitingMins} min):</strong> +$${waitingFee} TTD</p>`;
+  }
+  
+  const htmlBody = `
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e5e7eb; border-radius: 10px;">
+      <h2 style="color: ${color}; border-bottom: 2px solid ${color}; padding-bottom: 10px;">${icon} Client has ${actionWord} their booking!</h2>
+      <p>Hello Hayden,</p>
+      <p><strong>${clientName}</strong> has just updated their booking status to <strong>${status}</strong> via the website.</p>
+      
+      <div style="background-color: #f3f4f6; padding: 15px; border-radius: 8px; margin: 15px 0;">
+        <p style="margin: 5px 0;"><strong>Reference Code:</strong> ${refCode}</p>
+        <p style="margin: 5px 0;"><strong>Client Phone:</strong> <a href="tel:${phone}">${phone}</a></p>
+        <p style="margin: 5px 0;"><strong>Route:</strong> ${pickup} ➔ ${dropoff}</p>
+        <p style="margin: 5px 0;"><strong>Date & Time:</strong> ${date} at ${time}</p>
+        <p style="margin: 5px 0;"><strong>Final Price:</strong> $${totalPrice} TTD ($${totalUSD} USD)</p>
+        ${breakdownHTML}
+      </div>
+      
+      ${isConfirmed ? `
+        <div style="background-color: #f0fdf4; padding: 15px; border-radius: 8px; margin: 15px 0; border: 2px solid #22c55e;">
+          <h3 style="color: #15803d; margin-top: 0; font-size: 16px;">📅 Add to Google Calendar</h3>
+          <p style="margin: 10px 0; color: #166534;">Click the button below to manually add this booking to your Google Calendar:</p>
+          <div style="text-align: center; margin: 15px 0;">
+            <a href="${calendarLink}" target="_blank" style="display: inline-block; padding: 12px 30px; background-color: #4285f4; color: white; text-decoration: none; border-radius: 6px; font-weight: bold; font-size: 14px;">
+               Add to Google Calendar
+            </a>
+          </div>
+        </div>
+      ` : '<p style="color: #dc2626;">✗ Please remove from schedule if necessary.</p>'}
+      
+      <p style="margin-top: 20px; padding-top: 20px; border-top: 2px solid #e5e7eb; font-size: 12px; color: #6b7280;">
+        HKJ Logistics Automated System
+      </p>
+    </div>
+  `;
+  
+  try {
+    MailApp.sendEmail({ to: ADMIN_EMAIL, subject: subject, htmlBody: htmlBody });
+    Logger.log('✅ Admin status update email sent for ' + refCode);
+  } catch (e) {
+    Logger.log('❌ Failed to send admin status email: ' + e.toString());
+  }
+}
+
+// =====================================================================
+// 9. MANUAL MENU FUNCTIONS
+// =====================================================================
+
+/**
+ * Manually sends a price quote email from the spreadsheet menu.
+ */
+function sendPriceEmail() {
+  var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
+  var row = sheet.getActiveCell().getRow();
+  if (row < 2) { SpreadsheetApp.getUi().alert('Please select a booking row first.'); return; }
+  
+  var price = sheet.getRange(row, 11).getValue();
+  var email = sheet.getRange(row, 13).getValue();
+  
+  if (!price) { SpreadsheetApp.getUi().alert('Please add price to Column K first.'); return; }
+  if (!email) { SpreadsheetApp.getUi().alert('No email address for this client.'); return; }
+  
+  var rowData = sheet.getRange(row, 1, 1, 16).getValues()[0];
+  sendAdminPriceQuoteEmail(rowData, row, price);
+  sheet.getRange(row, 10).setValue('Price Sent');
+  SpreadsheetApp.getUi().alert('✅ Price email sent successfully!');
+}
+
+/**
+ * Manually opens a WhatsApp window with a pre-filled price quote message.
+ * Includes surcharge and waiting time breakdown.
+ */
+function sendWhatsApp() {
+  var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
+  var row = sheet.getActiveCell().getRow();
+  if (row < 2) { SpreadsheetApp.getUi().alert('Please select a booking row first.'); return; }
+  
+  var rowData = sheet.getRange(row, 1, 1, 16).getValues()[0];
+  var phone = rowData[4];
+  var refCode = rowData[2];
+  var clientName = rowData[3];
+  var price = rowData[10];
+  var pickup = rowData[5];
+  var dropoff = rowData[6];
+  var date = rowData[0] instanceof Date ? Utilities.formatDate(rowData[0], Session.getScriptTimeZone(), "MMMM d, yyyy") : rowData[0];
+  var time = rowData[1];
+  var surchargeType = rowData[14] || 'none';
+  var waitingMins = parseInt(rowData[15]) || 0;
+  var surchargeAmount = calculateSurcharge(price, surchargeType);
+  var waitingFee = calculateWaitingTime(waitingMins);
+  var totalPrice = parseFloat(price) + surchargeAmount + waitingFee;
+  var usdPrice = Math.round(parseFloat(price) / EXCHANGE_RATE);
+  var totalUSD = Math.round(totalPrice / EXCHANGE_RATE);
+  
+  if (!phone) { SpreadsheetApp.getUi().alert('No phone number found.'); return; }
+  if (!price) { SpreadsheetApp.getUi().alert('Please enter a price in Column K (FARES) first!'); return; }
+  
+  var cleanPhone = phone.toString().replace(/\D/g, '');
+  
+  var message = `Hello ${clientName},\n\n`;
+  message += `Your HKJ Logistics booking ${refCode} is ready for review!\n`;
+  message += `📅 Date: ${date} at ${time}\n`;
+  message += `📍 Pickup: ${pickup}\n`;
+  message += `🏁 Drop-off: ${dropoff}\n`;
+  message += `💰 Base Price: $${price} TTD ($
