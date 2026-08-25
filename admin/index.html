@@ -1,4 +1,280 @@
-<script>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard - HKJ Logistics</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    * { font-family: 'Inter', sans-serif; box-sizing: border-box; }
+    body {
+      background: linear-gradient(135deg, rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.5)),
+                  url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=1920&q=80') !important;
+      background-size: cover !important; background-position: center !important;
+      background-attachment: fixed !important; background-repeat: no-repeat !important;
+      min-height: 100vh !important; margin: 0; padding: 0;
+    }
+    .status-pending { background: linear-gradient(135deg, #fef3c7, #fde68a); color: #92400e; }
+    .status-confirmed { background: linear-gradient(135deg, #dbeafe, #bfdbfe); color: #1e40af; }
+    .status-completed { background: linear-gradient(135deg, #dcfce7, #bbf7d0); color: #166534; }
+    .status-cancelled { background: linear-gradient(135deg, #fee2e2, #fecaca); color: #991b1b; }
+    .status-price-sent { background: linear-gradient(135deg, #f3e8ff, #e9d5ff); color: #6b21a8; }
+    .card-hover { transition: all 0.3s ease; overflow: visible !important; }
+    .card-hover:hover { transform: translateY(-5px); box-shadow: 0 20px 40px rgba(0,0,0,0.15); }
+    .login-screen {
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: linear-gradient(135deg, rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.6));
+      backdrop-filter: blur(10px); display: flex; align-items: center; justify-content: center;
+      z-index: 9999; animation: fadeIn 0.5s ease;
+    }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+    .login-card { animation: slideUp 0.6s ease; }
+    .glass-card {
+      background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+    }
+    .gradient-border { position: relative; }
+    .gradient-border::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px;
+      background: linear-gradient(90deg, #facc15, #f59e0b, #facc15); border-radius: 12px 12px 0 0;
+    }
+    .btn-gradient {
+      background: linear-gradient(135deg, #facc15, #f59e0b); transition: all 0.3s ease;
+    }
+    .btn-gradient:hover {
+      background: linear-gradient(135deg, #f59e0b, #d97706);
+      transform: translateY(-2px); box-shadow: 0 10px 20px rgba(245, 158, 11, 0.3);
+    }
+    .input-focus:focus {
+      border-color: #facc15; box-shadow: 0 0 0 3px rgba(250, 204, 21, 0.2);
+    }
+    .header-gradient {
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.98), rgba(255, 255, 255, 0.95));
+      backdrop-filter: blur(20px);
+    }
+    .price-dropdown { position: relative; display: inline-block; z-index: 100; }
+    .price-dropdown-content {
+      display: none; position: absolute; top: 100%; right: 0; margin-top: 0.5rem;
+      background: white; border-radius: 0.5rem; box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+      z-index: 99999; min-width: 140px; overflow: visible; border: 1px solid #e5e7eb;
+      max-height: 400px; overflow-y: auto;
+    }
+    .price-dropdown-content.show { display: block; animation: slideDown 0.2s ease; }
+    @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+    .price-option {
+      padding: 0.5rem 0.75rem; cursor: pointer; transition: all 0.2s ease;
+      font-weight: 600; font-size: 0.875rem; color: #374151;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .price-option:hover { background: linear-gradient(135deg, #fef3c7, #fde68a); color: #92400e; }
+    .auto-price-badge {
+      background: linear-gradient(135deg, #10b981, #059669); color: white;
+      font-size: 0.65rem; padding: 0.25rem 0.5rem; border-radius: 0.375rem;
+      font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;
+      cursor: pointer; transition: all 0.2s ease;
+    }
+    .auto-price-badge:hover { transform: scale(1.05); box-shadow: 0 4px 8px rgba(16, 185, 129, 0.3); }
+    .auto-price-badge:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+    @keyframes priceFlash {
+      0% { background-color: #d1fae5; border-color: #10b981; }
+      100% { background-color: white; border-color: #e5e7eb; }
+    }
+    .price-flash { animation: priceFlash 1s ease; }
+    .modal-overlay {
+      position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0, 0, 0, 0.7); backdrop-filter: blur(5px);
+      z-index: 1000; display: none; align-items: center; justify-content: center;
+      padding: 20px; overflow-y: auto;
+    }
+    .modal-overlay.active { display: flex; }
+    .modal-content {
+      background: white; border-radius: 1.5rem; padding: 2rem;
+      max-width: 800px; width: 100%; max-height: 90vh; overflow-y: auto;
+      animation: slideUp 0.3s ease;
+    }
+    .currency-display {
+      background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(6, 182, 212, 0.1));
+      border: 2px solid rgba(59, 130, 246, 0.3);
+    }
+    .surcharge-display {
+      background: linear-gradient(135deg, rgba(249, 115, 22, 0.1), rgba(234, 88, 12, 0.1));
+      border: 2px solid rgba(249, 115, 22, 0.3);
+    }
+  </style>
+</head>
+<body class="p-6">
+
+  <!-- Login Screen -->
+  <div id="loginScreen" class="login-screen">
+    <div class="login-card glass-card rounded-2xl shadow-2xl p-8 max-w-md w-full mx-4 gradient-border">
+      <div class="text-center mb-8">
+        <div class="w-24 h-24 bg-gradient-to-br from-yellow-400 to-yellow-500 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg">
+          <i class="fas fa-user-shield text-black text-4xl"></i>
+        </div>
+        <h1 class="text-4xl font-bold text-gray-800 mb-2">HKJ <span class="text-yellow-500">Logistics</span></h1>
+        <p class="text-gray-600 text-sm font-medium">Admin Dashboard</p>
+        <div class="w-16 h-1 bg-gradient-to-r from-yellow-400 to-yellow-500 mx-auto mt-4 rounded-full"></div>
+      </div>
+      <div class="mb-6">
+        <label class="block text-gray-700 text-sm font-semibold mb-2">
+          <i class="fas fa-lock text-yellow-500 mr-2"></i>Enter Password
+        </label>
+        <input type="password" id="passwordInput" 
+          class="w-full p-4 border-2 border-gray-200 rounded-xl focus:outline-none input-focus transition text-lg bg-gray-50"
+          placeholder="Enter admin password"
+          onkeypress="if(event.key === 'Enter') checkPassword()">
+      </div>
+      <button onclick="checkPassword()" class="w-full btn-gradient text-black font-bold py-4 rounded-xl shadow-lg text-lg">
+        <i class="fas fa-sign-in-alt mr-2"></i> Login
+      </button>
+      <p id="loginError" class="text-red-500 text-center mt-4 hidden font-medium">
+        <i class="fas fa-exclamation-circle mr-2"></i>Incorrect password!
+      </p>
+      <div class="mt-6 pt-6 border-t border-gray-200 text-center">
+        <p class="text-xs text-gray-500"><i class="fas fa-shield-alt text-yellow-500 mr-1"></i>Secure Admin Access</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Admin Dashboard -->
+  <div id="adminDashboard" class="hidden max-w-7xl mx-auto">
+    <div class="header-gradient rounded-2xl shadow-lg p-6 mb-6 flex justify-between items-center gradient-border">
+      <div class="flex items-center">
+        <div class="w-14 h-14 bg-gradient-to-br from-yellow-400 to-yellow-500 rounded-full flex items-center justify-center mr-4 shadow-lg">
+          <i class="fas fa-truck text-black text-2xl"></i>
+        </div>
+        <div>
+          <h1 class="text-3xl font-bold text-gray-800">HKJ <span class="text-yellow-500">Logistics</span> Admin</h1>
+          <p class="text-gray-600 text-sm font-medium">Manage bookings and communicate with clients</p>
+        </div>
+      </div>
+      <div class="flex gap-3">
+        <button onclick="generateReport()" class="bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white px-6 py-3 rounded-xl font-bold transition shadow-lg flex items-center">
+          <i class="fas fa-chart-bar mr-2"></i> Report
+        </button>
+        <button onclick="fetchBookings()" class="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white px-6 py-3 rounded-xl font-bold transition shadow-lg flex items-center">
+          <i class="fas fa-sync-alt mr-2"></i> Refresh
+        </button>
+        <button onclick="logout()" class="bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white px-6 py-3 rounded-xl font-bold transition shadow-lg flex items-center">
+          <i class="fas fa-sign-out-alt mr-2"></i> Logout
+        </button>
+      </div>
+    </div>
+
+    <div id="loading" class="text-center py-20">
+      <div class="inline-block animate-spin rounded-full h-16 w-16 border-4 border-yellow-400 border-t-transparent"></div>
+      <p class="mt-6 text-white text-lg font-semibold">Loading bookings...</p>
+    </div>
+
+    <div id="bookingsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 hidden"></div>
+  </div>
+
+  <!-- Edit Modal -->
+  <div id="editModal" class="modal-overlay">
+    <div class="modal-content">
+      <div class="flex justify-between items-center mb-6 pb-4 border-b-2 border-gray-200">
+        <h2 class="text-2xl font-bold text-gray-800"><i class="fas fa-edit text-purple-600 mr-2"></i>Edit Booking</h2>
+        <button onclick="closeEditModal()" class="text-gray-500 hover:text-gray-700 text-2xl"><i class="fas fa-times"></i></button>
+      </div>
+      <form id="editForm" class="space-y-4">
+        <input type="hidden" id="editRowNumber">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-bold text-gray-700 mb-1">Reference Code</label>
+            <input type="text" id="editRefCode" class="w-full p-3 border-2 border-gray-200 rounded-lg bg-gray-100" readonly>
+          </div>
+          <div>
+            <label class="block text-sm font-bold text-gray-700 mb-1">Status</label>
+            <select id="editStatus" class="w-full p-3 border-2 border-gray-200 rounded-lg focus:border-purple-500 focus:outline-none">
+              <option value="Pending">Pending</option>
+              <option value="Price Sent">Price Sent</option>
+              <option value="Confirmed">Confirmed</option>
+              <option value="Completed">Completed</option>
+              <option value="Cancelled">Cancelled</option>
+            </select>
+          </div>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-bold text-gray-700 mb-1">Client Name *</label>
+            <input type="text" id="editName" required class="w-full p-3 border-2 border-gray-200 rounded-lg focus:border-purple-500 focus:outline-none">
+          </div>
+          <div>
+            <label class="block text-sm font-bold text-gray-700 mb-1">Phone *</label>
+            <input type="tel" id="editPhone" required class="w-full p-3 border-2 border-gray-200 rounded-lg focus:border-purple-500 focus:outline-none">
+          </div>
+        </div>
+        <div>
+          <label class="block text-sm font-bold text-gray-700 mb-1">Email</label>
+          <input type="email" id="editEmail" class="w-full p-3 border-2 border-gray-200 rounded-lg focus:border-purple-500 focus:outline-none">
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-bold text-gray-700 mb-1">Date *</label>
+            <input type="date" id="editDate" required class="w-full p-3 border-2 border-gray-200 rounded-lg focus:border-purple-500 focus:outline-none">
+          </div>
+          <div>
+            <label class="block text-sm font-bold text-gray-700 mb-1">Time *</label>
+            <input type="time" id="editTime" required class="w-full p-3 border-2 border-gray-200 rounded-lg focus:border-purple-500 focus:outline-none">
+          </div>
+        </div>
+        <div>
+          <label class="block text-sm font-bold text-gray-700 mb-1">Pickup Location *</label>
+          <input type="text" id="editPickup" required class="w-full p-3 border-2 border-gray-200 rounded-lg focus:border-purple-500 focus:outline-none">
+        </div>
+        <div>
+          <label class="block text-sm font-bold text-gray-700 mb-1">Drop-off Location *</label>
+          <input type="text" id="editDropoff" required class="w-full p-3 border-2 border-gray-200 rounded-lg focus:border-purple-500 focus:outline-none">
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-bold text-gray-700 mb-1">Vehicle Type *</label>
+            <select id="editVehicle" required class="w-full p-3 border-2 border-gray-200 rounded-lg focus:border-purple-500 focus:outline-none">
+              <option value="Standard Sedan (1-4 Passengers)">Standard Sedan (1-4 Passengers)</option>
+              <option value="SUV (5-7 Passengers)">SUV (5-7 Passengers)</option>
+              <option value="Van (8-12 Passengers)">Van (8-12 Passengers)</option>
+              <option value="Luxury Vehicle">Luxury Vehicle</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-sm font-bold text-gray-700 mb-1">Service Type *</label>
+            <select id="editService" required class="w-full p-3 border-2 border-gray-200 rounded-lg focus:border-purple-500 focus:outline-none">
+              <option value="private">Private Transfer</option>
+              <option value="shared">Shared Transfer</option>
+              <option value="hourly">Hourly Service</option>
+            </select>
+          </div>
+        </div>
+        <div>
+          <label class="block text-sm font-bold text-gray-700 mb-1">Final Price (TTD)</label>
+          <input type="number" id="editPrice" step="0.01" class="w-full p-3 border-2 border-gray-200 rounded-lg focus:border-purple-500 focus:outline-none">
+        </div>
+        <div>
+          <label class="block text-sm font-bold text-gray-700 mb-1">Payment Method</label>
+          <select id="editPayment" class="w-full p-3 border-2 border-gray-200 rounded-lg focus:border-purple-500 focus:outline-none">
+            <option value="">Select...</option>
+            <option value="Credit Card / Linx">Credit Card / Linx</option>
+            <option value="Online (WiPay)">Online (WiPay)</option>
+            <option value="Cash">Cash</option>
+            <option value="Online Transfer">Online Transfer</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-sm font-bold text-gray-700 mb-1">Notes</label>
+          <textarea id="editNotes" rows="3" class="w-full p-3 border-2 border-gray-200 rounded-lg focus:border-purple-500 focus:outline-none"></textarea>
+        </div>
+        <div class="flex gap-3 pt-4">
+          <button type="button" onclick="closeEditModal()" class="flex-1 bg-gray-300 hover:bg-gray-400 text-gray-700 font-bold py-3 rounded-xl transition">Cancel</button>
+          <button type="submit" class="flex-1 bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white font-bold py-3 rounded-xl transition shadow-lg"><i class="fas fa-save mr-2"></i>Save Changes</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
     const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw1Fji0W9KckebjpfTcMLLtRNdf8fVMT_yQ_3PPrwg6kBZxsK8C-12TB-bAeCLY2ckwcg/exec';
     const ADMIN_PASSWORD = 'hkj5762';
     let allBookings = [];
@@ -32,15 +308,12 @@
       location.reload();
     }
 
-    // Currency conversion: 1 USD = 6.80 TTD (ROUNDED to nearest whole dollar)
     function convertTTDtoUSD(ttdAmount) {
       return Math.round(parseFloat(ttdAmount) / 6.80);
     }
 
-    // Surcharge calculation
     function calculateSurcharge(basePrice, surchargeType) {
       if (!surchargeType || surchargeType === 'none') return 0;
-      
       const base = parseFloat(basePrice) || 0;
       switch(surchargeType) {
         case 'peak': return 50;
@@ -62,119 +335,73 @@
     }
 
     function autoSavePrice(row, price) {
-      if (saveTimeout) {
-        clearTimeout(saveTimeout);
-      }
-      
-      const priceInput = document.getElementById(`price-${row}`);
-      if (priceInput) {
-        priceInput.style.borderColor = '#fbbf24';
-      }
-      
-      saveTimeout = setTimeout(() => {
+      if (saveTimeout) clearTimeout(saveTimeout);
+      const priceInput = document.getElementById('price-' + row);
+      if (priceInput) priceInput.style.borderColor = '#fbbf24';
+      saveTimeout = setTimeout(function() {
         fetch(APPS_SCRIPT_URL, {
           method: 'POST',
-          body: new URLSearchParams({
-            action: 'updatePrice',
-            row: row,
-            price: price
-          })
+          body: new URLSearchParams({ action: 'updatePrice', row: row, price: price })
         })
-        .then(response => response.json())
-        .then(data => {
-          if (data.success) {
-            if (priceInput) {
-              priceInput.style.borderColor = '#10b981';
-              setTimeout(() => {
-                priceInput.style.borderColor = '#e5e7eb';
-              }, 2000);
-            }
-            console.log('Price saved:', price);
+        .then(function(response) { return response.json(); })
+        .then(function(data) {
+          if (data.success && priceInput) {
+            priceInput.style.borderColor = '#10b981';
+            setTimeout(function() { priceInput.style.borderColor = '#e5e7eb'; }, 2000);
           }
         })
-        .catch(error => {
+        .catch(function(error) {
           console.error('Error saving price:', error);
-          if (priceInput) {
-            priceInput.style.borderColor = '#ef4444';
-          }
+          if (priceInput) priceInput.style.borderColor = '#ef4444';
         });
       }, 1000);
     }
 
-    // NEW: Update surcharge locally first, then save to server
     function updateSurcharge(row) {
-      const surchargeSelect = document.getElementById(`surcharge-${row}`);
+      const surchargeSelect = document.getElementById('surcharge-' + row);
+      if (!surchargeSelect) return;
       const surchargeType = surchargeSelect.value;
-      
-      // Get current price
-      const priceInput = document.getElementById(`price-${row}`);
-      const price = parseFloat(priceInput.value) || 0;
-      
-      // Calculate surcharge locally
+      const priceInput = document.getElementById('price-' + row);
+      const price = parseFloat(priceInput ? priceInput.value : 0) || 0;
       const surchargeAmount = calculateSurcharge(price, surchargeType);
       const totalPrice = price + surchargeAmount;
       const totalUSD = convertTTDtoUSD(totalPrice);
       
-      // Update the display immediately
-      const surchargeDisplay = document.getElementById(`surchargeDisplay-${row}`);
-      const totalDisplay = document.getElementById(`totalDisplay-${row}`);
-      
-      if (surchargeAmount > 0) {
-        if (surchargeDisplay) {
-          surchargeDisplay.innerHTML = `
-            <div class="surcharge-display p-3 rounded-lg mt-2 text-center">
-              <p class="text-sm text-orange-600 mb-1">Surcharge Applied</p>
-              <p class="text-lg font-bold text-orange-700">+$${surchargeAmount} TTD (${getSurchargeLabel(surchargeType)})</p>
-            </div>
-            <div class="bg-gradient-to-r from-green-100 to-emerald-100 p-3 rounded-lg mt-2 text-center border-2 border-green-300">
-              <p class="text-sm text-green-700 mb-1 font-bold">TOTAL FINAL PRICE</p>
-              <p class="text-2xl font-bold text-green-800">$${totalPrice.toFixed(2)} TTD ($${totalUSD} USD)</p>
-            </div>
-          `;
-        }
-      } else {
-        if (surchargeDisplay) {
+      const surchargeDisplay = document.getElementById('surchargeDisplay-' + row);
+      if (surchargeDisplay) {
+        if (surchargeAmount > 0) {
+          surchargeDisplay.innerHTML = '<div class="surcharge-display p-3 rounded-lg mt-2 text-center">' +
+            '<p class="text-sm text-orange-600 mb-1">Surcharge Applied</p>' +
+            '<p class="text-lg font-bold text-orange-700">+$' + surchargeAmount + ' TTD (' + getSurchargeLabel(surchargeType) + ')</p></div>' +
+            '<div class="bg-gradient-to-r from-green-100 to-emerald-100 p-3 rounded-lg mt-2 text-center border-2 border-green-300">' +
+            '<p class="text-sm text-green-700 mb-1 font-bold">TOTAL FINAL PRICE</p>' +
+            '<p class="text-2xl font-bold text-green-800">$' + totalPrice.toFixed(2) + ' TTD ($' + totalUSD + ' USD)</p></div>';
+        } else {
           surchargeDisplay.innerHTML = '';
         }
       }
       
-      // Save to server in background (don't refresh page)
-      if (surchargeSaveTimeout) {
-        clearTimeout(surchargeSaveTimeout);
-      }
-      
-      surchargeSaveTimeout = setTimeout(() => {
+      if (surchargeSaveTimeout) clearTimeout(surchargeSaveTimeout);
+      surchargeSaveTimeout = setTimeout(function() {
         fetch(APPS_SCRIPT_URL, {
           method: 'POST',
-          body: new URLSearchParams({
-            action: 'updateSurcharge',
-            row: row,
-            surcharge: surchargeType
-          })
+          body: new URLSearchParams({ action: 'updateSurcharge', row: row, surcharge: surchargeType })
         })
-        .then(response => response.json())
-        .then(data => {
-          if (data.success) {
-            console.log('Surcharge saved:', surchargeType);
-            // Show brief success indicator
+        .then(function(response) { return response.json(); })
+        .then(function(data) {
+          if (data.success && surchargeSelect) {
             surchargeSelect.style.borderColor = '#10b981';
-            setTimeout(() => {
-              surchargeSelect.style.borderColor = '#fdba74';
-            }, 2000);
+            setTimeout(function() { surchargeSelect.style.borderColor = '#fdba74'; }, 2000);
           }
         })
-        .catch(error => {
+        .catch(function(error) {
           console.error('Error saving surcharge:', error);
-          surchargeSelect.style.borderColor = '#ef4444';
+          if (surchargeSelect) surchargeSelect.style.borderColor = '#ef4444';
         });
       }, 500);
     }
 
-    // ==========================================
-    // EXPANDED PRESET ROUTES (ALL COMMON TRINIDAD ROUTES)
-    // ==========================================
     const PRESET_ROUTES = {
-      // Airport Routes
       'piarco-port of spain': { km: 20, price: 150 },
       'piarco-pos': { km: 20, price: 150 },
       'piarco-san fernando': { km: 60, price: 350 },
@@ -209,8 +436,6 @@
       'piarco-rio claro': { km: 75, price: 425 },
       'piarco-scarborough': { km: 100, price: 550 },
       'piarco-tobago': { km: 100, price: 550 },
-      
-      // Port of Spain Routes
       'port of spain-san fernando': { km: 20, price: 175 },
       'pos-san fernando': { km: 20, price: 175 },
       'port of spain-chaguanas': { km: 20, price: 150 },
@@ -271,8 +496,6 @@
       'pos-rio claro': { km: 65, price: 375 },
       'port of spain-scarborough': { km: 90, price: 500 },
       'pos-tobago': { km: 90, price: 500 },
-      
-      // San Fernando Routes
       'san fernando-chaguanas': { km: 15, price: 125 },
       'san fernando-grand bazaar': { km: 15, price: 125 },
       'san fernando-arima': { km: 40, price: 250 },
@@ -304,8 +527,6 @@
       'san fernando-rio claro': { km: 35, price: 225 },
       'san fernando-scarborough': { km: 80, price: 450 },
       'san fernando-tobago': { km: 80, price: 450 },
-      
-      // Chaguanas/Grand Bazaar Routes
       'chaguanas-arima': { km: 30, price: 200 },
       'grand bazaar-arima': { km: 30, price: 200 },
       'chaguanas-couva': { km: 10, price: 100 },
@@ -358,8 +579,6 @@
       'grand bazaar-rio claro': { km: 45, price: 275 },
       'chaguanas-scarborough': { km: 70, price: 400 },
       'grand bazaar-tobago': { km: 70, price: 400 },
-      
-      // C3 Centre Routes
       'c3 centre-piarco': { km: 60, price: 350 },
       'c3 centre-port of spain': { km: 20, price: 175 },
       'c3 centre-pos': { km: 20, price: 175 },
@@ -392,8 +611,6 @@
       'c3 centre-rio claro': { km: 35, price: 225 },
       'c3 centre-scarborough': { km: 80, price: 450 },
       'c3 centre-tobago': { km: 80, price: 450 },
-      
-      // Trincity Mall Routes
       'trincity mall-piarco': { km: 10, price: 100 },
       'trincity mall-port of spain': { km: 20, price: 150 },
       'trincity mall-pos': { km: 20, price: 150 },
@@ -428,8 +645,6 @@
       'trincity mall-rio claro': { km: 55, price: 325 },
       'trincity mall-scarborough': { km: 80, price: 450 },
       'trincity mall-tobago': { km: 80, price: 450 },
-      
-      // Long Circular Mall / Maraval Routes
       'long circular mall-piarco': { km: 25, price: 175 },
       'long circular mall-port of spain': { km: 5, price: 75 },
       'long circular mall-pos': { km: 5, price: 75 },
@@ -463,8 +678,6 @@
       'long circular mall-rio claro': { km: 70, price: 400 },
       'long circular mall-scarborough': { km: 95, price: 525 },
       'long circular mall-tobago': { km: 95, price: 525 },
-      
-      // St. James / MovieTowne Routes
       'st james-piarco': { km: 25, price: 175 },
       'movie towne-piarco': { km: 25, price: 175 },
       'st james-san fernando': { km: 25, price: 200 },
@@ -523,8 +736,6 @@
       'movie towne-rio claro': { km: 70, price: 400 },
       'st james-scarborough': { km: 95, price: 525 },
       'movie towne-tobago': { km: 95, price: 525 },
-      
-      // Arima Routes
       'arima-couva': { km: 35, price: 225 },
       'arima-trincity': { km: 20, price: 150 },
       'arima-maraval': { km: 30, price: 200 },
@@ -553,8 +764,6 @@
       'arima-rio claro': { km: 40, price: 250 },
       'arima-scarborough': { km: 90, price: 500 },
       'arima-tobago': { km: 90, price: 500 },
-      
-      // Couva Routes
       'couva-trincity': { km: 25, price: 175 },
       'couva-maraval': { km: 35, price: 225 },
       'couva-long circular': { km: 35, price: 225 },
@@ -582,8 +791,6 @@
       'couva-rio claro': { km: 50, price: 300 },
       'couva-scarborough': { km: 75, price: 425 },
       'couva-tobago': { km: 75, price: 425 },
-      
-      // Point Fortin / La Brea / Siparia / Penal / Princes Town Routes (Southern)
       'point fortin-la brea': { km: 10, price: 100 },
       'point fortin-siparia': { km: 15, price: 125 },
       'point fortin-penal': { km: 20, price: 150 },
@@ -594,7 +801,6 @@
       'point fortin-rio claro': { km: 45, price: 275 },
       'point fortin-scarborough': { km: 100, price: 550 },
       'point fortin-tobago': { km: 100, price: 550 },
-      
       'la brea-siparia': { km: 10, price: 100 },
       'la brea-penal': { km: 15, price: 125 },
       'la brea-princes town': { km: 20, price: 150 },
@@ -604,7 +810,6 @@
       'la brea-rio claro': { km: 40, price: 250 },
       'la brea-scarborough': { km: 95, price: 525 },
       'la brea-tobago': { km: 95, price: 525 },
-      
       'siparia-penal': { km: 10, price: 100 },
       'siparia-princes town': { km: 15, price: 125 },
       'siparia-sangre grande': { km: 60, price: 350 },
@@ -613,7 +818,6 @@
       'siparia-rio claro': { km: 35, price: 225 },
       'siparia-scarborough': { km: 90, price: 500 },
       'siparia-tobago': { km: 90, price: 500 },
-      
       'penal-princes town': { km: 10, price: 100 },
       'penal-sangre grande': { km: 55, price: 325 },
       'penal-toco': { km: 75, price: 425 },
@@ -621,43 +825,36 @@
       'penal-rio claro': { km: 30, price: 200 },
       'penal-scarborough': { km: 85, price: 475 },
       'penal-tobago': { km: 85, price: 475 },
-      
       'princes town-sangre grande': { km: 50, price: 300 },
       'princes town-toco': { km: 70, price: 400 },
       'princes town-mayaro': { km: 30, price: 200 },
       'princes town-rio claro': { km: 25, price: 175 },
       'princes town-scarborough': { km: 80, price: 450 },
       'princes town-tobago': { km: 80, price: 450 },
-      
-      // Eastern Routes
       'sangre grande-toco': { km: 30, price: 200 },
       'sangre grande-mayaro': { km: 40, price: 250 },
       'sangre grande-rio claro': { km: 35, price: 225 },
       'sangre grande-scarborough': { km: 80, price: 450 },
       'sangre grande-tobago': { km: 80, price: 450 },
-      
       'toco-mayaro': { km: 50, price: 300 },
       'toco-rio claro': { km: 45, price: 275 },
       'toco-scarborough': { km: 90, price: 500 },
       'toco-tobago': { km: 90, price: 500 },
-      
       'mayaro-rio claro': { km: 20, price: 150 },
       'mayaro-scarborough': { km: 70, price: 400 },
       'mayaro-tobago': { km: 70, price: 400 },
-      
       'rio claro-scarborough': { km: 65, price: 375 },
       'rio claro-tobago': { km: 65, price: 375 },
-      
-      // Tobago Routes
-      'scarborough-tobago': { km: 5, price: 50 },
+      'scarborough-tobago': { km: 5, price: 50 }
     };
 
     function getPresetPrice(pickup, dropoff) {
       const p = pickup.toLowerCase();
       const d = dropoff.toLowerCase();
-      
       for (let key in PRESET_ROUTES) {
-        const [from, to] = key.split('-');
+        const parts = key.split('-');
+        const from = parts[0];
+        const to = parts[1];
         if ((p.includes(from) && d.includes(to)) || (p.includes(to) && d.includes(from))) {
           return PRESET_ROUTES[key];
         }
@@ -666,34 +863,28 @@
     }
 
     async function calculateRealPrice(row) {
-      const btn = document.getElementById(`autoBtn-${row}`);
+      const btn = document.getElementById('autoBtn-' + row);
       const originalText = btn.innerHTML;
       btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Calculating...';
       btn.disabled = true;
-
-      const booking = allBookings.find(b => b._rowNumber === row);
+      const booking = allBookings.find(function(b) { return b._rowNumber === row; });
       if (!booking) { btn.innerHTML = originalText; btn.disabled = false; return; }
-
       const pickup = booking['PICK UP'];
       const dropoff = booking['DROP OFF'];
-
       const fullText = (pickup + ' ' + dropoff).toLowerCase();
-      
       if (fullText.includes('tobago') || fullText.includes('scarborough')) {
         applyAutoPrice(row, 500);
         btn.innerHTML = '<i class="fas fa-check mr-1"></i>AUTO $500 (Tobago)';
         btn.disabled = false;
         return;
       }
-
       const preset = getPresetPrice(pickup, dropoff);
       if (preset) {
         applyAutoPrice(row, preset.price);
-        btn.innerHTML = `<i class="fas fa-check mr-1"></i>AUTO $${preset.price} (${preset.km}km)`;
+        btn.innerHTML = '<i class="fas fa-check mr-1"></i>AUTO $' + preset.price + ' (' + preset.km + 'km)';
         btn.disabled = false;
         return;
       }
-
       alert('Could not calculate route.\n\nPlease enter price manually or use Quick Price buttons.');
       btn.innerHTML = originalText;
       btn.disabled = false;
@@ -702,11 +893,9 @@
     async function fetchBookings() {
       document.getElementById('loading').classList.remove('hidden');
       document.getElementById('bookingsGrid').classList.add('hidden');
-
       try {
         const response = await fetch(APPS_SCRIPT_URL);
         const data = await response.json();
-
         if (data.success) {
           allBookings = data.bookings;
           renderBookings(data.bookings);
@@ -725,13 +914,11 @@
     function renderBookings(bookings) {
       const grid = document.getElementById('bookingsGrid');
       grid.innerHTML = '';
-
-      bookings.reverse().forEach(booking => {
+      bookings.reverse().forEach(function(booking) {
         const row = booking._rowNumber;
         const status = (booking.STATUS || 'Pending').toLowerCase().replace(' ', '-');
         const price = booking['FINAL PRICE'] || booking['FARES'];
         const surchargeType = booking['SURCHARGE'] || 'none';
-        
         const hasRealPrice = price && price !== 0 && price !== '0' && price !== '0.00' && price !== '';
         const displayPrice = hasRealPrice ? price : '';
         const usdPrice = hasRealPrice ? convertTTDtoUSD(price) : '';
@@ -741,153 +928,77 @@
         
         const card = document.createElement('div');
         card.className = 'glass-card rounded-2xl shadow-lg p-6 border-l-4 border-yellow-400 card-hover relative';
-        card.innerHTML = `
-          <div class="flex justify-between items-start mb-4">
-            <div>
-              <h3 class="text-2xl font-bold text-gray-800">${booking['REF CODE'] || 'N/A'}</h3>
-              <p class="text-sm text-gray-600 font-medium">${booking.NAME || 'Unknown'}</p>
-            </div>
-            <span class="px-4 py-2 rounded-full text-xs font-bold uppercase status-${status} shadow-sm">
-              ${booking.STATUS || 'Pending'}
-            </span>
-          </div>
-
-          <div class="space-y-3 mb-4 text-sm">
-            <div class="flex items-center text-gray-700 bg-gray-50 p-2 rounded-lg">
-              <i class="fas fa-phone mr-3 text-blue-500"></i> 
-              <a href="tel:${booking.PHONE}" class="hover:text-blue-600 font-medium">${booking.PHONE || 'N/A'}</a>
-            </div>
-            <div class="flex items-center text-gray-700 bg-gray-50 p-2 rounded-lg">
-              <i class="fas fa-envelope mr-3 text-blue-500"></i> 
-              <a href="mailto:${booking.EMAIL}" class="hover:text-blue-600 truncate font-medium">${booking.EMAIL || 'N/A'}</a>
-            </div>
-            <div class="flex items-start bg-green-50 p-3 rounded-lg">
-              <i class="fas fa-map-marker-alt text-green-500 mt-1 mr-3"></i>
-              <div>
-                <p class="font-bold text-gray-700 text-xs uppercase mb-1">Pickup:</p>
-                <p class="text-gray-600 text-xs">${booking['PICK UP'] || 'N/A'}</p>
-              </div>
-            </div>
-            <div class="flex items-start bg-red-50 p-3 rounded-lg">
-              <i class="fas fa-flag-checkered text-red-500 mt-1 mr-3"></i>
-              <div>
-                <p class="font-bold text-gray-700 text-xs uppercase mb-1">Drop-off:</p>
-                <p class="text-gray-600 text-xs">${booking['DROP OFF'] || 'N/A'}</p>
-              </div>
-            </div>
-            <div class="flex items-center text-gray-700 bg-gray-50 p-2 rounded-lg">
-              <i class="fas fa-calendar-alt mr-3 text-purple-500"></i> 
-              <span class="font-medium">${formatDate(booking.DATE)} at ${formatTime(booking.TIME)}</span>
-            </div>
-            ${booking.NOTES ? `<div class="bg-yellow-50 p-3 rounded-lg text-yellow-800 text-xs border border-yellow-200"><i class="fas fa-sticky-note mr-2 text-yellow-600"></i> ${booking.NOTES.substring(0, 100)}${booking.NOTES.length > 100 ? '...' : ''}</div>` : ''}
-          </div>
-
-          <div class="border-t pt-4 mb-4 bg-gradient-to-r from-gray-50 to-gray-100 p-4 rounded-xl">
-            <div class="flex items-center justify-between mb-2">
-              <label class="block text-xs font-bold text-gray-600 uppercase">Final Price</label>
-              <button id="autoBtn-${row}" onclick="calculateRealPrice(${row})" class="auto-price-badge hover:opacity-80 transition cursor-pointer" title="Click to calculate price"><i class="fas fa-calculator mr-1"></i>AUTO PRICE</button>
-            </div>
-            <div class="flex items-center gap-2 mb-2">
-              <input type="number" id="price-${row}" value="${displayPrice}" placeholder="0.00" 
-                class="flex-1 p-2.5 border-2 border-gray-200 rounded-lg focus:outline-none input-focus transition font-bold text-base"
-                onchange="autoSavePrice(${row}, this.value)"
-                onkeyup="autoSavePrice(${row}, this.value)">
-              
-              <div class="price-dropdown">
-                <button onclick="togglePriceDropdown(${row})" 
-                  class="bg-gradient-to-r from-yellow-400 to-yellow-500 hover:from-yellow-500 hover:to-yellow-600 text-black font-bold py-2 px-3 rounded-lg shadow-md transition text-sm flex items-center gap-1">
-                  <i class="fas fa-tags"></i>
-                  <span class="hidden sm:inline">Quick</span>
-                  <i class="fas fa-chevron-down text-xs"></i>
-                </button>
-                
-                <div id="priceDropdown-${row}" class="price-dropdown-content">
-                  <div class="price-option" onclick="setQuickPrice(${row}, 100)"><span>$100</span><i class="fas fa-check text-green-600 opacity-0 hover:opacity-100"></i></div>
-                  <div class="price-option" onclick="setQuickPrice(${row}, 150)"><span>$150</span><i class="fas fa-check text-blue-600 opacity-0 hover:opacity-100"></i></div>
-                  <div class="price-option" onclick="setQuickPrice(${row}, 200)"><span>$200</span><i class="fas fa-check text-green-600 opacity-0 hover:opacity-100"></i></div>
-                  <div class="price-option" onclick="setQuickPrice(${row}, 250)"><span>$250</span><i class="fas fa-check text-purple-600 opacity-0 hover:opacity-100"></i></div>
-                  <div class="price-option" onclick="setQuickPrice(${row}, 300)"><span>$300</span><i class="fas fa-check text-blue-600 opacity-0 hover:opacity-100"></i></div>
-                  <div class="price-option" onclick="setQuickPrice(${row}, 350)"><span>$350</span><i class="fas fa-check text-green-600 opacity-0 hover:opacity-100"></i></div>
-                  <div class="price-option" onclick="setQuickPrice(${row}, 400)"><span>$400</span><i class="fas fa-check text-purple-600 opacity-0 hover:opacity-100"></i></div>
-                  <div class="price-option" onclick="setQuickPrice(${row}, 450)"><span>$450</span><i class="fas fa-check text-blue-600 opacity-0 hover:opacity-100"></i></div>
-                  <div class="price-option" onclick="setQuickPrice(${row}, 500)"><span>$500</span><i class="fas fa-check text-red-600 opacity-0 hover:opacity-100"></i></div>
-                  <div class="price-option" onclick="setQuickPrice(${row}, 550)"><span>$550</span><i class="fas fa-check text-purple-600 opacity-0 hover:opacity-100"></i></div>
-                </div>
-              </div>
-            </div>
-
-            ${hasRealPrice ? `
-            <div class="currency-display p-3 rounded-lg mt-2 text-center">
-              <p class="text-sm text-gray-600 mb-1">Base Price</p>
-              <p class="text-xl font-bold text-blue-600">$${parseFloat(price).toFixed(2)} TTD ($${usdPrice} USD)</p>
-            </div>
-            <div id="surchargeDisplay-${row}">
-              ${surchargeAmount > 0 ? `
-              <div class="surcharge-display p-3 rounded-lg mt-2 text-center">
-                <p class="text-sm text-orange-600 mb-1">Surcharge Applied</p>
-                <p class="text-lg font-bold text-orange-700">+$${surchargeAmount} TTD (${getSurchargeLabel(surchargeType)})</p>
-              </div>
-              <div class="bg-gradient-to-r from-green-100 to-emerald-100 p-3 rounded-lg mt-2 text-center border-2 border-green-300">
-                <p class="text-sm text-green-700 mb-1 font-bold">TOTAL FINAL PRICE</p>
-                <p class="text-2xl font-bold text-green-800">$${totalPrice.toFixed(2)} TTD ($${totalUSD} USD)</p>
-              </div>
-              ` : ''}
-            </div>
-            ` : ''}
-            
-            <!-- Surcharge Dropdown -->
-            <div class="mt-3">
-              <label class="block text-xs font-bold text-orange-600 uppercase mb-1"><i class="fas fa-clock mr-1"></i>Apply Surcharge</label>
-              <select id="surcharge-${row}" onchange="updateSurcharge(${row})" class="w-full p-2 border-2 border-orange-200 rounded-lg focus:outline-none focus:border-orange-400 transition text-sm font-medium bg-white">
-                <option value="none" ${surchargeType === 'none' ? 'selected' : ''}>No Surcharge</option>
-                <option value="peak" ${surchargeType === 'peak' ? 'selected' : ''}>Peak Hours (6-9 AM): +$50 TTD</option>
-                <option value="lateNight" ${surchargeType === 'lateNight' ? 'selected' : ''}>Late Night (10 PM-12 AM): +15%</option>
-                <option value="earlyMorning" ${surchargeType === 'earlyMorning' ? 'selected' : ''}>Early Morning (12-6 AM): +20%</option>
-                <option value="holiday" ${surchargeType === 'holiday' ? 'selected' : ''}>Public Holiday: +25%</option>
-              </select>
-            </div>
-
-            <p class="text-xs text-blue-600 font-medium mt-2"><i class="fas fa-info-circle mr-1"></i> Price auto-saves when you type</p>
-          </div>
-
-          <div class="grid grid-cols-2 gap-3 mb-3">
-            <button onclick="sendPriceEmail(${row})" class="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white py-2.5 px-4 rounded-xl font-bold text-sm transition shadow-lg flex items-center justify-center">
-              <i class="fas fa-envelope mr-2"></i> Email
-            </button>
-            <button onclick="sendWhatsApp(${row})" class="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white py-2.5 px-4 rounded-xl font-bold text-sm transition shadow-lg flex items-center justify-center">
-              <i class="fab fa-whatsapp mr-2"></i> WhatsApp
-            </button>
-          </div>
-
-          <div class="mb-3">
-            <label class="block text-xs font-bold text-gray-600 uppercase mb-2">Update Status</label>
-            <select onchange="updateStatus(${row}, this.value)" class="w-full p-2.5 border-2 border-gray-200 rounded-lg focus:outline-none input-focus transition text-sm font-medium bg-white">
-              <option value="Pending" ${booking.STATUS === 'Pending' ? 'selected' : ''}>🔄 Pending</option>
-              <option value="Price Sent" ${booking.STATUS === 'Price Sent' ? 'selected' : ''}>💰 Price Sent</option>
-              <option value="Confirmed" ${booking.STATUS === 'Confirmed' ? 'selected' : ''}>✅ Confirmed</option>
-              <option value="Completed" ${booking.STATUS === 'Completed' ? 'selected' : ''}>✔️ Completed</option>
-              <option value="Cancelled" ${booking.STATUS === 'Cancelled' ? 'selected' : ''}>❌ Cancelled</option>
-            </select>
-          </div>
-
-          <div class="border-t pt-3 mt-3">
-            <div class="grid grid-cols-3 gap-2 mb-3">
-              <button onclick="updateStatus(${row}, 'Confirmed')" class="bg-gradient-to-r from-blue-100 to-blue-200 hover:from-blue-200 hover:to-blue-300 text-blue-700 py-2 rounded-lg font-bold text-xs transition shadow-sm">
-                <i class="fas fa-check mr-1"></i> Confirm
-              </button>
-              <button onclick="updateStatus(${row}, 'Completed')" class="bg-gradient-to-r from-green-100 to-green-200 hover:from-green-200 hover:to-green-300 text-green-700 py-2 rounded-lg font-bold text-xs transition shadow-sm">
-                <i class="fas fa-check-double mr-1"></i> Complete
-              </button>
-              <button onclick="updateStatus(${row}, 'Pending')" class="bg-gradient-to-r from-yellow-100 to-yellow-200 hover:from-yellow-200 hover:to-yellow-300 text-yellow-700 py-2 rounded-lg font-bold text-xs transition shadow-sm">
-                <i class="fas fa-undo mr-1"></i> Pending
-              </button>
-            </div>
-            <button onclick="openEditModal(${row}, ${JSON.stringify(booking).replace(/"/g, '&quot;')})" 
-              class="w-full bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white font-bold py-2.5 px-4 rounded-xl transition shadow-lg flex items-center justify-center text-sm">
-              <i class="fas fa-edit mr-2"></i> Edit All Details
-            </button>
-          </div>
-        `;
+        
+        let surchargeHTML = '';
+        if (hasRealPrice) {
+          surchargeHTML = '<div class="currency-display p-3 rounded-lg mt-2 text-center">' +
+            '<p class="text-sm text-gray-600 mb-1">Base Price</p>' +
+            '<p class="text-xl font-bold text-blue-600">$' + parseFloat(price).toFixed(2) + ' TTD ($' + usdPrice + ' USD)</p></div>';
+          if (surchargeAmount > 0) {
+            surchargeHTML += '<div class="surcharge-display p-3 rounded-lg mt-2 text-center">' +
+              '<p class="text-sm text-orange-600 mb-1">Surcharge Applied</p>' +
+              '<p class="text-lg font-bold text-orange-700">+$' + surchargeAmount + ' TTD (' + getSurchargeLabel(surchargeType) + ')</p></div>' +
+              '<div class="bg-gradient-to-r from-green-100 to-emerald-100 p-3 rounded-lg mt-2 text-center border-2 border-green-300">' +
+              '<p class="text-sm text-green-700 mb-1 font-bold">TOTAL FINAL PRICE</p>' +
+              '<p class="text-2xl font-bold text-green-800">$' + totalPrice.toFixed(2) + ' TTD ($' + totalUSD + ' USD)</p></div>';
+          }
+        }
+        
+        card.innerHTML = '<div class="flex justify-between items-start mb-4">' +
+          '<div><h3 class="text-2xl font-bold text-gray-800">' + (booking['REF CODE'] || 'N/A') + '</h3>' +
+          '<p class="text-sm text-gray-600 font-medium">' + (booking.NAME || 'Unknown') + '</p></div>' +
+          '<span class="px-4 py-2 rounded-full text-xs font-bold uppercase status-' + status + ' shadow-sm">' + (booking.STATUS || 'Pending') + '</span></div>' +
+          '<div class="space-y-3 mb-4 text-sm">' +
+          '<div class="flex items-center text-gray-700 bg-gray-50 p-2 rounded-lg"><i class="fas fa-phone mr-3 text-blue-500"></i><a href="tel:' + booking.PHONE + '" class="hover:text-blue-600 font-medium">' + (booking.PHONE || 'N/A') + '</a></div>' +
+          '<div class="flex items-center text-gray-700 bg-gray-50 p-2 rounded-lg"><i class="fas fa-envelope mr-3 text-blue-500"></i><a href="mailto:' + booking.EMAIL + '" class="hover:text-blue-600 truncate font-medium">' + (booking.EMAIL || 'N/A') + '</a></div>' +
+          '<div class="flex items-start bg-green-50 p-3 rounded-lg"><i class="fas fa-map-marker-alt text-green-500 mt-1 mr-3"></i><div><p class="font-bold text-gray-700 text-xs uppercase mb-1">Pickup:</p><p class="text-gray-600 text-xs">' + (booking['PICK UP'] || 'N/A') + '</p></div></div>' +
+          '<div class="flex items-start bg-red-50 p-3 rounded-lg"><i class="fas fa-flag-checkered text-red-500 mt-1 mr-3"></i><div><p class="font-bold text-gray-700 text-xs uppercase mb-1">Drop-off:</p><p class="text-gray-600 text-xs">' + (booking['DROP OFF'] || 'N/A') + '</p></div></div>' +
+          '<div class="flex items-center text-gray-700 bg-gray-50 p-2 rounded-lg"><i class="fas fa-calendar-alt mr-3 text-purple-500"></i><span class="font-medium">' + formatDate(booking.DATE) + ' at ' + formatTime(booking.TIME) + '</span></div>' +
+          (booking.NOTES ? '<div class="bg-yellow-50 p-3 rounded-lg text-yellow-800 text-xs border border-yellow-200"><i class="fas fa-sticky-note mr-2 text-yellow-600"></i> ' + booking.NOTES.substring(0, 100) + (booking.NOTES.length > 100 ? '...' : '') + '</div>' : '') +
+          '</div>' +
+          '<div class="border-t pt-4 mb-4 bg-gradient-to-r from-gray-50 to-gray-100 p-4 rounded-xl">' +
+          '<div class="flex items-center justify-between mb-2"><label class="block text-xs font-bold text-gray-600 uppercase">Final Price</label>' +
+          '<button id="autoBtn-' + row + '" onclick="calculateRealPrice(' + row + ')" class="auto-price-badge hover:opacity-80 transition cursor-pointer" title="Click to calculate price"><i class="fas fa-calculator mr-1"></i>AUTO PRICE</button></div>' +
+          '<div class="flex items-center gap-2 mb-2"><input type="number" id="price-' + row + '" value="' + displayPrice + '" placeholder="0.00" class="flex-1 p-2.5 border-2 border-gray-200 rounded-lg focus:outline-none input-focus transition font-bold text-base" onchange="autoSavePrice(' + row + ', this.value)" onkeyup="autoSavePrice(' + row + ', this.value)">' +
+          '<div class="price-dropdown"><button onclick="togglePriceDropdown(' + row + ')" class="bg-gradient-to-r from-yellow-400 to-yellow-500 hover:from-yellow-500 hover:to-yellow-600 text-black font-bold py-2 px-3 rounded-lg shadow-md transition text-sm flex items-center gap-1"><i class="fas fa-tags"></i><span class="hidden sm:inline">Quick</span><i class="fas fa-chevron-down text-xs"></i></button>' +
+          '<div id="priceDropdown-' + row + '" class="price-dropdown-content">' +
+          '<div class="price-option" onclick="setQuickPrice(' + row + ', 100)"><span>$100</span><i class="fas fa-check text-green-600 opacity-0 hover:opacity-100"></i></div>' +
+          '<div class="price-option" onclick="setQuickPrice(' + row + ', 150)"><span>$150</span><i class="fas fa-check text-blue-600 opacity-0 hover:opacity-100"></i></div>' +
+          '<div class="price-option" onclick="setQuickPrice(' + row + ', 200)"><span>$200</span><i class="fas fa-check text-green-600 opacity-0 hover:opacity-100"></i></div>' +
+          '<div class="price-option" onclick="setQuickPrice(' + row + ', 250)"><span>$250</span><i class="fas fa-check text-purple-600 opacity-0 hover:opacity-100"></i></div>' +
+          '<div class="price-option" onclick="setQuickPrice(' + row + ', 300)"><span>$300</span><i class="fas fa-check text-blue-600 opacity-0 hover:opacity-100"></i></div>' +
+          '<div class="price-option" onclick="setQuickPrice(' + row + ', 350)"><span>$350</span><i class="fas fa-check text-green-600 opacity-0 hover:opacity-100"></i></div>' +
+          '<div class="price-option" onclick="setQuickPrice(' + row + ', 400)"><span>$400</span><i class="fas fa-check text-purple-600 opacity-0 hover:opacity-100"></i></div>' +
+          '<div class="price-option" onclick="setQuickPrice(' + row + ', 450)"><span>$450</span><i class="fas fa-check text-blue-600 opacity-0 hover:opacity-100"></i></div>' +
+          '<div class="price-option" onclick="setQuickPrice(' + row + ', 500)"><span>$500</span><i class="fas fa-check text-red-600 opacity-0 hover:opacity-100"></i></div>' +
+          '<div class="price-option" onclick="setQuickPrice(' + row + ', 550)"><span>$550</span><i class="fas fa-check text-purple-600 opacity-0 hover:opacity-100"></i></div>' +
+          '</div></div></div>' + surchargeHTML +
+          '<div class="mt-3"><label class="block text-xs font-bold text-orange-600 uppercase mb-1"><i class="fas fa-clock mr-1"></i>Apply Surcharge</label>' +
+          '<select id="surcharge-' + row + '" onchange="updateSurcharge(' + row + ')" class="w-full p-2 border-2 border-orange-200 rounded-lg focus:outline-none focus:border-orange-400 transition text-sm font-medium bg-white">' +
+          '<option value="none"' + (surchargeType === 'none' ? ' selected' : '') + '>No Surcharge</option>' +
+          '<option value="peak"' + (surchargeType === 'peak' ? ' selected' : '') + '>Peak Hours (6-9 AM): +$50 TTD</option>' +
+          '<option value="lateNight"' + (surchargeType === 'lateNight' ? ' selected' : '') + '>Late Night (10 PM-12 AM): +15%</option>' +
+          '<option value="earlyMorning"' + (surchargeType === 'earlyMorning' ? ' selected' : '') + '>Early Morning (12-6 AM): +20%</option>' +
+          '<option value="holiday"' + (surchargeType === 'holiday' ? ' selected' : '') + '>Public Holiday: +25%</option>' +
+          '</select></div>' +
+          '<p class="text-xs text-blue-600 font-medium mt-2"><i class="fas fa-info-circle mr-1"></i> Price auto-saves when you type</p></div>' +
+          '<div class="grid grid-cols-2 gap-3 mb-3">' +
+          '<button onclick="sendPriceEmail(' + row + ')" class="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white py-2.5 px-4 rounded-xl font-bold text-sm transition shadow-lg flex items-center justify-center"><i class="fas fa-envelope mr-2"></i> Email</button>' +
+          '<button onclick="sendWhatsApp(' + row + ')" class="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white py-2.5 px-4 rounded-xl font-bold text-sm transition shadow-lg flex items-center justify-center"><i class="fab fa-whatsapp mr-2"></i> WhatsApp</button></div>' +
+          '<div class="mb-3"><label class="block text-xs font-bold text-gray-600 uppercase mb-2">Update Status</label>' +
+          '<select onchange="updateStatus(' + row + ', this.value)" class="w-full p-2.5 border-2 border-gray-200 rounded-lg focus:outline-none input-focus transition text-sm font-medium bg-white">' +
+          '<option value="Pending"' + (booking.STATUS === 'Pending' ? ' selected' : '') + '>🔄 Pending</option>' +
+          '<option value="Price Sent"' + (booking.STATUS === 'Price Sent' ? ' selected' : '') + '>💰 Price Sent</option>' +
+          '<option value="Confirmed"' + (booking.STATUS === 'Confirmed' ? ' selected' : '') + '>✅ Confirmed</option>' +
+          '<option value="Completed"' + (booking.STATUS === 'Completed' ? ' selected' : '') + '>✔️ Completed</option>' +
+          '<option value="Cancelled"' + (booking.STATUS === 'Cancelled' ? ' selected' : '') + '>❌ Cancelled</option>' +
+          '</select></div>' +
+          '<div class="border-t pt-3 mt-3"><div class="grid grid-cols-3 gap-2 mb-3">' +
+          '<button onclick="updateStatus(' + row + ', \'Confirmed\')" class="bg-gradient-to-r from-blue-100 to-blue-200 hover:from-blue-200 hover:to-blue-300 text-blue-700 py-2 rounded-lg font-bold text-xs transition shadow-sm"><i class="fas fa-check mr-1"></i> Confirm</button>' +
+          '<button onclick="updateStatus(' + row + ', \'Completed\')" class="bg-gradient-to-r from-green-100 to-green-200 hover:from-green-200 hover:to-green-300 text-green-700 py-2 rounded-lg font-bold text-xs transition shadow-sm"><i class="fas fa-check-double mr-1"></i> Complete</button>' +
+          '<button onclick="updateStatus(' + row + ', \'Pending\')" class="bg-gradient-to-r from-yellow-100 to-yellow-200 hover:from-yellow-200 hover:to-yellow-300 text-yellow-700 py-2 rounded-lg font-bold text-xs transition shadow-sm"><i class="fas fa-undo mr-1"></i> Pending</button></div>' +
+          '<button onclick="openEditModal(' + row + ', ' + JSON.stringify(booking).replace(/"/g, '&quot;') + ')" class="w-full bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white font-bold py-2.5 px-4 rounded-xl transition shadow-lg flex items-center justify-center text-sm"><i class="fas fa-edit mr-2"></i> Edit All Details</button></div>';
+        
         grid.appendChild(card);
       });
     }
@@ -899,20 +1010,15 @@
       document.getElementById('editName').value = booking.NAME || '';
       document.getElementById('editPhone').value = booking.PHONE || '';
       document.getElementById('editEmail').value = booking.EMAIL || '';
-      
       let dateStr = booking.DATE || '';
-      if (dateStr && dateStr.includes('T')) {
-        dateStr = dateStr.split('T')[0];
-      }
+      if (dateStr && dateStr.includes('T')) dateStr = dateStr.split('T')[0];
       document.getElementById('editDate').value = dateStr;
-      
       let timeStr = booking.TIME || '';
       if (timeStr && timeStr.includes('T')) {
         const timeParts = timeStr.split('T')[1];
         timeStr = timeParts ? timeParts.substring(0, 5) : '';
       }
       document.getElementById('editTime').value = timeStr;
-      
       document.getElementById('editPickup').value = booking['PICK UP'] || '';
       document.getElementById('editDropoff').value = booking['DROP OFF'] || '';
       document.getElementById('editVehicle').value = booking['VEHICLE TYPE'] || '';
@@ -920,7 +1026,6 @@
       document.getElementById('editPrice').value = booking['FINAL PRICE'] || booking['FARES'] || '';
       document.getElementById('editPayment').value = booking['PAYMENT METHOD'] || '';
       document.getElementById('editNotes').value = booking.NOTES || '';
-      
       document.getElementById('editModal').classList.add('active');
     }
 
@@ -928,13 +1033,11 @@
       document.getElementById('editModal').classList.remove('active');
     }
 
-    document.getElementById('editForm').addEventListener('submit', async function(e) {
+    document.getElementById('editForm').addEventListener('submit', function(e) {
       e.preventDefault();
-      
       const row = document.getElementById('editRowNumber').value;
       const formData = {
-        action: 'updateBooking',
-        row: row,
+        action: 'updateBooking', row: row,
         refCode: document.getElementById('editRefCode').value,
         status: document.getElementById('editStatus').value,
         name: document.getElementById('editName').value,
@@ -950,69 +1053,55 @@
         payment: document.getElementById('editPayment').value,
         notes: document.getElementById('editNotes').value
       };
-      
       const btn = e.target.querySelector('button[type="submit"]');
       const originalHTML = btn.innerHTML;
       btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Saving...';
       btn.disabled = true;
-      
-      try {
-        const response = await fetch(APPS_SCRIPT_URL, {
-          method: 'POST',
-          body: new URLSearchParams(formData)
-        });
-        
-        const result = await response.json();
-        
-        if (result.success) {
-          alert('✅ Booking updated successfully!');
-          closeEditModal();
-          fetchBookings();
-        } else {
-          alert('Error updating booking.');
-        }
-      } catch (error) {
-        alert('Network error.');
-      } finally {
-        btn.innerHTML = originalHTML;
-        btn.disabled = false;
-      }
+      fetch(APPS_SCRIPT_URL, { method: 'POST', body: new URLSearchParams(formData) })
+        .then(function(response) { return response.json(); })
+        .then(function(result) {
+          if (result.success) {
+            alert('✅ Booking updated successfully!');
+            closeEditModal();
+            fetchBookings();
+          } else {
+            alert('Error updating booking.');
+          }
+        })
+        .catch(function(error) { alert('Network error.'); })
+        .finally(function() { btn.innerHTML = originalHTML; btn.disabled = false; });
     });
 
     function applyAutoPrice(row, price) {
-      const input = document.getElementById(`price-${row}`);
+      const input = document.getElementById('price-' + row);
       input.value = price;
       input.classList.add('price-flash');
-      setTimeout(() => {
-        input.classList.remove('price-flash');
-      }, 1000);
+      setTimeout(function() { input.classList.remove('price-flash'); }, 1000);
       autoSavePrice(row, price);
     }
 
     function togglePriceDropdown(row) {
       event.stopPropagation();
-      const dropdown = document.getElementById(`priceDropdown-${row}`);
-      document.querySelectorAll('.price-dropdown-content').forEach(d => {
+      const dropdown = document.getElementById('priceDropdown-' + row);
+      document.querySelectorAll('.price-dropdown-content').forEach(function(d) {
         if (d !== dropdown) d.classList.remove('show');
       });
       dropdown.classList.toggle('show');
     }
 
     function setQuickPrice(row, price) {
-      const input = document.getElementById(`price-${row}`);
+      const input = document.getElementById('price-' + row);
       input.value = price;
       input.classList.add('price-flash');
-      setTimeout(() => {
-        input.classList.remove('price-flash');
-      }, 1000);
-      const dropdown = document.getElementById(`priceDropdown-${row}`);
+      setTimeout(function() { input.classList.remove('price-flash'); }, 1000);
+      const dropdown = document.getElementById('priceDropdown-' + row);
       dropdown.classList.remove('show');
       autoSavePrice(row, price);
     }
 
     document.addEventListener('click', function(e) {
       if (!e.target.closest('.price-dropdown')) {
-        document.querySelectorAll('.price-dropdown-content').forEach(dropdown => {
+        document.querySelectorAll('.price-dropdown-content').forEach(function(dropdown) {
           dropdown.classList.remove('show');
         });
       }
@@ -1023,9 +1112,7 @@
       try {
         const date = new Date(dateString);
         return date.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
-      } catch (e) {
-        return dateString;
-      }
+      } catch (e) { return dateString; }
     }
 
     function formatTime(timeString) {
@@ -1033,38 +1120,22 @@
       try {
         const time = new Date(timeString);
         return time.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
-      } catch (e) {
-        return timeString;
-      }
+      } catch (e) { return timeString; }
     }
 
     async function sendPriceEmail(row) {
-      const price = document.getElementById(`price-${row}`).value;
-      if (!price || price === '0' || price === '0.00') {
-        alert('Please enter a valid price first.');
-        return;
-      }
-
+      const price = document.getElementById('price-' + row).value;
+      if (!price || price === '0' || price === '0.00') { alert('Please enter a valid price first.'); return; }
       const btn = event.target.closest('button');
       const originalHTML = btn.innerHTML;
       btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
       btn.disabled = true;
-
       try {
-        console.log('Sending price email for row:', row, 'price:', price);
-        
         const response = await fetch(APPS_SCRIPT_URL, {
           method: 'POST',
-          body: new URLSearchParams({
-            action: 'sendPriceEmail',
-            row: row,
-            price: price
-          })
+          body: new URLSearchParams({ action: 'sendPriceEmail', row: row, price: price })
         });
-        
         const result = await response.json();
-        console.log('Email response:', result);
-        
         if (result.success) {
           alert('✅ Price email sent successfully!');
           fetchBookings();
@@ -1081,31 +1152,17 @@
     }
 
     async function sendWhatsApp(row) {
-      const price = document.getElementById(`price-${row}`).value;
-      if (!price || price === '0' || price === '0.00') {
-        alert('Please enter a valid price first.');
-        return;
-      }
-
+      const price = document.getElementById('price-' + row).value;
+      if (!price || price === '0' || price === '0.00') { alert('Please enter a valid price first.'); return; }
       const btn = event.target.closest('button');
       const originalHTML = btn.innerHTML;
       btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Preparing...';
       btn.disabled = true;
-
       try {
-        await fetch(APPS_SCRIPT_URL, {
-          method: 'POST',
-          body: new URLSearchParams({
-            action: 'updatePrice',
-            row: row,
-            price: price
-          })
-        });
-
+        await fetch(APPS_SCRIPT_URL, { method: 'POST', body: new URLSearchParams({ action: 'updatePrice', row: row, price: price }) });
         const response = await fetch(APPS_SCRIPT_URL);
         const data = await response.json();
-        const booking = data.bookings.find(b => b._rowNumber === row);
-        
+        const booking = data.bookings.find(function(b) { return b._rowNumber === row; });
         if (booking) {
           let phone = booking.PHONE || '';
           const refCode = booking['REF CODE'] || '';
@@ -1119,56 +1176,36 @@
           const totalPrice = parseFloat(price) + surchargeAmount;
           const usdPrice = convertTTDtoUSD(price);
           const totalUSD = convertTTDtoUSD(totalPrice);
-          
           phone = phone.toString().replace(/\D/g, '');
-          if (!phone.startsWith('1')) {
-            phone = '1' + phone;
-          }
-          
-          let message = `Hello ${clientName},\n\n`;
-          message += `Your HKJ Logistics booking ${refCode} is ready for review!\n\n`;
-          message += `📅 Date: ${date} at ${time}\n`;
-          message += `📍 Pickup: ${pickup}\n`;
-          message += `🏁 Drop-off: ${dropoff}\n`;
-          message += `💰 Base Price: $${price} TTD ($${usdPrice} USD)\n`;
-          
+          if (!phone.startsWith('1')) phone = '1' + phone;
+          let message = 'Hello ' + clientName + ',\n\n';
+          message += 'Your HKJ Logistics booking ' + refCode + ' is ready for review!\n\n';
+          message += '📅 Date: ' + date + ' at ' + time + '\n';
+          message += '📍 Pickup: ' + pickup + '\n';
+          message += ' Drop-off: ' + dropoff + '\n';
+          message += '💰 Base Price: $' + price + ' TTD ($' + usdPrice + ' USD)\n';
           if (surchargeAmount > 0) {
-            message += `⚠️ Surcharge: +$${surchargeAmount} TTD (${getSurchargeLabel(surchargeType)})\n`;
-            message += ` TOTAL: $${totalPrice.toFixed(2)} TTD ($${totalUSD} USD)\n`;
+            message += '⚠️ Surcharge: +$' + surchargeAmount + ' TTD (' + getSurchargeLabel(surchargeType) + ')\n';
+            message += '💵 TOTAL: $' + totalPrice.toFixed(2) + ' TTD ($' + totalUSD + ' USD)\n\n';
           } else {
-            message += `💵 TOTAL: $${totalPrice.toFixed(2)} TTD ($${totalUSD} USD)\n`;
+            message += '💵 TOTAL: $' + totalPrice.toFixed(2) + ' TTD ($' + totalUSD + ' USD)\n\n';
           }
-          
-          message += `\n📋 HOW IT WORKS:\n`;
-          message += `1. We received your request. ✓\n`;
-          message += `2. This is your personalized quote. ✓\n`;
-          message += `3. Click the link below to CONFIRM or DECLINE your booking.\n\n`;
-          message += ` Confirm or Decline here:\n`;
-          message += `https://hkjlogisticsltdtt.vercel.app/confirm.html?code=${refCode}\n\n`;
-          message += `Thank you,\nHayden Joseph\nManaging Director, HKJ Logistics Ltd\n+1 (868) 780-0300`;
-          
+          message += '📋 HOW IT WORKS:\n';
+          message += '1. We received your request. ✓\n';
+          message += '2. This is your personalized quote. ✓\n';
+          message += '3. Click the link below to CONFIRM or DECLINE your booking.\n\n';
+          message += '👉 Confirm or Decline here:\n';
+          message += 'https://hkjlogisticsltdtt.vercel.app/confirm.html?code=' + refCode + '\n\n';
+          message += 'Thank you,\nHayden Joseph\nManaging Director, HKJ Logistics Ltd\n+1 (868) 780-0300';
           const encodedMessage = encodeURIComponent(message);
-          const whatsappUrl = `https://wa.me/${phone}?text=${encodedMessage}`;
-          
+          const whatsappUrl = 'https://wa.me/' + phone + '?text=' + encodedMessage;
           const newWindow = window.open(whatsappUrl, '_blank');
-          
           if (!newWindow || newWindow.closed || typeof newWindow.closed == 'undefined') {
             alert('⚠️ WhatsApp popup was blocked!');
           } else {
-            setTimeout(() => {
-              alert('✅ WhatsApp opened! Client can now confirm or decline.');
-            }, 1000);
+            setTimeout(function() { alert('✅ WhatsApp opened! Client can now confirm or decline.'); }, 1000);
           }
-          
-          await fetch(APPS_SCRIPT_URL, {
-            method: 'POST',
-            body: new URLSearchParams({
-              action: 'updateStatus',
-              row: row,
-              status: 'Price Sent'
-            })
-          });
-          
+          await fetch(APPS_SCRIPT_URL, { method: 'POST', body: new URLSearchParams({ action: 'updateStatus', row: row, status: 'Price Sent' }) });
           fetchBookings();
         }
       } catch (error) {
@@ -1183,84 +1220,44 @@
     async function updateStatus(row, status) {
       const originalText = event.target.innerHTML;
       event.target.disabled = true;
-
       try {
         const response = await fetch(APPS_SCRIPT_URL, {
           method: 'POST',
-          body: new URLSearchParams({
-            action: 'updateStatus',
-            row: row,
-            status: status
-          })
+          body: new URLSearchParams({ action: 'updateStatus', row: row, status: status })
         });
         const result = await response.json();
-        if (result.success) {
-          fetchBookings();
-        } else {
-          alert('Error updating status.');
-        }
-      } catch (error) {
-        alert('Network error.');
-      } finally {
-        event.target.disabled = false;
-      }
+        if (result.success) { fetchBookings(); }
+        else { alert('Error updating status.'); }
+      } catch (error) { alert('Network error.'); }
+      finally { event.target.disabled = false; }
     }
 
     async function generateReport() {
       try {
         const response = await fetch(APPS_SCRIPT_URL);
         const data = await response.json();
-        
         if (data.success) {
           const bookings = data.bookings;
-          
-          let pending = 0, confirmed = 0, completed = 0, cancelled = 0, priceSent = 0;
-          let totalRevenue = 0;
-          
-          bookings.forEach(b => {
+          let pending = 0, confirmed = 0, completed = 0, cancelled = 0, priceSent = 0, totalRevenue = 0;
+          bookings.forEach(function(b) {
             const status = b.STATUS || 'Pending';
             const price = parseFloat(b['FINAL PRICE'] || b['FARES']) || 0;
             const surchargeType = b['SURCHARGE'] || 'none';
             const surchargeAmount = calculateSurcharge(price, surchargeType);
             const totalPrice = price + surchargeAmount;
-            
             if (status === 'Pending') pending++;
             else if (status === 'Price Sent') priceSent++;
             else if (status === 'Confirmed') confirmed++;
             else if (status === 'Completed') completed++;
             else if (status === 'Cancelled') cancelled++;
-            
-            if (totalPrice && ['Completed', 'Confirmed', 'Price Sent'].includes(status)) {
-              totalRevenue += totalPrice;
-            }
+            if (totalPrice && ['Completed', 'Confirmed', 'Price Sent'].includes(status)) totalRevenue += totalPrice;
           });
-          
           const totalUSD = Math.round(totalRevenue / 6.80);
-          
-          const report = `📊 HKJ Logistics Report\n\n` +
-            `📈 BOOKING STATUS:\n` +
-            `─────────────────\n` +
-            `Total Bookings: ${bookings.length}\n` +
-            `⏳ Pending: ${pending}\n` +
-            `💰 Price Sent: ${priceSent}\n` +
-            `✅ Confirmed: ${confirmed}\n` +
-            `✔️ Completed: ${completed}\n` +
-            `❌ Cancelled: ${cancelled}\n\n` +
-            `💵 TOTAL REVENUE (with surcharges):\n` +
-            `   $${totalRevenue.toFixed(2)} TTD\n` +
-            `   $${totalUSD} USD (rounded)\n` +
-            `─────────────────\n` +
-            `Exchange Rate: 1 USD = 6.80 TTD\n` +
-            `Generated: ${new Date().toLocaleString()}`;
-          
+          const report = '📊 HKJ Logistics Report\n\n📈 BOOKING STATUS:\n─────────────────\nTotal Bookings: ' + bookings.length + '\n⏳ Pending: ' + pending + '\n💰 Price Sent: ' + priceSent + '\n✅ Confirmed: ' + confirmed + '\n✔️ Completed: ' + completed + '\n❌ Cancelled: ' + cancelled + '\n\n💵 TOTAL REVENUE (with surcharges):\n   $' + totalRevenue.toFixed(2) + ' TTD\n   $' + totalUSD + ' USD (rounded)\n─────────────────\nExchange Rate: 1 USD = 6.80 TTD\nGenerated: ' + new Date().toLocaleString();
           alert(report);
         }
-      } catch (error) {
-        alert('Error generating report.');
-      }
+      } catch (error) { alert('Error generating report.'); }
     }
-
-    window.addEventListener('DOMContentLoaded', () => {
-      // Login screen is shown by default
-    });
   </script>
+</body>
+</html>
