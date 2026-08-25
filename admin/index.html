@@ -105,7 +105,7 @@
     }
   </style>
 </head>
-<body class="p-6">
+<body class="p-4 md:p-6">
 
   <!-- Login Screen -->
   <div id="loginScreen" class="login-screen">
@@ -141,24 +141,24 @@
 
   <!-- Admin Dashboard -->
   <div id="adminDashboard" class="hidden max-w-7xl mx-auto">
-    <div class="header-gradient rounded-2xl shadow-lg p-6 mb-6 flex justify-between items-center gradient-border">
+    <div class="header-gradient rounded-2xl shadow-lg p-4 md:p-6 mb-6 flex flex-col md:flex-row justify-between items-center gap-4 gradient-border">
       <div class="flex items-center">
         <div class="w-14 h-14 bg-gradient-to-br from-yellow-400 to-yellow-500 rounded-full flex items-center justify-center mr-4 shadow-lg">
           <i class="fas fa-truck text-black text-2xl"></i>
         </div>
         <div>
-          <h1 class="text-3xl font-bold text-gray-800">HKJ <span class="text-yellow-500">Logistics</span> Admin</h1>
+          <h1 class="text-2xl md:text-3xl font-bold text-gray-800">HKJ <span class="text-yellow-500">Logistics</span> Admin</h1>
           <p class="text-gray-600 text-sm font-medium">Manage bookings and communicate with clients</p>
         </div>
       </div>
-      <div class="flex gap-3">
-        <button onclick="generateReport()" class="bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white px-6 py-3 rounded-xl font-bold transition shadow-lg flex items-center">
+      <div class="flex flex-wrap gap-2 md:gap-3">
+        <button onclick="generateReport()" class="bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white px-4 md:px-6 py-2 md:py-3 rounded-xl font-bold transition shadow-lg flex items-center text-sm md:text-base">
           <i class="fas fa-chart-bar mr-2"></i> Report
         </button>
-        <button onclick="fetchBookings()" class="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white px-6 py-3 rounded-xl font-bold transition shadow-lg flex items-center">
+        <button onclick="fetchBookings()" class="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white px-4 md:px-6 py-2 md:py-3 rounded-xl font-bold transition shadow-lg flex items-center text-sm md:text-base">
           <i class="fas fa-sync-alt mr-2"></i> Refresh
         </button>
-        <button onclick="logout()" class="bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white px-6 py-3 rounded-xl font-bold transition shadow-lg flex items-center">
+        <button onclick="logout()" class="bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white px-4 md:px-6 py-2 md:py-3 rounded-xl font-bold transition shadow-lg flex items-center text-sm md:text-base">
           <i class="fas fa-sign-out-alt mr-2"></i> Logout
         </button>
       </div>
@@ -935,12 +935,15 @@
             '<p class="text-sm text-gray-600 mb-1">Base Price</p>' +
             '<p class="text-xl font-bold text-blue-600">$' + parseFloat(price).toFixed(2) + ' TTD ($' + usdPrice + ' USD)</p></div>';
           if (surchargeAmount > 0) {
-            surchargeHTML += '<div class="surcharge-display p-3 rounded-lg mt-2 text-center">' +
+            surchargeHTML += '<div id="surchargeDisplay-' + row + '">' +
+              '<div class="surcharge-display p-3 rounded-lg mt-2 text-center">' +
               '<p class="text-sm text-orange-600 mb-1">Surcharge Applied</p>' +
               '<p class="text-lg font-bold text-orange-700">+$' + surchargeAmount + ' TTD (' + getSurchargeLabel(surchargeType) + ')</p></div>' +
               '<div class="bg-gradient-to-r from-green-100 to-emerald-100 p-3 rounded-lg mt-2 text-center border-2 border-green-300">' +
               '<p class="text-sm text-green-700 mb-1 font-bold">TOTAL FINAL PRICE</p>' +
-              '<p class="text-2xl font-bold text-green-800">$' + totalPrice.toFixed(2) + ' TTD ($' + totalUSD + ' USD)</p></div>';
+              '<p class="text-2xl font-bold text-green-800">$' + totalPrice.toFixed(2) + ' TTD ($' + totalUSD + ' USD)</p></div></div>';
+          } else {
+            surchargeHTML += '<div id="surchargeDisplay-' + row + '"></div>';
           }
         }
         
@@ -982,7 +985,7 @@
           '<option value="holiday"' + (surchargeType === 'holiday' ? ' selected' : '') + '>Public Holiday: +25%</option>' +
           '</select></div>' +
           '<p class="text-xs text-blue-600 font-medium mt-2"><i class="fas fa-info-circle mr-1"></i> Price auto-saves when you type</p></div>' +
-          '<div class="grid grid-cols-2 gap-3 mb-3">' +
+          '<div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3">' +
           '<button onclick="sendPriceEmail(' + row + ')" class="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white py-2.5 px-4 rounded-xl font-bold text-sm transition shadow-lg flex items-center justify-center"><i class="fas fa-envelope mr-2"></i> Email</button>' +
           '<button onclick="sendWhatsApp(' + row + ')" class="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white py-2.5 px-4 rounded-xl font-bold text-sm transition shadow-lg flex items-center justify-center"><i class="fab fa-whatsapp mr-2"></i> WhatsApp</button></div>' +
           '<div class="mb-3"><label class="block text-xs font-bold text-gray-600 uppercase mb-2">Update Status</label>' +
@@ -1159,6 +1162,9 @@
       btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Preparing...';
       btn.disabled = true;
       try {
+        const surchargeSelect = document.getElementById('surcharge-' + row);
+        const surchargeType = surchargeSelect ? surchargeSelect.value : 'none';
+        
         await fetch(APPS_SCRIPT_URL, { method: 'POST', body: new URLSearchParams({ action: 'updatePrice', row: row, price: price }) });
         const response = await fetch(APPS_SCRIPT_URL);
         const data = await response.json();
@@ -1171,25 +1177,29 @@
           const dropoff = booking['DROP OFF'] || '';
           const date = formatDate(booking.DATE);
           const time = formatTime(booking.TIME);
-          const surchargeType = booking['SURCHARGE'] || 'none';
+          
           const surchargeAmount = calculateSurcharge(price, surchargeType);
           const totalPrice = parseFloat(price) + surchargeAmount;
           const usdPrice = convertTTDtoUSD(price);
           const totalUSD = convertTTDtoUSD(totalPrice);
+          
           phone = phone.toString().replace(/\D/g, '');
           if (!phone.startsWith('1')) phone = '1' + phone;
+          
           let message = 'Hello ' + clientName + ',\n\n';
           message += 'Your HKJ Logistics booking ' + refCode + ' is ready for review!\n\n';
           message += '📅 Date: ' + date + ' at ' + time + '\n';
           message += '📍 Pickup: ' + pickup + '\n';
-          message += ' Drop-off: ' + dropoff + '\n';
+          message += '🏁 Drop-off: ' + dropoff + '\n';
           message += '💰 Base Price: $' + price + ' TTD ($' + usdPrice + ' USD)\n';
+          
           if (surchargeAmount > 0) {
             message += '⚠️ Surcharge: +$' + surchargeAmount + ' TTD (' + getSurchargeLabel(surchargeType) + ')\n';
             message += '💵 TOTAL: $' + totalPrice.toFixed(2) + ' TTD ($' + totalUSD + ' USD)\n\n';
           } else {
             message += '💵 TOTAL: $' + totalPrice.toFixed(2) + ' TTD ($' + totalUSD + ' USD)\n\n';
           }
+          
           message += '📋 HOW IT WORKS:\n';
           message += '1. We received your request. ✓\n';
           message += '2. This is your personalized quote. ✓\n';
@@ -1197,11 +1207,12 @@
           message += '👉 Confirm or Decline here:\n';
           message += 'https://hkjlogisticsltdtt.vercel.app/confirm.html?code=' + refCode + '\n\n';
           message += 'Thank you,\nHayden Joseph\nManaging Director, HKJ Logistics Ltd\n+1 (868) 780-0300';
+          
           const encodedMessage = encodeURIComponent(message);
           const whatsappUrl = 'https://wa.me/' + phone + '?text=' + encodedMessage;
           const newWindow = window.open(whatsappUrl, '_blank');
           if (!newWindow || newWindow.closed || typeof newWindow.closed == 'undefined') {
-            alert('⚠️ WhatsApp popup was blocked!');
+            alert('️ WhatsApp popup was blocked!');
           } else {
             setTimeout(function() { alert('✅ WhatsApp opened! Client can now confirm or decline.'); }, 1000);
           }
