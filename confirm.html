@@ -308,7 +308,7 @@
         
         <!-- Waiting Time Fee (if applicable) -->
         <div id="waitingBox" class="hidden waiting-box p-4 rounded-xl mb-3">
-          <p class="text-sm text-purple-300 mb-1">⏳ Waiting Time Fee</p>
+          <p class="text-sm text-purple-300 mb-1"> Waiting Time Fee</p>
           <p id="waitingAmount" class="text-2xl md:text-3xl font-bold text-purple-400"></p>
           <p id="waitingReason" class="text-sm text-purple-300 mt-1"></p>
         </div>
@@ -490,7 +490,6 @@
   <script>
     const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw1Fji0W9KckebjpfTcMLLtRNdf8fVMT_yQ_3PPrwg6kBZxsK8C-12TB-bAeCLY2ckwcg/exec';
     const EXCHANGE_RATE = 6.80;
-    const WAITING_RATE_PER_15MIN = 10;
     let currentBooking = null;
     let currentRow = null;
 
@@ -510,12 +509,15 @@
       }
     }
 
+    // UPDATED: Calculate waiting fee with new pricing structure
     function calculateWaitingFee(minutes) {
       const mins = parseInt(minutes) || 0;
       if (mins <= 15) return 0;
-      const extraMinutes = mins - 15;
-      const blocks = Math.ceil(extraMinutes / 15);
-      return blocks * WAITING_RATE_PER_15MIN;
+      if (mins <= 30) return 50;
+      if (mins <= 60) return 100;
+      if (mins <= 90) return 200;
+      if (mins <= 120) return 300;
+      return 300; // Cap at 120 mins
     }
 
     function getSurchargeLabel(surchargeType) {
@@ -530,9 +532,11 @@
 
     function getWaitingLabel(minutes) {
       const mins = parseInt(minutes) || 0;
+      const fee = calculateWaitingFee(mins);
+      const usdFee = convertTTDtoUSD(fee);
       if (mins === 0) return 'No waiting time';
       if (mins <= 15) return '15 min (Free grace period)';
-      return mins + ' min waiting (First 15 min free, then $10 TTD per 15 min)';
+      return `${mins} min (+$${fee} TTD / ~$${usdFee} USD)`;
     }
 
     window.addEventListener('DOMContentLoaded', function() {
