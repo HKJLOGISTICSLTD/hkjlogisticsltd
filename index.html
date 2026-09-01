@@ -462,8 +462,8 @@
         </div>
         <div>
           <label class="block text-sm font-bold text-gray-300 mb-2"><i class="fas fa-clock text-cyan-400 mr-2"></i><span data-en="Pickup Time" data-es="Hora de Recogida">Pickup Time</span> *</label>
-          <!-- UPDATED: Added readonly, autocomplete="off", and cursor-pointer to force digital dropdown on mobile -->
-          <input type="text" id="bookTimePicker" name="bookTime" required placeholder="Select Time (e.g. 02:30 PM)" readonly autocomplete="off" class="w-full p-3 border rounded-xl focus:outline-none input-focus transition bg-dark-input text-cyan-400 cursor-pointer">
+          <!-- UPDATED: Added onfocus="this.blur()" and select-none to completely block native mobile clock -->
+          <input type="text" id="bookTimePicker" name="bookTime" required placeholder="Tap to Select Time" readonly autocomplete="off" onfocus="this.blur()" class="w-full p-3 border rounded-xl focus:outline-none input-focus transition bg-dark-input text-cyan-400 cursor-pointer select-none">
         </div>
       </div>
 
@@ -499,11 +499,11 @@
         <select onchange="document.getElementById('pickupAddress').value=this.value" 
           class="w-full p-3 mb-3 border-2 border-gray-600 rounded-xl focus:outline-none bg-dark-input text-white text-sm">
           <option value="">-- Quick Select Popular Location --</option>
-          <optgroup label="✈️ Airports">
+          <optgroup label="️ Airports">
             <option value="Piarco International Airport, Trinidad">Piarco International Airport</option>
             <option value="A.N.R. Robinson International Airport, Tobago">Tobago Airport</option>
           </optgroup>
-          <optgroup label="️ Malls & Shopping">
+          <optgroup label="🛍️ Malls & Shopping">
             <option value="C3 Centre, Sir Solomon Hochoy Highway, San Fernando">C3 Centre (San Fernando)</option>
             <option value="Grand Bazaar, West Mall, Caroni">Grand Bazaar (West Mall)</option>
             <option value="Trincity Mall, Trincity">Trincity Mall</option>
@@ -512,7 +512,7 @@
             <option value="South Park Mall, San Fernando">South Park Mall, San Fernando</option>
             <option value="Gulf City Mall, La Romain">Gulf City Mall, La Romain</option>
           </optgroup>
-          <optgroup label="🏙️ Major Areas">
+          <optgroup label="️ Major Areas">
             <option value="Port of Spain, Trinidad">Port of Spain</option>
             <option value="San Fernando, Trinidad">San Fernando</option>
             <option value="Chaguanas, Trinidad">Chaguanas</option>
@@ -523,7 +523,7 @@
           </optgroup>
           
           <!-- CATEGORIZED HOTEL LIST -->
-          <optgroup label="🏨 Port of Spain / St. Clair / St. Ann's / Cascade">
+          <optgroup label=" Port of Spain / St. Clair / St. Ann's / Cascade">
             <option value="Hyatt Regency Trinidad — Port of Spain">Hyatt Regency Trinidad — Port of Spain</option>
             <option value="Hilton Trinidad & Conference Centre — Port of Spain">Hilton Trinidad & Conference Centre — Port of Spain</option>
             <option value="Courtyard by Marriott Port of Spain — Port of Spain">Courtyard by Marriott Port of Spain — Port of Spain</option>
@@ -640,7 +640,7 @@
           </optgroup>
           
           <!-- CATEGORIZED HOTEL LIST -->
-          <optgroup label=" Port of Spain / St. Clair / St. Ann's / Cascade">
+          <optgroup label="🏨 Port of Spain / St. Clair / St. Ann's / Cascade">
             <option value="Hyatt Regency Trinidad — Port of Spain">Hyatt Regency Trinidad — Port of Spain</option>
             <option value="Hilton Trinidad & Conference Centre — Port of Spain">Hilton Trinidad & Conference Centre — Port of Spain</option>
             <option value="Courtyard by Marriott Port of Spain — Port of Spain">Courtyard by Marriott Port of Spain — Port of Spain</option>
@@ -695,7 +695,7 @@
             <option value="Seven Days Guest House — Esmeralda">Seven Days Guest House — Esmeralda</option>
           </optgroup>
           
-          <optgroup label=" North Coast / East Coast">
+          <optgroup label="🏨 North Coast / East Coast">
             <option value="Trinidad Maracas Bay Hotel — Maracas Bay">Trinidad Maracas Bay Hotel — Maracas Bay</option>
             <option value="Coral Cove Marina Hotel — Chaguaramas">Coral Cove Marina Hotel — Chaguaramas</option>
             <option value="CrewsInn Hotel — Chaguaramas">CrewsInn Hotel — Chaguaramas</option>
