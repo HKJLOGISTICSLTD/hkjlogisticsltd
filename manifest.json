@@ -2,7 +2,7 @@
   "name": "HKJ Logistics Admin",
   "short_name": "HKJ Admin",
   "description": "Admin Dashboard for HKJ Logistics",
-  "start_url": "/admin.html",
+  "start_url": "start_url": "/admin/index.html",
   "display": "standalone",
   "background_color": "#0f172a",
   "theme_color": "#facc15",
