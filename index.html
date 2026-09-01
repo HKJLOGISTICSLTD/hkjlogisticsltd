@@ -16,6 +16,11 @@
   <!-- Google Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
   
+  <!-- Digital Time Picker Styles -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/themes/dark.css">
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+  
   <style>
     /* ==========================================
        GLOBAL STYLES & RESETS
@@ -457,7 +462,7 @@
         </div>
         <div>
           <label class="block text-sm font-bold text-gray-300 mb-2"><i class="fas fa-clock text-cyan-400 mr-2"></i><span data-en="Pickup Time" data-es="Hora de Recogida">Pickup Time</span> *</label>
-          <input type="time" name="bookTime" required class="w-full p-3 border rounded-xl focus:outline-none input-focus transition bg-dark-input text-cyan-400">
+          <input type="text" id="bookTimePicker" name="bookTime" required placeholder="Select Time (e.g. 02:30 PM)" class="w-full p-3 border rounded-xl focus:outline-none input-focus transition bg-dark-input text-cyan-400">
         </div>
       </div>
 
@@ -493,7 +498,7 @@
         <select onchange="document.getElementById('pickupAddress').value=this.value" 
           class="w-full p-3 mb-3 border-2 border-gray-600 rounded-xl focus:outline-none bg-dark-input text-white text-sm">
           <option value="">-- Quick Select Popular Location --</option>
-          <optgroup label="✈️ Airports">
+          <optgroup label="️ Airports">
             <option value="Piarco International Airport, Trinidad">Piarco International Airport</option>
             <option value="A.N.R. Robinson International Airport, Tobago">Tobago Airport</option>
           </optgroup>
@@ -517,7 +522,7 @@
           </optgroup>
           
           <!-- CATEGORIZED HOTEL LIST -->
-          <optgroup label=" Port of Spain / St. Clair / St. Ann's / Cascade">
+          <optgroup label="🏨 Port of Spain / St. Clair / St. Ann's / Cascade">
             <option value="Hyatt Regency Trinidad — Port of Spain">Hyatt Regency Trinidad — Port of Spain</option>
             <option value="Hilton Trinidad & Conference Centre — Port of Spain">Hilton Trinidad & Conference Centre — Port of Spain</option>
             <option value="Courtyard by Marriott Port of Spain — Port of Spain">Courtyard by Marriott Port of Spain — Port of Spain</option>
@@ -584,7 +589,7 @@
             <option value="Blanchisseuse Beach Facilities — Blanchisseuse">Blanchisseuse Beach Facilities — Blanchisseuse</option>
           </optgroup>
           
-          <optgroup label="🏨 Other Notable Accommodation">
+          <optgroup label=" Other Notable Accommodation">
             <option value="Pax Guest House — Mount St. Benedict, Tunapuna">Pax Guest House — Mount St. Benedict, Tunapuna</option>
             <option value="La Mamre Resort — Maraval">La Mamre Resort — Maraval</option>
             <option value="The Blue Cottage — Diego Martin">The Blue Cottage — Diego Martin</option>
@@ -634,7 +639,7 @@
           </optgroup>
           
           <!-- CATEGORIZED HOTEL LIST -->
-          <optgroup label=" Port of Spain / St. Clair / St. Ann's / Cascade">
+          <optgroup label="🏨 Port of Spain / St. Clair / St. Ann's / Cascade">
             <option value="Hyatt Regency Trinidad — Port of Spain">Hyatt Regency Trinidad — Port of Spain</option>
             <option value="Hilton Trinidad & Conference Centre — Port of Spain">Hilton Trinidad & Conference Centre — Port of Spain</option>
             <option value="Courtyard by Marriott Port of Spain — Port of Spain">Courtyard by Marriott Port of Spain — Port of Spain</option>
@@ -680,7 +685,7 @@
             <option value="Ramel's Tropical Suites — Cunupia">Ramel's Tropical Suites — Cunupia</option>
           </optgroup>
           
-          <optgroup label="🏨 South Trinidad">
+          <optgroup label=" South Trinidad">
             <option value="Cara Hotels — Claxton Bay">Cara Hotels — Claxton Bay</option>
             <option value="Paria Suites Hotel — La Romaine">Paria Suites Hotel — La Romaine</option>
             <option value="Tradewinds Hotel — San Fernando">Tradewinds Hotel — San Fernando</option>
@@ -1107,6 +1112,15 @@
       const today = new Date().toISOString().split('T')[0];
       dateInput.setAttribute('min', today);
     }
+
+    // Initialize Digital Clock
+    flatpickr("#bookTimePicker", {
+      enableTime: true,
+      noCalendar: true,
+      dateFormat: "h:i K",
+      time_24hr: false,
+      theme: "dark"
+    });
   </script>
 </body>
 </html>
