@@ -1349,22 +1349,16 @@
           message += 'Your HKJ Logistics booking ' + refCode + ' is ready for review!\n\n';
           message += '📅 Date: ' + date + ' at ' + time + '\n';
           message += '📍 Pickup: ' + pickup + '\n';
-          message += ' Drop-off: ' + dropoff + '\n';
+          message += '🏁 Drop-off: ' + dropoff + '\n';
           message += '💰 Base Price: $' + price + ' TTD ($' + usdPrice + ' USD)\n';
-          
-          if (surchargeAmount > 0) {
-            message += '️ Surcharge: +$' + surchargeAmount + ' TTD (' + getSurchargeLabel(surchargeType) + ')\n';
-          }
-          if (waitingFee > 0) {
-            message += '⏳ Waiting Time (' + waitingMins + ' min): +$' + waitingFee + ' TTD (~$' + convertTTDtoUSD(waitingFee) + ' USD)\n';
-          }
-          
+          if (surchargeAmount > 0) { message += '⚠️ Surcharge: +$' + surchargeAmount + ' TTD (' + getSurchargeLabel(surchargeType) + ')\n'; }
+          if (waitingFee > 0) { message += '⏳ Waiting Time (' + waitingMins + ' min): +$' + waitingFee + ' TTD (~$' + convertTTDtoUSD(waitingFee) + ' USD)\n'; }
           message += '💵 TOTAL: $' + totalPrice.toFixed(2) + ' TTD ($' + totalUSD + ' USD)\n\n';
-          message += ' HOW IT WORKS:\n';
+          message += '📋 HOW IT WORKS:\n';
           message += '1. We received your request. ✓\n';
           message += '2. This is your personalized quote. ✓\n';
           message += '3. Click the link below to CONFIRM or DECLINE your booking.\n\n';
-          message += ' Confirm or Decline here:\n';
+          message += '👉 Confirm or Decline here:\n';
           message += 'https://hkjlogisticsltdtt.vercel.app/confirm.html?code=' + refCode + '\n\n';
           message += 'Thank you,\nHayden Joseph\nManaging Director, HKJ Logistics Ltd\n+1 (868) 780-0300';
           
