@@ -1,0 +1,22 @@
+{
+  "name": "HKJ Logistics Admin",
+  "short_name": "HKJ Admin",
+  "description": "Admin Dashboard for HKJ Logistics",
+  "start_url": "/admin.html",
+  "display": "standalone",
+  "background_color": "#0f172a",
+  "theme_color": "#facc15",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "/icon-192.PNG",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/icon-512.PNG",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
