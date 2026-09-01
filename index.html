@@ -407,6 +407,7 @@
 
   <footer class="glass-card rounded-2xl shadow-lg p-6 text-center mb-6 border-t border-white/10"><div class="flex justify-center items-center mb-4"><div class="w-10 h-10 bg-gradient-to-br from-yellow-400 to-yellow-500 rounded-full flex items-center justify-center mr-3"><i class="fas fa-truck text-black"></i></div><span class="text-xl font-bold text-white">HKJ <span class="text-yellow-500">Logistics</span></span></div><p class="text-gray-400">&copy; 2026 HKJ Logistics Ltd. <span data-en="All rights reserved." data-es="Todos los derechos reservados.">All rights reserved.</span></p><p class="text-sm text-gray-500 mt-2" data-en="Serving Trinidad with pride and professionalism." data-es="Sirviendo a Trinidad con orgullo y profesionalismo.">Serving Trinidad with pride and professionalism.</p></footer>
   <button id="scrollToTop" class="hidden fixed bottom-8 right-8 bg-yellow-500 text-black w-12 h-12 rounded-full shadow-lg hover:bg-yellow-600 transition z-30 flex items-center justify-center"><i class="fas fa-arrow-up"></i></button>
+ 
   <script>
     const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw1Fji0W9KckebjpfTcMLLtRNdf8fVMT_yQ_3PPrwg6kBZxsK8C-12TB-bAeCLY2ckwcg/exec'; 
     const form = document.getElementById('bookingForm');
@@ -420,25 +421,40 @@
       if (select) {
         currentLang = select.value;
         // Update the hidden input so the Apps Script knows which language to use for WhatsApp
-        document.getElementById('bookingLanguage').value = currentLang;
+        const langInput = document.getElementById('bookingLanguage');
+        if (langInput) {
+          langInput.value = currentLang;
+        }
         translatePage();
       }
     }
     
     function translatePage() {
+      // Update dropdown selection
       const select = document.getElementById('languageSelect');
       if (select) select.value = currentLang;
       
+      // Update all elements with data-en and data-es attributes
       const elements = document.querySelectorAll('[data-en][data-es]');
       elements.forEach(element => {
-        element.textContent = element.getAttribute(`data-${currentLang}`);
+        if (currentLang === 'es') {
+          element.textContent = element.getAttribute('data-es');
+        } else {
+          element.textContent = element.getAttribute('data-en');
+        }
       });
       
-      const inputs = document.querySelectorAll('input[placeholder-en][placeholder-es]');
+      // Update placeholders for inputs
+      const inputs = document.querySelectorAll('input[placeholder]');
       inputs.forEach(input => {
-        input.placeholder = input.getAttribute(`placeholder-${currentLang}`);
+        if (currentLang === 'es' && input.getAttribute('placeholder-es')) {
+          input.placeholder = input.getAttribute('placeholder-es');
+        } else if (input.getAttribute('placeholder-en')) {
+          input.placeholder = input.getAttribute('placeholder-en');
+        }
       });
       
+      // Save preference
       localStorage.setItem('hkjLang', currentLang);
     }
     
@@ -447,7 +463,11 @@
       const savedLang = localStorage.getItem('hkjLang');
       if (savedLang) {
         currentLang = savedLang;
-        document.getElementById('bookingLanguage').value = currentLang;
+        // Update hidden field
+        const langInput = document.getElementById('bookingLanguage');
+        if (langInput) {
+          langInput.value = currentLang;
+        }
         translatePage();
       }
     });
@@ -481,7 +501,10 @@
       e.preventDefault();
       
       // Ensure the hidden language field is up to date
-      document.getElementById('bookingLanguage').value = currentLang;
+      const langInput = document.getElementById('bookingLanguage');
+      if (langInput) {
+        langInput.value = currentLang;
+      }
 
       console.log('=== FORM SUBMISSION DEBUG START ===');
       const formData = new FormData(form);
@@ -547,5 +570,3 @@
   </script>
 </body>
 </html>
-```
- 
