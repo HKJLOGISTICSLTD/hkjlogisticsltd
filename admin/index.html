@@ -4,6 +4,15 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Admin Dashboard - HKJ Logistics</title>
+  
+  <!-- PWA Meta Tags for Mobile App Experience -->
+  <link rel="manifest" href="/manifest.json">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="theme-color" content="#0f172a">
+  <link rel="apple-touch-icon" href="/icon-192.PNG">
+
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
@@ -340,7 +349,7 @@
       }
     }
 
-    // NEW: Calculate waiting time fee with updated pricing
+    // Calculate waiting time fee with updated pricing
     function calculateWaitingTime(minutes) {
       const mins = parseInt(minutes) || 0;
       if (mins <= 15) return 0;
@@ -1344,7 +1353,7 @@
           message += '💰 Base Price: $' + price + ' TTD ($' + usdPrice + ' USD)\n';
           
           if (surchargeAmount > 0) {
-            message += '⚠️ Surcharge: +$' + surchargeAmount + ' TTD (' + getSurchargeLabel(surchargeType) + ')\n';
+            message += '️ Surcharge: +$' + surchargeAmount + ' TTD (' + getSurchargeLabel(surchargeType) + ')\n';
           }
           if (waitingFee > 0) {
             message += '⏳ Waiting Time (' + waitingMins + ' min): +$' + waitingFee + ' TTD (~$' + convertTTDtoUSD(waitingFee) + ' USD)\n';
@@ -1417,10 +1426,23 @@
             if (totalPrice && ['Completed', 'Confirmed', 'Price Sent'].includes(status)) totalRevenue += totalPrice;
           });
           const totalUSD = Math.round(totalRevenue / 6.80);
-          const report = '📊 HKJ Logistics Report\n\n📈 BOOKING STATUS:\n─────────────────\nTotal Bookings: ' + bookings.length + '\n⏳ Pending: ' + pending + '\n💰 Price Sent: ' + priceSent + '\n✅ Confirmed: ' + confirmed + '\n✔️ Completed: ' + completed + '\n❌ Cancelled: ' + cancelled + '\n\n💵 TOTAL REVENUE (with surcharges & waiting):\n   $' + totalRevenue.toFixed(2) + ' TTD\n   $' + totalUSD + ' USD (rounded)\n─────────────────\nExchange Rate: 1 USD = 6.80 TTD\nGenerated: ' + new Date().toLocaleString();
+          const report = '📊 HKJ Logistics Report\n\n BOOKING STATUS:\n─────────────────\nTotal Bookings: ' + bookings.length + '\n Pending: ' + pending + '\n💰 Price Sent: ' + priceSent + '\n✅ Confirmed: ' + confirmed + '\n✔️ Completed: ' + completed + '\n❌ Cancelled: ' + cancelled + '\n\n💵 TOTAL REVENUE (with surcharges & waiting):\n   $' + totalRevenue.toFixed(2) + ' TTD\n   $' + totalUSD + ' USD (rounded)\n─────────────────\nExchange Rate: 1 USD = 6.80 TTD\nGenerated: ' + new Date().toLocaleString();
           alert(report);
         }
       } catch (error) { alert('Error generating report.'); }
+    }
+  </script>
+
+  <!-- Service Worker Registration for PWA (Mobile App) -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', function() {
+        navigator.serviceWorker.register('/sw.js').then(function(registration) {
+          console.log('ServiceWorker registration successful');
+        }, function(err) {
+          console.log('ServiceWorker registration failed: ', err);
+        });
+      });
     }
   </script>
 </body>
