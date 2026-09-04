@@ -179,9 +179,7 @@
     <div class="text-center"><h3 class="text-3xl font-bold text-white section-title" data-en="Book Your Ride" data-es="Reserva tu Viaje">Book Your Ride</h3><p class="text-gray-400 mt-4" data-en="Fill out the form below and we will get back to you with a quote shortly." data-es="Completa el formulario a continuación y te contactaremos con una cotización pronto.">Fill out the form below and we will get back to you with a quote shortly.</p></div>
     
     <form id="bookingForm" class="space-y-6 mt-8 max-w-4xl mx-auto">
-      <!-- HIDDEN LANGUAGE FIELD FOR WHATSAPP AUTO-DETECT -->
       <input type="hidden" name="language" id="bookingLanguage" value="en">
-      <!-- HIDDEN GPS FIELDS -->
       <input type="hidden" name="pickupLat" id="pickupLat" value="">
       <input type="hidden" name="pickupLng" id="pickupLng" value="">
 
@@ -250,7 +248,7 @@
             <option value="Samise Villa — St. Ann's">Samise Villa — St. Ann's</option>
             <option value="Kiskadee Korner — St. Clair">Kiskadee Korner — St. Clair</option>
           </optgroup>
-          <optgroup label="🏨 Piarco / Trincity / East Trinidad">
+          <optgroup label=" Piarco / Trincity / East Trinidad">
             <option value="Holiday Inn Express & Suites Trincity Trinidad Airport by IHG — Trincity">Holiday Inn Express & Suites Trincity Trinidad Airport by IHG — Trincity</option>
             <option value="Regent Star Hotel — Piarco">Regent Star Hotel — Piarco</option>
             <option value="Runway Hotel and Restaurant — Piarco">Runway Hotel and Restaurant — Piarco</option>
@@ -269,7 +267,7 @@
             <option value="Hacienda Jacana — Talparo">Hacienda Jacana — Talparo</option>
             <option value="Ramel's Tropical Suites — Cunupia">Ramel's Tropical Suites — Cunupia</option>
           </optgroup>
-          <optgroup label="🏨 South Trinidad">
+          <optgroup label=" South Trinidad">
             <option value="Cara Hotels — Claxton Bay">Cara Hotels — Claxton Bay</option>
             <option value="Paria Suites Hotel — La Romaine">Paria Suites Hotel — La Romaine</option>
             <option value="Tradewinds Hotel — San Fernando">Tradewinds Hotel — San Fernando</option>
@@ -277,7 +275,7 @@
             <option value="South Western Court — Point Fortin">South Western Court — Point Fortin</option>
             <option value="Seven Days Guest House — Esmeralda">Seven Days Guest House — Esmeralda</option>
           </optgroup>
-          <optgroup label=" North Coast / East Coast">
+          <optgroup label="🏨 North Coast / East Coast">
             <option value="Trinidad Maracas Bay Hotel — Maracas Bay">Trinidad Maracas Bay Hotel — Maracas Bay</option>
             <option value="Coral Cove Marina Hotel — Chaguaramas">Coral Cove Marina Hotel — Chaguaramas</option>
             <option value="CrewsInn Hotel — Chaguaramas">CrewsInn Hotel — Chaguaramas</option>
@@ -314,7 +312,7 @@
           <optgroup label="✈️ Airports">
             <option value="Piarco International Airport, Trinidad">Piarco International Airport</option>
           </optgroup>
-          <optgroup label="🛍️ Malls & Shopping">
+          <optgroup label="️ Malls & Shopping">
             <option value="C3 Centre, Sir Solomon Hochoy Highway, San Fernando">C3 Centre (San Fernando)</option>
             <option value="Grand Bazaar, Chaguanas">Grand Bazaar (Chaguanas)</option>
             <option value="West Mall, Valsayn">West Mall (Valsayn)</option>
@@ -370,7 +368,7 @@
             <option value="Emporis Resorts — D'Abadie">Emporis Resorts — D'Abadie</option>
             <option value="HADCO Experiences at Asa Wright Nature Centre — Arima">HADCO Experiences at Asa Wright Nature Centre — Arima</option>
           </optgroup>
-          <optgroup label=" Central Trinidad">
+          <optgroup label="🏨 Central Trinidad">
             <option value="Metro Hotel — Couva">Metro Hotel — Couva</option>
             <option value="Hacienda Jacana — Talparo">Hacienda Jacana — Talparo</option>
             <option value="Ramel's Tropical Suites — Cunupia">Ramel's Tropical Suites — Cunupia</option>
@@ -484,6 +482,31 @@
         document.getElementById('pickupLat').value = e.latlng.lat;
         document.getElementById('pickupLng').value = e.latlng.lng;
       });
+
+      // Add "Use My Current Location" button
+      var locateControl = L.control({position: 'topright'});
+      locateControl.onAdd = function(map) {
+        var div = L.DomUtil.create('div', 'leaflet-bar leaflet-control');
+        div.innerHTML = '<a href="#" title="Use my current location" style="display:block;width:30px;height:30px;line-height:30px;text-align:center;font-size:16px;background:#fff;color:#000;">📍</a>';
+        div.onclick = function(e) {
+          e.preventDefault();
+          if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(function(position) {
+              var lat = position.coords.latitude;
+              var lng = position.coords.longitude;
+              map.setView([lat, lng], 16);
+              if (marker) map.removeLayer(marker);
+              marker = L.marker([lat, lng]).addTo(map);
+              document.getElementById('pickupLat').value = lat;
+              document.getElementById('pickupLng').value = lng;
+            }, function(error) {
+              alert('Could not get your location. Please drop a pin manually.');
+            });
+          }
+        };
+        return div;
+      };
+      locateControl.addTo(map);
     });
 
     const mainNav = document.getElementById('mainNav');
