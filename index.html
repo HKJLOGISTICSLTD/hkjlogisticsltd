@@ -469,44 +469,76 @@
         translatePage();
       }
       
-      // INITIALIZE THE PIN DROP MAP
-      var map = L.map('pickupMap').setView([10.6918, -61.2225], 10); // Centered on Trinidad
-      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '© OpenStreetMap contributors'
-      }).addTo(map);
+         // INITIALIZE THE PIN DROP MAP WITH AUTO-ADDRESS
+    var map = L.map('pickupMap').setView([10.6918, -61.2225], 10); // Centered on Trinidad
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '© OpenStreetMap contributors'
+    }).addTo(map);
 
-      var marker;
-      map.on('click', function(e) {
-        if (marker) map.removeLayer(marker);
-        marker = L.marker(e.latlng).addTo(map);
-        document.getElementById('pickupLat').value = e.latlng.lat;
-        document.getElementById('pickupLng').value = e.latlng.lng;
-      });
+    var marker;
 
-      // Add "Use My Current Location" button
-      var locateControl = L.control({position: 'topright'});
-      locateControl.onAdd = function(map) {
-        var div = L.DomUtil.create('div', 'leaflet-bar leaflet-control');
-        div.innerHTML = '<a href="#" title="Use my current location" style="display:block;width:30px;height:30px;line-height:30px;text-align:center;font-size:16px;background:#fff;color:#000;">📍</a>';
-        div.onclick = function(e) {
-          e.preventDefault();
-          if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(function(position) {
-              var lat = position.coords.latitude;
-              var lng = position.coords.longitude;
-              map.setView([lat, lng], 16);
-              if (marker) map.removeLayer(marker);
-              marker = L.marker([lat, lng]).addTo(map);
-              document.getElementById('pickupLat').value = lat;
-              document.getElementById('pickupLng').value = lng;
-            }, function(error) {
-              alert('Could not get your location. Please drop a pin manually.');
-            });
+    // Function to get address from coordinates
+    function fetchAddress(lat, lng) {
+      // Show loading state in the address box
+      document.getElementById('pickupAddress').value = "Finding address...";
+      
+      const url = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`;
+      
+      fetch(url)
+        .then(response => response.json())
+        .then(data => {
+          if (data && data.display_name) {
+            // If we get an address, put it in the box!
+            document.getElementById('pickupAddress').value = data.display_name;
+          } else {
+            // Fallback if no address found
+            document.getElementById('pickupAddress').value = "Pinned Location (Lat: " + lat.toFixed(5) + ", Lng: " + lng.toFixed(5) + ")";
           }
-        };
-        return div;
+        })
+        .catch(err => {
+          console.error("Geocoding error", err);
+          document.getElementById('pickupAddress').value = "Pinned Location (Coordinates saved)";
+        });
+    }
+
+    // When user clicks the map
+    map.on('click', function(e) {
+      if (marker) map.removeLayer(marker);
+      marker = L.marker(e.latlng).addTo(map);
+      document.getElementById('pickupLat').value = e.latlng.lat;
+      document.getElementById('pickupLng').value = e.latlng.lng;
+      
+      // Trigger the address finder
+      fetchAddress(e.latlng.lat, e.latlng.lng);
+    });
+
+    // Add "Use My Current Location" button
+    var locateControl = L.control({position: 'topright'});
+    locateControl.onAdd = function(map) {
+      var div = L.DomUtil.create('div', 'leaflet-bar leaflet-control');
+      div.innerHTML = '<a href="#" title="Use my current location" style="display:block;width:30px;height:30px;line-height:30px;text-align:center;font-size:16px;background:#fff;color:#000;">📍</a>';
+      div.onclick = function(e) {
+        e.preventDefault();
+        if (navigator.geolocation) {
+          navigator.geolocation.getCurrentPosition(function(position) {
+            var lat = position.coords.latitude;
+            var lng = position.coords.longitude;
+            map.setView([lat, lng], 16);
+            if (marker) map.removeLayer(marker);
+            marker = L.marker([lat, lng]).addTo(map);
+            document.getElementById('pickupLat').value = lat;
+            document.getElementById('pickupLng').value = lng;
+            
+            // Trigger the address finder
+            fetchAddress(lat, lng);
+          }, function(error) {
+            alert('Could not get your location. Please drop a pin manually.');
+          });
+        }
       };
-      locateControl.addTo(map);
+      return div;
+    };
+    locateControl.addTo(map);
     });
 
     const mainNav = document.getElementById('mainNav');
