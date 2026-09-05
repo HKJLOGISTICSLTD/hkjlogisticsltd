@@ -648,7 +648,7 @@
       var locateControl = L.control({position: 'topright'});
       locateControl.onAdd = function(map) {
         var div = L.DomUtil.create('div', 'leaflet-bar leaflet-control');
-        div.innerHTML = '<a href="#" title="Use my current location" style="display:block;width:30px;height:30px;line-height:30px;text-align:center;font-size:16px;background:#fff;color:#000;"></a>';
+        div.innerHTML = div.innerHTML = '<a href="#" title="Use my current location" style="display:block;width:30px;height:30px;line-height:30px;text-align:center;font-size:16px;background:#fff;color:#000;"></a>';
         div.onclick = function(e) {
           e.preventDefault();
           if (navigator.geolocation) {
