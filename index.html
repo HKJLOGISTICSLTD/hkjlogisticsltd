@@ -74,7 +74,7 @@
     #pickupMap { height: 250px; width: 100%; border-radius: 0.75rem; margin-top: 1rem; z-index: 1; border: 2px solid rgba(255,255,255,0.1); }
     .leaflet-container { background: #1e293b; }
     
-    /* FIXED Autocomplete Styles */
+    /* FIXED Autocomplete Styles - Trinidad Only */
     .autocomplete-container { 
       position: relative; 
       z-index: 1000;
@@ -357,7 +357,7 @@
           <optgroup label="✈️ Airports">
             <option value="Piarco International Airport, Trinidad">Piarco International Airport</option>
           </optgroup>
-          <optgroup label="️ Malls & Shopping">
+          <optgroup label="🛍️ Malls & Shopping">
             <option value="C3 Centre, Sir Solomon Hochoy Highway, San Fernando">C3 Centre (San Fernando)</option>
             <option value="Grand Bazaar, Chaguanas">Grand Bazaar (Chaguanas)</option>
             <option value="West Mall, Valsayn">West Mall (Valsayn)</option>
@@ -367,7 +367,7 @@
             <option value="South Park Mall, San Fernando">South Park Mall, San Fernando</option>
             <option value="Gulf City Mall, La Romain">Gulf City Mall, La Romain</option>
           </optgroup>
-          <optgroup label="️ Major Areas">
+          <optgroup label="🏙️ Major Areas">
             <option value="Port of Spain, Trinidad">Port of Spain</option>
             <option value="San Fernando, Trinidad">San Fernando</option>
             <option value="Chaguanas, Trinidad">Chaguanas</option>
@@ -399,7 +399,7 @@
             <option value="Samise Villa — St. Ann's">Samise Villa — St. Ann's</option>
             <option value="Kiskadee Korner — St. Clair">Kiskadee Korner — St. Clair</option>
           </optgroup>
-          <optgroup label="🏨 Piarco / Trincity / East Trinidad">
+          <optgroup label=" Piarco / Trincity / East Trinidad">
             <option value="Holiday Inn Express & Suites Trincity Trinidad Airport by IHG — Trincity">Holiday Inn Express & Suites Trincity Trinidad Airport by IHG — Trincity</option>
             <option value="Regent Star Hotel — Piarco">Regent Star Hotel — Piarco</option>
             <option value="Runway Hotel and Restaurant — Piarco">Runway Hotel and Restaurant — Piarco</option>
@@ -413,12 +413,12 @@
             <option value="Emporis Resorts — D'Abadie">Emporis Resorts — D'Abadie</option>
             <option value="HADCO Experiences at Asa Wright Nature Centre — Arima">HADCO Experiences at Asa Wright Nature Centre — Arima</option>
           </optgroup>
-          <optgroup label="🏨 Central Trinidad">
+          <optgroup label=" Central Trinidad">
             <option value="Metro Hotel — Couva">Metro Hotel — Couva</option>
             <option value="Hacienda Jacana — Talparo">Hacienda Jacana — Talparo</option>
             <option value="Ramel's Tropical Suites — Cunupia">Ramel's Tropical Suites — Cunupia</option>
           </optgroup>
-          <optgroup label="🏨 South Trinidad">
+          <optgroup label=" South Trinidad">
             <option value="Cara Hotels — Claxton Bay">Cara Hotels — Claxton Bay</option>
             <option value="Paria Suites Hotel — La Romaine">Paria Suites Hotel — La Romaine</option>
             <option value="Tradewinds Hotel — San Fernando">Tradewinds Hotel — San Fernando</option>
@@ -426,7 +426,7 @@
             <option value="South Western Court — Point Fortin">South Western Court — Point Fortin</option>
             <option value="Seven Days Guest House — Esmeralda">Seven Days Guest House — Esmeralda</option>
           </optgroup>
-          <optgroup label=" North Coast / East Coast">
+          <optgroup label="🏨 North Coast / East Coast">
             <option value="Trinidad Maracas Bay Hotel — Maracas Bay">Trinidad Maracas Bay Hotel — Maracas Bay</option>
             <option value="Coral Cove Marina Hotel — Chaguaramas">Coral Cove Marina Hotel — Chaguaramas</option>
             <option value="CrewsInn Hotel — Chaguaramas">CrewsInn Hotel — Chaguaramas</option>
@@ -445,7 +445,7 @@
           </optgroup>
         </select>
         
-        <!-- AUTOCOMPLETE CONTAINER -->
+        <!-- AUTOCOMPLETE CONTAINER - TRINIDAD ONLY -->
         <div class="autocomplete-container mb-3">
           <input type="text" id="pickupAddress" name="pickupAddressText" required class="w-full p-3 border rounded-xl focus:outline-none input-focus transition bg-dark-input" placeholder="Or type your address (autocomplete enabled)..." oninput="handleAddressInput(this.value, 'pickupResults')" autocomplete="off">
           <div id="pickupResults" class="autocomplete-results"></div>
@@ -479,7 +479,7 @@
             <option value="South Park Mall, San Fernando">South Park Mall, San Fernando</option>
             <option value="Gulf City Mall, La Romain">Gulf City Mall, La Romain</option>
           </optgroup>
-          <optgroup label="️ Major Areas">
+          <optgroup label="🏙️ Major Areas">
             <option value="Port of Spain, Trinidad">Port of Spain</option>
             <option value="San Fernando, Trinidad">San Fernando</option>
             <option value="Chaguanas, Trinidad">Chaguanas</option>
@@ -487,7 +487,7 @@
             <option value="Couva, Trinidad">Couva</option>
             <option value="Point Fortin, Trinidad">Point Fortin</option>
           </optgroup>
-          <optgroup label="🏨 Port of Spain / St. Clair / St. Ann's / Cascade">
+          <optgroup label=" Port of Spain / St. Clair / St. Ann's / Cascade">
             <option value="Hyatt Regency Trinidad — Port of Spain">Hyatt Regency Trinidad — Port of Spain</option>
             <option value="Hilton Trinidad & Conference Centre — Port of Spain">Hilton Trinidad & Conference Centre — Port of Spain</option>
             <option value="Courtyard by Marriott Port of Spain — Port of Spain">Courtyard by Marriott Port of Spain — Port of Spain</option>
@@ -511,7 +511,7 @@
             <option value="Samise Villa — St. Ann's">Samise Villa — St. Ann's</option>
             <option value="Kiskadee Korner — St. Clair">Kiskadee Korner — St. Clair</option>
           </optgroup>
-          <optgroup label="🏨 Piarco / Trincity / East Trinidad">
+          <optgroup label=" Piarco / Trincity / East Trinidad">
             <option value="Holiday Inn Express & Suites Trincity Trinidad Airport by IHG — Trincity">Holiday Inn Express & Suites Trincity Trinidad Airport by IHG — Trincity</option>
             <option value="Regent Star Hotel — Piarco">Regent Star Hotel — Piarco</option>
             <option value="Runway Hotel and Restaurant — Piarco">Runway Hotel and Restaurant — Piarco</option>
@@ -538,7 +538,7 @@
             <option value="South Western Court — Point Fortin">South Western Court — Point Fortin</option>
             <option value="Seven Days Guest House — Esmeralda">Seven Days Guest House — Esmeralda</option>
           </optgroup>
-          <optgroup label=" North Coast / East Coast">
+          <optgroup label="🏨 North Coast / East Coast">
             <option value="Trinidad Maracas Bay Hotel — Maracas Bay">Trinidad Maracas Bay Hotel — Maracas Bay</option>
             <option value="Coral Cove Marina Hotel — Chaguaramas">Coral Cove Marina Hotel — Chaguaramas</option>
             <option value="CrewsInn Hotel — Chaguaramas">CrewsInn Hotel — Chaguaramas</option>
@@ -557,7 +557,7 @@
           </optgroup>
         </select>
         
-        <!-- AUTOCOMPLETE CONTAINER -->
+        <!-- AUTOCOMPLETE CONTAINER - TRINIDAD ONLY -->
         <div class="autocomplete-container mb-3">
           <input type="text" id="dropoffAddress" name="dropoffAddressText" required class="w-full p-3 border rounded-xl focus:outline-none input-focus transition bg-dark-input" placeholder="Or type your address (autocomplete enabled)..." oninput="handleAddressInput(this.value, 'dropoffResults')" autocomplete="off">
           <div id="dropoffResults" class="autocomplete-results"></div>
@@ -569,7 +569,7 @@
 
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div><label class="block text-sm font-bold text-gray-300 mb-2"><i class="fas fa-car text-indigo-400 mr-2"></i><span data-en="Vehicle Type" data-es="Tipo de Vehículo">Vehicle Type</span> *</label><select name="vehicleType" required class="w-full p-3 border rounded-xl focus:outline-none input-focus transition bg-dark-input"><option value="" data-en="Select a vehicle..." data-es="Selecciona un vehículo...">Select a vehicle...</option><option value="Standard Sedan (1-4 Passengers)" data-en="Standard Sedan (1-4 Passengers)" data-es="Sedán Estándar (1-4 Pasajeros)">Standard Sedan (1-4 Passengers)</option><option value="SUV (5-7 Passengers) - Security Deposit Required" data-en="SUV (5-7 Passengers) - Security Deposit Required" data-es="SUV (5-7 Pasajeros) - Depósito de Seguridad Requerido">SUV (5-7 Passengers) <span class="text-red-500 font-bold">- Security Deposit Required</span></option><option value="Van (8-12 Passengers) - Security Deposit Required" data-en="Van (8-12 Passengers) - Security Deposit Required" data-es="Furgoneta (8-12 Pasajeros) - Depósito de Seguridad Requerido">Van (8-12 Passengers) <span class="text-red-500 font-bold">- Security Deposit Required</span></option><option value="Luxury Vehicle - Security Deposit Required" data-en="Luxury Vehicle - Security Deposit Required" data-es="Vehículo de Lujo - Depósito de Seguridad Requerido">Luxury Vehicle <span class="text-red-500 font-bold">- Security Deposit Required</span></option></select></div>
-        <div><label class="block text-sm font-bold text-gray-300 mb-2"><i class="fas fa-concierge-bell text-pink-400 mr-2"></i><span data-en="Service Type" data-es="Tipo de Servicio">Service Type</span> *</label><select name="serviceType" id="serviceType" required onchange="handleServiceTypeChange()" class="w-full p-3 border rounded-xl focus:outline-none input-focus transition bg-dark-input"><option value="" data-en="Select a service..." data-es="Selecciona un servicio...">Select a service...</option><option value="private" data-en="🚗 Private Transfer (single person)" data-es="🚗 Private Transfer (single person)">🚗 Private Transfer (single person)</option><option value="shared" data-en="👥 Shared Ride (groups)" data-es="👥 Shared Ride (groups)">👥 Shared Ride (groups)</option><option value="hourly" data-en="⏰ Hourly Charter (add $100.00 per hour rate automatically)" data-es="⏰ Hourly Charter (add $100.00 per hour rate automatically)">⏰ Hourly Charter (add $100.00 per hour rate automatically)</option><option value="caroni" data-en="🦜 Caroni Bird Sanctuary Tour Taxi Service" data-es="🦜 Caroni Bird Sanctuary Tour Taxi Service">🦜 Caroni Bird Sanctuary Tour Taxi Service</option></select></div>
+        <div><label class="block text-sm font-bold text-gray-300 mb-2"><i class="fas fa-concierge-bell text-pink-400 mr-2"></i><span data-en="Service Type" data-es="Tipo de Servicio">Service Type</span> *</label><select name="serviceType" id="serviceType" required onchange="handleServiceTypeChange()" class="w-full p-3 border rounded-xl focus:outline-none input-focus transition bg-dark-input"><option value="" data-en="Select a service..." data-es="Selecciona un servicio...">Select a service...</option><option value="private" data-en="🚗 Private Transfer (single person)" data-es="🚗 Private Transfer (single person)">🚗 Private Transfer (single person)</option><option value="shared" data-en="👥 Shared Ride (groups)" data-es=" Shared Ride (groups)">👥 Shared Ride (groups)</option><option value="hourly" data-en="⏰ Hourly Charter (add $100.00 per hour rate automatically)" data-es="⏰ Hourly Charter (add $100.00 per hour rate automatically)">⏰ Hourly Charter (add $100.00 per hour rate automatically)</option><option value="caroni" data-en="🦜 Caroni Bird Sanctuary Tour Taxi Service" data-es=" Caroni Bird Sanctuary Tour Taxi Service"> Caroni Bird Sanctuary Tour Taxi Service</option></select></div>
       </div>
       
       <!-- Service Type Warning Messages -->
@@ -683,7 +683,7 @@
       var locateControl = L.control({position: 'topright'});
       locateControl.onAdd = function(map) {
         var div = L.DomUtil.create('div', 'leaflet-bar leaflet-control');
-        div.innerHTML = '<a href="#" title="Use my current location" style="display:block;width:30px;height:30px;line-height:30px;text-align:center;font-size:16px;background:#fff;color:#000;">📍</a>';
+        div.innerHTML = '<a href="#" title="Use my current location" style="display:block;width:30px;height:30px;line-height:30px;text-align:center;font-size:16px;background:#fff;color:#000;"></a>';
         div.onclick = function(e) {
           e.preventDefault();
           if (navigator.geolocation) {
@@ -706,7 +706,7 @@
       locateControl.addTo(map);
     });
 
-    // Address Autocomplete Function
+    // Address Autocomplete Function - TRINIDAD ONLY
     let autocompleteTimeout;
     function handleAddressInput(value, resultsId) {
       clearTimeout(autocompleteTimeout);
@@ -718,7 +718,8 @@
       }
       
       autocompleteTimeout = setTimeout(function() {
-        const url = const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(value)}&countrycodes=tt&limit=5&viewbox=-61.9,10.9,-60.5,10.0&bounded=1`;
+        // FIXED: Restrict to Trinidad & Tobago only
+        const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(value)}&countrycodes=tt&limit=5&viewbox=-61.9,10.9,-60.5,10.0&bounded=1`;
         
         fetch(url)
           .then(response => response.json())
@@ -788,7 +789,7 @@
         suggestedPriceInput.value = "";
         
         warningDiv.classList.remove('hidden');
-        warningTitle.textContent = '⏰ Hourly Charter Pricing';
+        warningTitle.textContent = ' Hourly Charter Pricing';
         warningText.textContent = '$100 TTD per hour. Minimum 2 hours booking required. Final price calculated based on total hours.';
       } else {
         // Re-enable dropoff if it was locked
