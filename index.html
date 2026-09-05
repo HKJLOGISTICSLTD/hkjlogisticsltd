@@ -73,6 +73,13 @@
     /* Map Styles */
     #pickupMap { height: 250px; width: 100%; border-radius: 0.75rem; margin-top: 1rem; z-index: 1; border: 2px solid rgba(255,255,255,0.1); }
     .leaflet-container { background: #1e293b; }
+    
+    /* Autocomplete Styles */
+    .autocomplete-container { position: relative; }
+    .autocomplete-results { position: absolute; top: 100%; left: 0; right: 0; background: white; border: 1px solid #e5e7eb; border-radius: 0.5rem; max-height: 200px; overflow-y: auto; z-index: 1000; box-shadow: 0 10px 25px rgba(0,0,0,0.3); display: none; }
+    .autocomplete-result { padding: 0.75rem; cursor: pointer; border-bottom: 1px solid #e5e7eb; transition: all 0.2s ease; }
+    .autocomplete-result:hover { background: linear-gradient(135deg, #fef3c7, #fde68a); color: #92400e; }
+    .autocomplete-result:last-child { border-bottom: none; }
   </style>
 </head>
 <body class="p-4 md:p-6">
@@ -203,10 +210,10 @@
         <label class="block text-sm font-bold text-gray-300 mb-2"><i class="fas fa-map-marker-alt text-green-500 mr-2"></i><span data-en="Pickup Location" data-es="Lugar de Recogida">Pickup Location</span> *</label>
         <select onchange="document.getElementById('pickupAddress').value=this.value" class="w-full p-3 mb-3 border-2 border-gray-600 rounded-xl focus:outline-none bg-dark-input text-white text-sm">
           <option value="">-- Quick Select Popular Location --</option>
-          <optgroup label="✈️ Airports">
+          <optgroup label="️ Airports">
             <option value="Piarco International Airport, Trinidad">Piarco International Airport</option>
           </optgroup>
-          <optgroup label="🛍️ Malls & Shopping">
+          <optgroup label="️ Malls & Shopping">
             <option value="C3 Centre, Sir Solomon Hochoy Highway, San Fernando">C3 Centre (San Fernando)</option>
             <option value="Grand Bazaar, Chaguanas">Grand Bazaar (Chaguanas)</option>
             <option value="West Mall, Valsayn">West Mall (Valsayn)</option>
@@ -262,7 +269,7 @@
             <option value="Emporis Resorts — D'Abadie">Emporis Resorts — D'Abadie</option>
             <option value="HADCO Experiences at Asa Wright Nature Centre — Arima">HADCO Experiences at Asa Wright Nature Centre — Arima</option>
           </optgroup>
-          <optgroup label="🏨 Central Trinidad">
+          <optgroup label=" Central Trinidad">
             <option value="Metro Hotel — Couva">Metro Hotel — Couva</option>
             <option value="Hacienda Jacana — Talparo">Hacienda Jacana — Talparo</option>
             <option value="Ramel's Tropical Suites — Cunupia">Ramel's Tropical Suites — Cunupia</option>
@@ -275,7 +282,7 @@
             <option value="South Western Court — Point Fortin">South Western Court — Point Fortin</option>
             <option value="Seven Days Guest House — Esmeralda">Seven Days Guest House — Esmeralda</option>
           </optgroup>
-          <optgroup label="🏨 North Coast / East Coast">
+          <optgroup label=" North Coast / East Coast">
             <option value="Trinidad Maracas Bay Hotel — Maracas Bay">Trinidad Maracas Bay Hotel — Maracas Bay</option>
             <option value="Coral Cove Marina Hotel — Chaguaramas">Coral Cove Marina Hotel — Chaguaramas</option>
             <option value="CrewsInn Hotel — Chaguaramas">CrewsInn Hotel — Chaguaramas</option>
@@ -286,14 +293,20 @@
             <option value="Oceanview Eco Lodge — Manzanilla">Oceanview Eco Lodge — Manzanilla</option>
             <option value="Blanchisseuse Beach Facilities — Blanchisseuse">Blanchisseuse Beach Facilities — Blanchisseuse</option>
           </optgroup>
-          <optgroup label="🏨 Other Notable Accommodation">
+          <optgroup label=" Other Notable Accommodation">
             <option value="Pax Guest House — Mount St. Benedict, Tunapuna">Pax Guest House — Mount St. Benedict, Tunapuna</option>
             <option value="La Mamre Resort — Maraval">La Mamre Resort — Maraval</option>
             <option value="The Blue Cottage — Diego Martin">The Blue Cottage — Diego Martin</option>
             <option value="Cheers Apartments — Caroni">Cheers Apartments — Caroni</option>
           </optgroup>
         </select>
-        <input type="text" id="pickupAddress" name="pickupAddressText" required class="w-full p-3 border rounded-xl focus:outline-none input-focus transition bg-dark-input" placeholder="Or type your exact address...">
+        
+        <!-- AUTOCOMPLETE CONTAINER -->
+        <div class="autocomplete-container mb-3">
+          <input type="text" id="pickupAddress" name="pickupAddressText" required class="w-full p-3 border rounded-xl focus:outline-none input-focus transition bg-dark-input" placeholder="Or type your address (autocomplete enabled)..." oninput="handleAddressInput(this.value, 'pickupResults')" autocomplete="off">
+          <div id="pickupResults" class="autocomplete-results"></div>
+        </div>
+        
         <input type="hidden" name="pickupCity" value="Trinidad">
         
         <!-- INTERACTIVE PIN DROP MAP -->
@@ -373,7 +386,7 @@
             <option value="Hacienda Jacana — Talparo">Hacienda Jacana — Talparo</option>
             <option value="Ramel's Tropical Suites — Cunupia">Ramel's Tropical Suites — Cunupia</option>
           </optgroup>
-          <optgroup label="🏨 South Trinidad">
+          <optgroup label=" South Trinidad">
             <option value="Cara Hotels — Claxton Bay">Cara Hotels — Claxton Bay</option>
             <option value="Paria Suites Hotel — La Romaine">Paria Suites Hotel — La Romaine</option>
             <option value="Tradewinds Hotel — San Fernando">Tradewinds Hotel — San Fernando</option>
@@ -399,14 +412,31 @@
             <option value="Cheers Apartments — Caroni">Cheers Apartments — Caroni</option>
           </optgroup>
         </select>
-        <input type="text" id="dropoffAddress" name="dropoffAddressText" required class="w-full p-3 border rounded-xl focus:outline-none input-focus transition bg-dark-input" placeholder="Or type your exact address...">
+        
+        <!-- AUTOCOMPLETE CONTAINER -->
+        <div class="autocomplete-container mb-3">
+          <input type="text" id="dropoffAddress" name="dropoffAddressText" required class="w-full p-3 border rounded-xl focus:outline-none input-focus transition bg-dark-input" placeholder="Or type your address (autocomplete enabled)..." oninput="handleAddressInput(this.value, 'dropoffResults')" autocomplete="off">
+          <div id="dropoffResults" class="autocomplete-results"></div>
+        </div>
+        
         <input type="hidden" name="dropoffCity" value="Trinidad">
         <p class="text-xs text-gray-500 mt-2"><i class="fas fa-info-circle text-blue-400 mr-1"></i><span data-en="Select from dropdown OR type manually" data-es="Selecciona del menú desplegable O escribe manualmente">Select from dropdown OR type manually</span></p>
       </div>
 
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div><label class="block text-sm font-bold text-gray-300 mb-2"><i class="fas fa-car text-indigo-400 mr-2"></i><span data-en="Vehicle Type" data-es="Tipo de Vehículo">Vehicle Type</span> *</label><select name="vehicleType" required class="w-full p-3 border rounded-xl focus:outline-none input-focus transition bg-dark-input"><option value="" data-en="Select a vehicle..." data-es="Selecciona un vehículo...">Select a vehicle...</option><option value="Standard Sedan (1-4 Passengers)" data-en="Standard Sedan (1-4 Passengers)" data-es="Sedán Estándar (1-4 Pasajeros)">Standard Sedan (1-4 Passengers)</option><option value="SUV (5-7 Passengers) - Security Deposit Required" data-en="SUV (5-7 Passengers) - Security Deposit Required" data-es="SUV (5-7 Pasajeros) - Depósito de Seguridad Requerido">SUV (5-7 Passengers) <span class="text-red-500 font-bold">- Security Deposit Required</span></option><option value="Van (8-12 Passengers) - Security Deposit Required" data-en="Van (8-12 Passengers) - Security Deposit Required" data-es="Furgoneta (8-12 Pasajeros) - Depósito de Seguridad Requerido">Van (8-12 Passengers) <span class="text-red-500 font-bold">- Security Deposit Required</span></option><option value="Luxury Vehicle - Security Deposit Required" data-en="Luxury Vehicle - Security Deposit Required" data-es="Vehículo de Lujo - Depósito de Seguridad Requerido">Luxury Vehicle <span class="text-red-500 font-bold">- Security Deposit Required</span></option></select></div>
-        <div><label class="block text-sm font-bold text-gray-300 mb-2"><i class="fas fa-concierge-bell text-pink-400 mr-2"></i><span data-en="Service Type" data-es="Tipo de Servicio">Service Type</span> *</label><select name="serviceType" required class="w-full p-3 border rounded-xl focus:outline-none input-focus transition bg-dark-input"><option value="" data-en="Select a service..." data-es="Selecciona un servicio...">Select a service...</option><option value="private" data-en="Private Transfer" data-es="Traslado Privado">Private Transfer</option><option value="shared" data-en="Shared Transfer" data-es="Traslado Compartido">Shared Transfer</option><option value="hourly" data-en="Hourly Service" data-es="Servicio por Hora">Hourly Service</option></select></div>
+        <div><label class="block text-sm font-bold text-gray-300 mb-2"><i class="fas fa-concierge-bell text-pink-400 mr-2"></i><span data-en="Service Type" data-es="Tipo de Servicio">Service Type</span> *</label><select name="serviceType" id="serviceType" required onchange="handleServiceTypeChange()" class="w-full p-3 border rounded-xl focus:outline-none input-focus transition bg-dark-input"><option value="" data-en="Select a service..." data-es="Selecciona un servicio...">Select a service...</option><option value="private" data-en="🚗 Private Transfer (single person)" data-es="🚗 Private Transfer (single person)">🚗 Private Transfer (single person)</option><option value="shared" data-en="👥 Shared Ride (groups)" data-es="👥 Shared Ride (groups)">👥 Shared Ride (groups)</option><option value="hourly" data-en=" Hourly Charter (add $100.00 per hour rate automatically)" data-es="⏰ Hourly Charter (add $100.00 per hour rate automatically)">⏰ Hourly Charter (add $100.00 per hour rate automatically)</option><option value="caroni" data-en="🦜 Caroni Swamp Tour" data-es="🦜 Caroni Swamp Tour">🦜 Caroni Swamp Tour</option></select></div>
+      </div>
+      
+      <!-- Service Type Warning Messages -->
+      <div id="serviceWarning" class="hidden bg-yellow-900/30 p-4 rounded-xl border-2 border-yellow-500/50">
+        <div class="flex items-start">
+          <i class="fas fa-info-circle text-yellow-400 text-xl mr-3 mt-1"></i>
+          <div>
+            <h4 class="text-lg font-bold text-yellow-400 mb-2" id="warningTitle">Service Information</h4>
+            <p class="text-yellow-200 text-sm" id="warningText">Additional details about this service.</p>
+          </div>
+        </div>
       </div>
 
       <div><label class="block text-sm font-bold text-gray-300 mb-2"><i class="fas fa-credit-card text-yellow-400 mr-2"></i><span data-en="Payment Method" data-es="Método de Pago">Payment Method</span> *</label><select name="paymentMethod" required class="w-full p-3 border rounded-xl focus:outline-none input-focus transition bg-dark-input"><option value="" data-en="Select a payment method..." data-es="Selecciona un método de pago...">Select a payment method...</option><option value="Cash" data-en="Cash" data-es="Efectivo">Cash</option><option value="Credit Card / Linx" data-en="Credit Card / Linx" data-es="Tarjeta de Crédito / Linx">Credit Card / Linx</option><option value="Online Payment (WiPay)" data-en="Online Payment (WiPay)" data-es="Pago en Línea (WiPay)">Online Payment (WiPay)</option><option value="Bank Transfer" data-en="Bank Transfer" data-es="Transferencia Bancaria">Bank Transfer</option></select></div>
@@ -469,77 +499,142 @@
         translatePage();
       }
       
-         // INITIALIZE THE PIN DROP MAP WITH AUTO-ADDRESS
-    var map = L.map('pickupMap').setView([10.6918, -61.2225], 10); // Centered on Trinidad
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '© OpenStreetMap contributors'
-    }).addTo(map);
+      // INITIALIZE THE PIN DROP MAP WITH AUTO-ADDRESS
+      var map = L.map('pickupMap').setView([10.6918, -61.2225], 10); // Centered on Trinidad
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '© OpenStreetMap contributors'
+      }).addTo(map);
 
-    var marker;
+      var marker;
 
-    // Function to get address from coordinates
-    function fetchAddress(lat, lng) {
-      // Show loading state in the address box
-      document.getElementById('pickupAddress').value = "Finding address...";
-      
-      const url = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`;
-      
-      fetch(url)
-        .then(response => response.json())
-        .then(data => {
-          if (data && data.display_name) {
-            // If we get an address, put it in the box!
-            document.getElementById('pickupAddress').value = data.display_name;
-          } else {
-            // Fallback if no address found
-            document.getElementById('pickupAddress').value = "Pinned Location (Lat: " + lat.toFixed(5) + ", Lng: " + lng.toFixed(5) + ")";
+      // Function to get address from coordinates
+      function fetchAddress(lat, lng) {
+        document.getElementById('pickupAddress').value = "Finding address...";
+        
+        const url = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`;
+        
+        fetch(url)
+          .then(response => response.json())
+          .then(data => {
+            if (data && data.display_name) {
+              document.getElementById('pickupAddress').value = data.display_name;
+            } else {
+              document.getElementById('pickupAddress').value = "Pinned Location (Lat: " + lat.toFixed(5) + ", Lng: " + lng.toFixed(5) + ")";
+            }
+          })
+          .catch(err => {
+            console.error("Geocoding error", err);
+            document.getElementById('pickupAddress').value = "Pinned Location (Coordinates saved)";
+          });
+      }
+
+      map.on('click', function(e) {
+        if (marker) map.removeLayer(marker);
+        marker = L.marker(e.latlng).addTo(map);
+        document.getElementById('pickupLat').value = e.latlng.lat;
+        document.getElementById('pickupLng').value = e.latlng.lng;
+        fetchAddress(e.latlng.lat, e.latlng.lng);
+      });
+
+      var locateControl = L.control({position: 'topright'});
+      locateControl.onAdd = function(map) {
+        var div = L.DomUtil.create('div', 'leaflet-bar leaflet-control');
+        div.innerHTML = '<a href="#" title="Use my current location" style="display:block;width:30px;height:30px;line-height:30px;text-align:center;font-size:16px;background:#fff;color:#000;">📍</a>';
+        div.onclick = function(e) {
+          e.preventDefault();
+          if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(function(position) {
+              var lat = position.coords.latitude;
+              var lng = position.coords.longitude;
+              map.setView([lat, lng], 16);
+              if (marker) map.removeLayer(marker);
+              marker = L.marker([lat, lng]).addTo(map);
+              document.getElementById('pickupLat').value = lat;
+              document.getElementById('pickupLng').value = lng;
+              fetchAddress(lat, lng);
+            }, function(error) {
+              alert('Could not get your location. Please drop a pin manually.');
+            });
           }
-        })
-        .catch(err => {
-          console.error("Geocoding error", err);
-          document.getElementById('pickupAddress').value = "Pinned Location (Coordinates saved)";
-        });
+        };
+        return div;
+      };
+      locateControl.addTo(map);
+    });
+
+    // Address Autocomplete Function
+    let autocompleteTimeout;
+    function handleAddressInput(value, resultsId) {
+      clearTimeout(autocompleteTimeout);
+      const resultsDiv = document.getElementById(resultsId);
+      
+      if (value.length < 3) {
+        resultsDiv.style.display = 'none';
+        return;
+      }
+      
+      autocompleteTimeout = setTimeout(function() {
+        const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(value + ', Trinidad')}&limit=5`;
+        
+        fetch(url)
+          .then(response => response.json())
+          .then(data => {
+            if (data.length > 0) {
+              resultsDiv.innerHTML = '';
+              data.forEach(item => {
+                const div = document.createElement('div');
+                div.className = 'autocomplete-result';
+                div.textContent = item.display_name;
+                div.onclick = function() {
+                  document.getElementById(resultsId === 'pickupResults' ? 'pickupAddress' : 'dropoffAddress').value = item.display_name;
+                  resultsDiv.style.display = 'none';
+                  
+                  // Drop pin on map if it's pickup
+                  if (resultsId === 'pickupResults') {
+                    const map = document.getElementById('pickupMap');
+                    if (map) {
+                      const existingMarker = document.querySelector('.leaflet-marker-icon');
+                      if (existingMarker) existingMarker.remove();
+                      const marker = L.marker([parseFloat(item.lat), parseFloat(item.lon)]).addTo(map);
+                      map.setView([parseFloat(item.lat), parseFloat(item.lon)], 16);
+                      document.getElementById('pickupLat').value = item.lat;
+                      document.getElementById('pickupLng').value = item.lon;
+                    }
+                  }
+                };
+                resultsDiv.appendChild(div);
+              });
+              resultsDiv.style.display = 'block';
+            } else {
+              resultsDiv.style.display = 'none';
+            }
+          })
+          .catch(err => {
+            console.error("Autocomplete error", err);
+            resultsDiv.style.display = 'none';
+          });
+      }, 500);
     }
 
-    // When user clicks the map
-    map.on('click', function(e) {
-      if (marker) map.removeLayer(marker);
-      marker = L.marker(e.latlng).addTo(map);
-      document.getElementById('pickupLat').value = e.latlng.lat;
-      document.getElementById('pickupLng').value = e.latlng.lng;
+    // Service Type Change Handler
+    function handleServiceTypeChange() {
+      const serviceType = document.getElementById('serviceType').value;
+      const warningDiv = document.getElementById('serviceWarning');
+      const warningTitle = document.getElementById('warningTitle');
+      const warningText = document.getElementById('warningText');
       
-      // Trigger the address finder
-      fetchAddress(e.latlng.lat, e.latlng.lng);
-    });
-
-    // Add "Use My Current Location" button
-    var locateControl = L.control({position: 'topright'});
-    locateControl.onAdd = function(map) {
-      var div = L.DomUtil.create('div', 'leaflet-bar leaflet-control');
-      div.innerHTML = '<a href="#" title="Use my current location" style="display:block;width:30px;height:30px;line-height:30px;text-align:center;font-size:16px;background:#fff;color:#000;">📍</a>';
-      div.onclick = function(e) {
-        e.preventDefault();
-        if (navigator.geolocation) {
-          navigator.geolocation.getCurrentPosition(function(position) {
-            var lat = position.coords.latitude;
-            var lng = position.coords.longitude;
-            map.setView([lat, lng], 16);
-            if (marker) map.removeLayer(marker);
-            marker = L.marker([lat, lng]).addTo(map);
-            document.getElementById('pickupLat').value = lat;
-            document.getElementById('pickupLng').value = lng;
-            
-            // Trigger the address finder
-            fetchAddress(lat, lng);
-          }, function(error) {
-            alert('Could not get your location. Please drop a pin manually.');
-          });
-        }
-      };
-      return div;
-    };
-    locateControl.addTo(map);
-    });
+      if (serviceType === 'caroni') {
+        warningDiv.classList.remove('hidden');
+        warningTitle.textContent = ' Caroni Swamp Tour Pricing';
+        warningText.textContent = 'Starting from $300 TTD. Final price will be confirmed based on your exact pickup location and will be sent to you via email/WhatsApp.';
+      } else if (serviceType === 'hourly') {
+        warningDiv.classList.remove('hidden');
+        warningTitle.textContent = '⏰ Hourly Charter Pricing';
+        warningText.textContent = '$100 TTD per hour. Minimum 2 hours booking required. Final price calculated based on total hours.';
+      } else {
+        warningDiv.classList.add('hidden');
+      }
+    }
 
     const mainNav = document.getElementById('mainNav');
     window.addEventListener('scroll', function() {
@@ -629,6 +724,15 @@
         else this.value = num;
       });
     }
+    
+    // Close autocomplete when clicking outside
+    document.addEventListener('click', function(e) {
+      if (!e.target.closest('.autocomplete-container')) {
+        document.querySelectorAll('.autocomplete-results').forEach(div => {
+          div.style.display = 'none';
+        });
+      }
+    });
   </script>
 </body>
 </html>
