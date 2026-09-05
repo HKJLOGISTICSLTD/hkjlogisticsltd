@@ -99,7 +99,7 @@
         <div><label class="block text-sm font-bold text-gray-700 mb-1">Drop-off Location *</label><input type="text" id="editDropoff" required class="w-full p-3 border-2 border-gray-200 rounded-lg focus:border-purple-500 focus:outline-none"></div>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div><label class="block text-sm font-bold text-gray-700 mb-1">Vehicle Type *</label><select id="editVehicle" required class="w-full p-3 border-2 border-gray-200 rounded-lg focus:border-purple-500 focus:outline-none"><option value="Standard Sedan (1-4 Passengers)">Standard Sedan (1-4 Passengers)</option><option value="SUV (5-7 Passengers)">SUV (5-7 Passengers)</option><option value="Van (8-12 Passengers)">Van (8-12 Passengers)</option><option value="Luxury Vehicle">Luxury Vehicle</option></select></div>
-          <div><label class="block text-sm font-bold text-gray-700 mb-1">Service Type *</label><select id="editService" required class="w-full p-3 border-2 border-gray-200 rounded-lg focus:border-purple-500 focus:outline-none"><option value="private">Private Transfer</option><option value="shared">Shared Transfer</option><option value="hourly">Hourly Service</option></select></div>
+          <div><label class="block text-sm font-bold text-gray-700 mb-1">Service Type *</label><select id="editService" required class="w-full p-3 border-2 border-gray-200 rounded-lg focus:border-purple-500 focus:outline-none"><option value="private">Private Transfer</option><option value="shared">Shared Transfer</option><option value="hourly">Hourly Service</option><option value="caroni">Caroni Bird Sanctuary Tour</option></select></div>
         </div>
         <div><label class="block text-sm font-bold text-gray-700 mb-1">Final Price (TTD)</label><input type="number" id="editPrice" step="0.01" class="w-full p-3 border-2 border-gray-200 rounded-lg focus:border-purple-500 focus:outline-none"></div>
         <div><label class="block text-sm font-bold text-gray-700 mb-1">Payment Method</label><select id="editPayment" class="w-full p-3 border-2 border-gray-200 rounded-lg focus:border-purple-500 focus:outline-none"><option value="">Select...</option><option value="Credit Card / Linx">Credit Card / Linx</option><option value="Online (WiPay)">Online (WiPay)</option><option value="Cash">Cash</option><option value="Online Transfer">Online Transfer</option></select></div>
@@ -221,7 +221,7 @@
             message += '📅 Fecha: ' + date + ' a las ' + time + '\n';
             message += '📍 Recogida: ' + pickup + '\n';
             message += '🏁 Destino: ' + dropoff + '\n';
-            message += '💰 Precio Base: $' + price + ' TTD ($' + usdPrice + ' USD)\n';
+            message += ' Precio Base: $' + price + ' TTD ($' + usdPrice + ' USD)\n';
             if (surchargeAmount > 0) { message += '⚠️ Recargo: +$' + surchargeAmount + ' TTD\n'; }
             if (waitingFee > 0) { message += '⏳ Tiempo de Espera (' + waitingMins + ' min): +$' + waitingFee + ' TTD\n'; }
             message += '💵 TOTAL: $' + totalPrice.toFixed(2) + ' TTD ($' + totalUSD + ' USD)\n\n';
@@ -235,14 +235,14 @@
           } else {
             message = 'Hello ' + clientName + ',\n\n';
             message += 'Your HKJ Logistics booking ' + refCode + ' is ready for review!\n\n';
-            message += ' Date: ' + date + ' at ' + time + '\n';
-            message += ' Pickup: ' + pickup + '\n';
+            message += '📅 Date: ' + date + ' at ' + time + '\n';
+            message += '📍 Pickup: ' + pickup + '\n';
             message += '🏁 Drop-off: ' + dropoff + '\n';
             message += '💰 Base Price: $' + price + ' TTD ($' + usdPrice + ' USD)\n';
             if (surchargeAmount > 0) { message += '⚠️ Surcharge: +$' + surchargeAmount + ' TTD\n'; }
             if (waitingFee > 0) { message += '⏳ Waiting Time (' + waitingMins + ' min): +$' + waitingFee + ' TTD\n'; }
             message += '💵 TOTAL: $' + totalPrice.toFixed(2) + ' TTD ($' + totalUSD + ' USD)\n\n';
-            message += '📋 HOW IT WORKS:\n';
+            message += ' HOW IT WORKS:\n';
             message += '1. We received your request. ✓\n';
             message += '2. This is your personalized quote. ✓\n';
             message += '3. Click the link below to CONFIRM or DECLINE your booking.\n\n';
@@ -274,7 +274,7 @@
     }
 
     async function updateStatus(row, status) { const originalText = event.target.innerHTML; event.target.disabled = true; try { const response = await fetch(APPS_SCRIPT_URL, { method: 'POST', body: new URLSearchParams({ action: 'updateStatus', row: row, status: status }) }); const result = await response.json(); if (result.success) { fetchBookings(); } else { alert('Error updating status.'); } } catch (error) { alert('Network error.'); } finally { event.target.disabled = false; } }
-    async function generateReport() { try { const response = await fetch(APPS_SCRIPT_URL); const data = await response.json(); if (data.success) { const bookings = data.bookings; let pending = 0, confirmed = 0, completed = 0, cancelled = 0, priceSent = 0, totalRevenue = 0; bookings.forEach(function(b) { const status = b.STATUS || 'Pending'; const price = parseFloat(b['FINAL PRICE'] || b['FARES']) || 0; const surchargeType = b['SURCHARGE'] || 'none'; const waitingMins = parseInt(b['WAITING']) || 0; const surchargeAmount = calculateSurcharge(price, surchargeType); const waitingFee = calculateWaitingTime(waitingMins); const totalPrice = price + surchargeAmount + waitingFee; if (status === 'Pending') pending++; else if (status === 'Price Sent') priceSent++; else if (status === 'Confirmed') confirmed++; else if (status === 'Completed') completed++; else if (status === 'Cancelled') cancelled++; if (totalPrice && ['Completed', 'Confirmed', 'Price Sent'].includes(status)) totalRevenue += totalPrice; }); const totalUSD = Math.round(totalRevenue / 6.80); const report = ' HKJ Logistics Report\n\n📈 BOOKING STATUS:\n─────────────────\nTotal Bookings: ' + bookings.length + '\n⏳ Pending: ' + pending + '\n💰 Price Sent: ' + priceSent + '\n✅ Confirmed: ' + confirmed + '\n✔️ Completed: ' + completed + '\n❌ Cancelled: ' + cancelled + '\n\n💵 TOTAL REVENUE (with surcharges & waiting):\n   $' + totalRevenue.toFixed(2) + ' TTD\n   $' + totalUSD + ' USD (rounded)\n─────────────────\nExchange Rate: 1 USD = 6.80 TTD\nGenerated: ' + new Date().toLocaleString(); alert(report); } } catch (error) { alert('Error generating report.'); } }
+    async function generateReport() { try { const response = await fetch(APPS_SCRIPT_URL); const data = await response.json(); if (data.success) { const bookings = data.bookings; let pending = 0, confirmed = 0, completed = 0, cancelled = 0, priceSent = 0, totalRevenue = 0; bookings.forEach(function(b) { const status = b.STATUS || 'Pending'; const price = parseFloat(b['FINAL PRICE'] || b['FARES']) || 0; const surchargeType = b['SURCHARGE'] || 'none'; const waitingMins = parseInt(b['WAITING']) || 0; const surchargeAmount = calculateSurcharge(price, surchargeType); const waitingFee = calculateWaitingTime(waitingMins); const totalPrice = price + surchargeAmount + waitingFee; if (status === 'Pending') pending++; else if (status === 'Price Sent') priceSent++; else if (status === 'Confirmed') confirmed++; else if (status === 'Completed') completed++; else if (status === 'Cancelled') cancelled++; if (totalPrice && ['Completed', 'Confirmed', 'Price Sent'].includes(status)) totalRevenue += totalPrice; }); const totalUSD = Math.round(totalRevenue / 6.80); const report = '📊 HKJ Logistics Report\n\n📈 BOOKING STATUS:\n─────────────────\nTotal Bookings: ' + bookings.length + '\n⏳ Pending: ' + pending + '\n💰 Price Sent: ' + priceSent + '\n✅ Confirmed: ' + confirmed + '\n✔️ Completed: ' + completed + '\n❌ Cancelled: ' + cancelled + '\n\n💵 TOTAL REVENUE (with surcharges & waiting):\n   $' + totalRevenue.toFixed(2) + ' TTD\n   $' + totalUSD + ' USD (rounded)\n─────────────────\nExchange Rate: 1 USD = 6.80 TTD\nGenerated: ' + new Date().toLocaleString(); alert(report); } } catch (error) { alert('Error generating report.'); } }
   </script>
 
   <script>
