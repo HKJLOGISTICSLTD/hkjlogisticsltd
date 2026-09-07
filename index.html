@@ -358,7 +358,7 @@
           <optgroup label="✈️ Airports">
             <option value="Piarco International Airport, Trinidad">Piarco International Airport</option>
           </optgroup>
-          <optgroup label="🛍️ Malls & Shopping">
+          <optgroup label="️ Malls & Shopping">
             <option value="C3 Centre, Sir Solomon Hochoy Highway, San Fernando">C3 Centre (San Fernando)</option>
             <option value="Grand Bazaar, Chaguanas">Grand Bazaar (Chaguanas)</option>
             <option value="West Mall, Valsayn">West Mall (Valsayn)</option>
@@ -376,7 +376,7 @@
             <option value="Couva, Trinidad">Couva</option>
             <option value="Point Fortin, Trinidad">Point Fortin</option>
           </optgroup>
-          <optgroup label="🏨 Port of Spain / St. Clair / St. Ann's / Cascade">
+          <optgroup label=" Port of Spain / St. Clair / St. Ann's / Cascade">
             <option value="Hyatt Regency Trinidad — Port of Spain">Hyatt Regency Trinidad — Port of Spain</option>
             <option value="Hilton Trinidad & Conference Centre — Port of Spain">Hilton Trinidad & Conference Centre — Port of Spain</option>
             <option value="Courtyard by Marriott Port of Spain — Port of Spain">Courtyard by Marriott Port of Spain — Port of Spain</option>
@@ -538,7 +538,7 @@
             <option value="Emporis Resorts — D'Abadie">Emporis Resorts — D'Abadie</option>
             <option value="HADCO Experiences at Asa Wright Nature Centre — Arima">HADCO Experiences at Asa Wright Nature Centre — Arima</option>
           </optgroup>
-          <optgroup label="🏨 Central Trinidad">
+          <optgroup label=" Central Trinidad">
             <option value="Metro Hotel — Couva">Metro Hotel — Couva</option>
             <option value="Hacienda Jacana — Talparo">Hacienda Jacana — Talparo</option>
             <option value="Ramel's Tropical Suites — Cunupia">Ramel's Tropical Suites — Cunupia</option>
@@ -668,6 +668,14 @@
         translatePage();
       }
       
+      // FIX FOR MISSING LEAFLET PIN ICON
+      delete L.Icon.Default.prototype._getIconUrl;
+      L.Icon.Default.mergeOptions({
+          iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon-2x.png',
+          iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon.png',
+          shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png',
+      });
+
       // INITIALIZE THE PIN DROP MAP WITH AUTO-ADDRESS
       var map = L.map('pickupMap').setView([10.6918, -61.2225], 10); // Centered on Trinidad
       L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -755,9 +763,14 @@
                 const div = document.createElement('div');
                 div.className = 'autocomplete-result';
                 
-                // FIX: Replace "San Juan-Laventille" with "North Coast" in the display text
                 let displayText = item.display_name;
-                if (displayText.includes('San Juan-Laventille')) {
+                
+                // FIX: Custom labels for Maracas results
+                if (displayText.includes('Maracas') && displayText.includes('North Coast')) {
+                    displayText = 'Maracas Beach';
+                } else if (displayText.includes('Maracas') && displayText.includes('Tunapuna-Piarco')) {
+                    displayText = 'Maracas St Joseph';
+                } else if (displayText.includes('San Juan-Laventille')) {
                     displayText = displayText.replace('San Juan-Laventille', 'North Coast');
                 }
                 
@@ -813,7 +826,7 @@
         suggestedPriceInput.value = "300";
         
         warningDiv.classList.remove('hidden');
-        warningTitle.textContent = '🦜 Caroni Bird Sanctuary Tour Taxi Service';
+        warningTitle.textContent = ' Caroni Bird Sanctuary Tour Taxi Service';
         warningText.textContent = 'Base price set to $300 TTD. Final price may vary based on pickup location and will be confirmed via email/WhatsApp.';
       } else if (serviceType === 'hourly') {
         // Re-enable dropoff if it was locked
