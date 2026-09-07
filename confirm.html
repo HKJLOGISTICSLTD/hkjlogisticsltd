@@ -99,38 +99,31 @@
         let dStr = "N/A";
         let tStr = "N/A";
         
-        // Handle date
+        // Handle date - FORCE TRINIDAD TIMEZONE
         if (dateVal) {
             let d = new Date(dateVal);
             if (!isNaN(d.getTime())) { 
-                dStr = d.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }); 
+                dStr = d.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric', timeZone: 'America/Port_of_Spain' }); 
             } else { 
                 dStr = dateVal; 
             }
         }
         
-        // Handle time - extract directly from the string to avoid timezone issues
+        // Handle time - FORCE TRINIDAD TIMEZONE
         if (timeVal) {
-            // If it's the Google Sheets 1899 format
-            if (timeVal.toString().includes('1899')) {
-                let match = timeVal.toString().match(/T(\d{2}):(\d{2})/);
-                if (match) {
-                    let h = parseInt(match[1]);
-                    let m = match[2];
-                    let ampm = h >= 12 ? 'PM' : 'AM';
-                    h = h % 12; 
-                    h = h ? h : 12;
-                    tStr = h + ':' + m + ' ' + ampm;
+            // If it's the Google Sheets 1899 date object
+            if (timeVal.toString().includes('1899') || timeVal.toString().includes('T')) {
+                let d = new Date(timeVal);
+                if (!isNaN(d.getTime())) {
+                    // MAGIC FIX: Force it to display in Trinidad time
+                    tStr = d.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', timeZone: 'America/Port_of_Spain' });
                 }
             } 
-            // If it's already a time string like "12:00 AM" or "00:00"
-            else if (typeof timeVal === 'string') {
-                // If it contains AM/PM, use it as is
+            // If it's already a clean string like "12:00 AM"
+            else if (typeof timeVal === 'string' && timeVal.includes(':')) {
                 if (timeVal.includes('AM') || timeVal.includes('PM')) {
                     tStr = timeVal;
-                } 
-                // If it's 24-hour format like "00:00" or "14:30"
-                else if (timeVal.includes(':')) {
+                } else {
                     let parts = timeVal.split(':');
                     let h = parseInt(parts[0]);
                     let m = parts[1];
@@ -139,12 +132,7 @@
                     h = h ? h : 12;
                     tStr = h + ':' + m + ' ' + ampm;
                 }
-                else {
-                    tStr = timeVal;
-                }
-            }
-            // Fallback
-            else {
+            } else {
                 tStr = timeVal.toString();
             }
         }
