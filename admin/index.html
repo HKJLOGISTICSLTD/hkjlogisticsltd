@@ -336,37 +336,39 @@
           
           if (language === 'es' || language === 'español' || language === 'spanish') {
             message = 'Hola ' + clientName + ',\n\n';
-            message += 'Tu reserva de HKJ Logistics ' + refCode + ' está lista para revisión.\n\n';
-            message += ' Fecha: ' + date + ' a las ' + time + '\n';
+            message += 'Su reserva de HKJ Logistics ' + refCode + ' está lista para revisión.\n\n';
+            message += '📅 Fecha: ' + date + ' a las ' + time + '\n';
             message += ' Recogida: ' + pickup + '\n';
             message += '🏁 Destino: ' + dropoff + '\n';
-            message += ' Precio Base: $' + price + ' TTD ($' + usdPrice + ' USD)\n';
-            if (surchargeAmount > 0) { message += '️ Recargo: +$' + surchargeAmount + ' TTD\n'; }
+            message += '💰 Precio Base: $' + price + ' TTD ($' + usdPrice + ' USD)\n';
+            if (surchargeAmount > 0) { message += '⚠️ Recargo: +$' + surchargeAmount + ' TTD\n'; }
             if (waitingFee > 0) { message += '⏳ Tiempo de Espera (' + waitingMins + ' min): +$' + waitingFee + ' TTD\n'; }
-            message += ' TOTAL: $' + totalPrice.toFixed(2) + ' TTD ($' + totalUSD + ' USD)\n\n';
-            message += ' CÓMO FUNCIONA:\n';
+            message += '💵 TOTAL: $' + totalPrice.toFixed(2) + ' TTD ($' + totalUSD + ' USD)\n\n';
+            message += 'CÓMO FUNCIONA:\n';
             message += '1. Recibimos tu solicitud. ✓\n';
             message += '2. Esta es tu cotización personalizada. ✓\n';
             message += '3. Haz clic en el enlace de abajo para CONFIRMAR o RECHAZAR tu reserva.\n\n';
-            message += ' Confirmar o Rechazar aquí:\n';
+            message += 'Confirmar o Rechazar aquí:\n';
             message += 'https://hkjlogisticsltdtt.vercel.app/confirm.html?code=' + refCode + '\n\n';
+            message += 'Nuestro equipo administrativo revisará su solicitud y le enviará la cotización formal en breve.\n\n';
             message += 'Gracias,\nHayden Joseph\nDirector Gerente, HKJ Logistics Ltd\n+1 (868) 780-0300';
           } else {
             message = 'Hello ' + clientName + ',\n\n';
             message += 'Your HKJ Logistics booking ' + refCode + ' is ready for review!\n\n';
-            message += ' Date: ' + date + ' at ' + time + '\n';
-            message += ' Pickup: ' + pickup + '\n';
-            message += '🏁 Drop-off: ' + dropoff + '\n';
-            message += '💰 Base Price: $' + price + ' TTD ($' + usdPrice + ' USD)\n';
+            message += '📅 Date: ' + date + ' at ' + time + '\n';
+            message += '📍 Pickup: ' + pickup + '\n';
+            message += ' Drop-off: ' + dropoff + '\n';
+            message += '💵 Base Price: $' + price + ' TTD ($' + usdPrice + ' USD)\n';
             if (surchargeAmount > 0) { message += '⚠️ Surcharge: +$' + surchargeAmount + ' TTD\n'; }
             if (waitingFee > 0) { message += '⏳ Waiting Time (' + waitingMins + ' min): +$' + waitingFee + ' TTD\n'; }
             message += '💵 TOTAL: $' + totalPrice.toFixed(2) + ' TTD ($' + totalUSD + ' USD)\n\n';
-            message += ' HOW IT WORKS:\n';
+            message += 'HOW IT WORKS:\n';
             message += '1. We received your request. ✓\n';
             message += '2. This is your personalized quote. ✓\n';
             message += '3. Click the link below to CONFIRM or DECLINE your booking.\n\n';
             message += '👉 Confirm or Decline here:\n';
             message += 'https://hkjlogisticsltdtt.vercel.app/confirm.html?code=' + refCode + '\n\n';
+            message += 'Our admin team will review your request and send the formal quotation shortly.\n\n';
             message += 'Thank you,\nHayden Joseph\nManaging Director, HKJ Logistics Ltd\n+1 (868) 780-0300';
           }
           
@@ -393,7 +395,7 @@
     }
 
     async function updateStatus(row, status) { const originalText = event.target.innerHTML; event.target.disabled = true; try { const response = await fetch(APPS_SCRIPT_URL, { method: 'POST', body: new URLSearchParams({ action: 'updateStatus', row: row, status: status }) }); const result = await response.json(); if (result.success) { fetchBookings(); } else { alert('Error updating status.'); } } catch (error) { alert('Network error.'); } finally { event.target.disabled = false; } }
-    async function generateReport() { try { const response = await fetch(APPS_SCRIPT_URL); const data = await response.json(); if (data.success) { const bookings = data.bookings; let pending = 0, confirmed = 0, completed = 0, cancelled = 0, priceSent = 0, totalRevenue = 0; bookings.forEach(function(b) { const status = b.STATUS || 'Pending'; const price = parseFloat(b['FINAL PRICE'] || b['FARES']) || 0; const surchargeType = b['SURCHARGE'] || 'none'; const waitingMins = parseInt(b['WAITING']) || 0; const surchargeAmount = calculateSurcharge(price, surchargeType); const waitingFee = calculateWaitingTime(waitingMins); const totalPrice = price + surchargeAmount + waitingFee; if (status === 'Pending') pending++; else if (status === 'Price Sent') priceSent++; else if (status === 'Confirmed') confirmed++; else if (status === 'Completed') completed++; else if (status === 'Cancelled') cancelled++; if (totalPrice && ['Completed', 'Confirmed', 'Price Sent'].includes(status)) totalRevenue += totalPrice; }); const totalUSD = Math.round(totalRevenue / 6.80); const report = ' HKJ Logistics Report\n\n BOOKING STATUS:\n─────────────────\nTotal Bookings: ' + bookings.length + '\n⏳ Pending: ' + pending + '\n💰 Price Sent: ' + priceSent + '\n✅ Confirmed: ' + confirmed + '\n✔️ Completed: ' + completed + '\n❌ Cancelled: ' + cancelled + '\n\n TOTAL REVENUE (with surcharges & waiting):\n   $' + totalRevenue.toFixed(2) + ' TTD\n   $' + totalUSD + ' USD (rounded)\n─────────────────\nExchange Rate: 1 USD = 6.80 TTD\nGenerated: ' + new Date().toLocaleString(); alert(report); } } catch (error) { alert('Error generating report.'); } }
+    async function generateReport() { try { const response = await fetch(APPS_SCRIPT_URL); const data = await response.json(); if (data.success) { const bookings = data.bookings; let pending = 0, confirmed = 0, completed = 0, cancelled = 0, priceSent = 0, totalRevenue = 0; bookings.forEach(function(b) { const status = b.STATUS || 'Pending'; const price = parseFloat(b['FINAL PRICE'] || b['FARES']) || 0; const surchargeType = b['SURCHARGE'] || 'none'; const waitingMins = parseInt(b['WAITING']) || 0; const surchargeAmount = calculateSurcharge(price, surchargeType); const waitingFee = calculateWaitingTime(waitingMins); const totalPrice = price + surchargeAmount + waitingFee; if (status === 'Pending') pending++; else if (status === 'Price Sent') priceSent++; else if (status === 'Confirmed') confirmed++; else if (status === 'Completed') completed++; else if (status === 'Cancelled') cancelled++; if (totalPrice && ['Completed', 'Confirmed', 'Price Sent'].includes(status)) totalRevenue += totalPrice; }); const totalUSD = Math.round(totalRevenue / 6.80); const report = '📊 HKJ Logistics Report\n\n📋 BOOKING STATUS:\n─────────────────\nTotal Bookings: ' + bookings.length + '\n⏳ Pending: ' + pending + '\n💰 Price Sent: ' + priceSent + '\n✅ Confirmed: ' + confirmed + '\n✔️ Completed: ' + completed + '\n❌ Cancelled: ' + cancelled + '\n\n💵 TOTAL REVENUE (with surcharges & waiting):\n   $' + totalRevenue.toFixed(2) + ' TTD\n   $' + totalUSD + ' USD (rounded)\n─────────────────\nExchange Rate: 1 USD = 6.80 TTD\nGenerated: ' + new Date().toLocaleString(); alert(report); } } catch (error) { alert('Error generating report.'); } }
     
     // Auto-generate price display on page load
     window.addEventListener('DOMContentLoaded', function() {
