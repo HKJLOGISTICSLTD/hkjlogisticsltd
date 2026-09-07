@@ -99,6 +99,40 @@
     let currentBooking = null;
     let currentRow = null;
 
+    // Helper to fix the Google Sheets 1899 date glitch
+    function cleanDateTime(dateVal, timeVal) {
+        let dStr = "N/A";
+        let tStr = "N/A";
+
+        if (dateVal) {
+            let d = new Date(dateVal);
+            if (!isNaN(d.getTime())) {
+                dStr = d.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+            } else {
+                dStr = dateVal;
+            }
+        }
+
+        if (timeVal) {
+            // Check if it's the weird Google Sheets 1899 date
+            if (timeVal.toString().includes('1899')) {
+                let match = timeVal.toString().match(/T(\d{2}:\d{2})/);
+                if (match) {
+                    let parts = match[1].split(':');
+                    let h = parseInt(parts[0]);
+                    let m = parts[1];
+                    let ampm = h >= 12 ? 'PM' : 'AM';
+                    h = h % 12;
+                    h = h ? h : 12;
+                    tStr = h + ':' + m + ' ' + ampm;
+                }
+            } else {
+                tStr = timeVal; // It's already a string like "12:00 PM"
+            }
+        }
+        return { date: dStr, time: tStr };
+    }
+
     window.addEventListener('DOMContentLoaded', () => {
       const urlParams = new URLSearchParams(window.location.search);
       const code = urlParams.get('code');
@@ -138,8 +172,10 @@
       document.getElementById('pickup').textContent = booking['PICK UP'] || 'N/A';
       document.getElementById('dropoff').textContent = booking['DROP OFF'] || 'N/A';
       
-      const date = booking.DATE ? new Date(booking.DATE).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) : 'N/A';
-      document.getElementById('dateTime').textContent = date + ' at ' + (booking.TIME || 'N/A');
+      // Use the helper to fix the date/time
+      const cleanDT = cleanDateTime(booking.DATE, booking.TIME);
+      document.getElementById('dateTime').textContent = cleanDT.date + ' at ' + cleanDT.time;
+      
       document.getElementById('vehicle').textContent = booking['VEHICLE TYPE'] || 'N/A';
       
       const price = parseFloat(booking['FINAL PRICE'] || booking['FARES'] || 0);
@@ -171,22 +207,23 @@
       const refCode = currentBooking['REF CODE'];
       const pickup = currentBooking['PICK UP'] || 'N/A';
       const dropoff = currentBooking['DROP OFF'] || 'N/A';
-      const date = currentBooking.DATE ? new Date(currentBooking.DATE).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) : 'N/A';
-      const time = currentBooking.TIME || 'N/A';
+      
+      const cleanDT = cleanDateTime(currentBooking.DATE, currentBooking.TIME);
       const price = parseFloat(currentBooking['FINAL PRICE'] || currentBooking['FARES'] || 0);
       const usd = Math.round(price / 6.80);
       
-      // Clean message with no weird symbols, proper spacing, and bold final price
-      let msg = `Hello HKJ Logistics,\n\n`;
-      msg += `I would like to confirm my booking ${refCode}.\n\n`;
-      msg += `Pickup: ${pickup}\n`;
-      msg += `Drop-off: ${dropoff}\n`;
-      msg += `Date: ${date} at ${time}\n\n`;
-      msg += `FINAL PRICE: $${price.toFixed(2)} TTD ($${usd} USD)\n\n`;
-      msg += `Thank you!`;
+      // Clean message with NO emojis to prevent diamonds
+      let msg = 'Hello HKJ Logistics,\n\n';
+      msg += 'I would like to confirm my booking ' + refCode + '.\n\n';
+      msg += 'PICKUP: ' + pickup + '\n';
+      msg += 'DROP-OFF: ' + dropoff + '\n';
+      msg += 'DATE: ' + cleanDT.date + '\n';
+      msg += 'TIME: ' + cleanDT.time + '\n\n';
+      msg += 'TOTAL PRICE: $' + price.toFixed(2) + ' TTD ($' + usd + ' USD)\n\n';
+      msg += 'Thank you!';
       
       const phone = '18687800300'; // Your business number
-      const url = `https://wa.me/${phone}?text=${encodeURIComponent(msg)}`;
+      const url = 'https://wa.me/' + phone + '?text=' + encodeURIComponent(msg);
       window.open(url, '_blank');
     }
   </script>
