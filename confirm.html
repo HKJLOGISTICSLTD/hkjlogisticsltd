@@ -9,338 +9,186 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
     * { font-family: 'Inter', sans-serif; }
-    body {
-      background: linear-gradient(135deg, rgba(15, 23, 42, 0.75), rgba(30, 41, 59, 0.85)),
-                  url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=1920&q=80') !important;
-      background-size: cover !important; background-position: center !important;
-      background-attachment: fixed !important; background-repeat: no-repeat !important;
-      min-height: 100vh !important; margin: 0; padding: 0;
-    }
-    .glass-card { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(20px); }
-    @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-    .animate-fade-in { animation: fadeIn 0.5s ease-out forwards; }
+    body { background: linear-gradient(135deg, rgba(15, 23, 42, 0.9), rgba(30, 41, 59, 0.9)), url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=1920&q=80'); background-size: cover; background-position: center; min-height: 100vh; color: white; }
+    .glass-card { background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.2); }
+    .btn-confirm { background: linear-gradient(135deg, #22c55e, #16a34a); }
+    .btn-decline { background: linear-gradient(135deg, #ef4444, #dc2626); }
+    .btn-whatsapp { background: linear-gradient(135deg, #25D366, #128C7E); }
   </style>
 </head>
-<body class="p-4 md:p-6 flex items-center justify-center min-h-screen">
-
-  <div class="glass-card rounded-2xl shadow-2xl p-8 max-w-2xl w-full animate-fade-in">
+<body class="p-4 md:p-8 flex items-center justify-center">
+  <div class="max-w-2xl w-full">
     <div class="text-center mb-8">
-      <div class="w-20 h-20 bg-gradient-to-br from-yellow-400 to-yellow-500 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
-        <i class="fas fa-truck text-black text-3xl"></i>
+      <div class="w-16 h-16 bg-yellow-400 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
+        <i class="fas fa-truck text-black text-2xl"></i>
       </div>
-      <h1 class="text-3xl font-bold text-gray-800 mb-2">HKJ <span class="text-yellow-500">Logistics</span></h1>
-      <p id="pageTitle" class="text-gray-600">Confirm Your Booking</p>
+      <h1 class="text-3xl font-bold">HKJ <span class="text-yellow-400">Logistics</span></h1>
+      <p class="text-gray-300 mt-2">Booking Confirmation</p>
     </div>
 
     <div id="loading" class="text-center py-12">
       <div class="inline-block animate-spin rounded-full h-12 w-12 border-4 border-yellow-400 border-t-transparent"></div>
-      <p id="loadingText" class="mt-4 text-gray-600">Loading booking details...</p>
+      <p class="mt-4 text-lg">Loading booking details...</p>
     </div>
 
-    <div id="bookingDetails" class="hidden">
-      <div class="bg-gradient-to-r from-blue-50 to-indigo-50 p-6 rounded-xl mb-6 border-2 border-blue-200">
-        <h2 id="bookingTitle" class="text-xl font-bold text-blue-800 mb-4">Booking Details</h2>
-        <div class="space-y-3 text-sm">
-          <div class="flex justify-between"><span class="font-semibold text-gray-600">Reference:</span><span id="refCode" class="font-bold text-blue-600"></span></div>
-          <div class="flex justify-between"><span class="font-semibold text-gray-600">Name:</span><span id="clientName" class="text-gray-800"></span></div>
-          <div class="flex justify-between"><span class="font-semibold text-gray-600">Date & Time:</span><span id="dateTime" class="text-gray-800"></span></div>
-          <div class="flex justify-between"><span class="font-semibold text-gray-600">Pickup:</span><span id="pickup" class="text-gray-800"></span></div>
-          <div class="flex justify-between"><span class="font-semibold text-gray-600">Drop-off:</span><span id="dropoff" class="text-gray-800"></span></div>
-          <div class="border-t border-blue-200 pt-3 mt-3">
-            <div class="flex justify-between items-center">
-              <span class="font-bold text-gray-700">Total Price:</span>
-              <div class="text-right">
-                <p id="totalPrice" class="text-2xl font-bold text-blue-600"></p>
-                <p id="totalPriceUSD" class="text-sm text-blue-500"></p>
-              </div>
-            </div>
-          </div>
+    <div id="bookingDetails" class="hidden glass-card rounded-2xl shadow-2xl p-6 md:p-8">
+      <div class="flex justify-between items-start mb-6 pb-4 border-b border-white/20">
+        <div>
+          <h2 class="text-2xl font-bold text-yellow-400" id="refCode">Loading...</h2>
+          <p class="text-sm text-gray-300 mt-1" id="statusBadge">Status: Pending</p>
         </div>
       </div>
 
-      <div id="statusSection" class="text-center mb-6">
-        <div id="statusBadge" class="inline-block px-6 py-3 rounded-full font-bold text-lg mb-4"></div>
-        <p id="statusMessage" class="text-gray-600"></p>
+      <div class="space-y-4 mb-6">
+        <div class="flex items-start bg-white/5 p-4 rounded-xl">
+          <i class="fas fa-user text-blue-400 mt-1 mr-3"></i>
+          <div><p class="text-xs text-gray-400 uppercase font-bold">Client Name</p><p class="font-semibold" id="clientName">-</p></div>
+        </div>
+        <div class="flex items-start bg-white/5 p-4 rounded-xl">
+          <i class="fas fa-map-marker-alt text-green-400 mt-1 mr-3"></i>
+          <div><p class="text-xs text-gray-400 uppercase font-bold">Pickup</p><p class="font-semibold" id="pickup">-</p></div>
+        </div>
+        <div class="flex items-start bg-white/5 p-4 rounded-xl">
+          <i class="fas fa-flag-checkered text-red-400 mt-1 mr-3"></i>
+          <div><p class="text-xs text-gray-400 uppercase font-bold">Drop-off</p><p class="font-semibold" id="dropoff">-</p></div>
+        </div>
+        <div class="flex items-start bg-white/5 p-4 rounded-xl">
+          <i class="fas fa-calendar-alt text-purple-400 mt-1 mr-3"></i>
+          <div><p class="text-xs text-gray-400 uppercase font-bold">Date & Time</p><p class="font-semibold" id="dateTime">-</p></div>
+        </div>
+        <div class="flex items-start bg-white/5 p-4 rounded-xl">
+          <i class="fas fa-car text-indigo-400 mt-1 mr-3"></i>
+          <div><p class="text-xs text-gray-400 uppercase font-bold">Vehicle</p><p class="font-semibold" id="vehicle">-</p></div>
+        </div>
       </div>
 
-      <div id="actionButtons" class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <button onclick="confirmBooking()" id="confirmBtn" class="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-bold py-4 rounded-xl shadow-lg transition transform hover:scale-105">
-          <i class="fas fa-check mr-2"></i>Confirm Booking
+      <div class="bg-yellow-400/10 border border-yellow-400/30 rounded-xl p-6 text-center mb-6">
+        <p class="text-sm text-yellow-200 uppercase font-bold mb-2">Quoted Final Price</p>
+        <p class="text-4xl font-bold text-white" id="priceTTD">$0.00 TTD</p>
+        <p class="text-xl font-semibold text-blue-300" id="priceUSD">$0 USD</p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <button onclick="updateBookingStatus('Confirmed')" class="btn-confirm text-white font-bold py-4 rounded-xl shadow-lg hover:opacity-90 transition flex items-center justify-center">
+          <i class="fas fa-check mr-2"></i> Confirm Booking
         </button>
-        <button onclick="declineBooking()" id="declineBtn" class="bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white font-bold py-4 rounded-xl shadow-lg transition transform hover:scale-105">
-          <i class="fas fa-times mr-2"></i>Decline Booking
+        <button onclick="updateBookingStatus('Cancelled')" class="btn-decline text-white font-bold py-4 rounded-xl shadow-lg hover:opacity-90 transition flex items-center justify-center">
+          <i class="fas fa-times mr-2"></i> Decline Booking
+        </button>
+      </div>
+
+      <div class="mt-6 text-center">
+        <button onclick="shareOnWhatsApp()" class="btn-whatsapp text-white font-bold py-3 px-6 rounded-xl shadow-lg hover:opacity-90 transition flex items-center justify-center mx-auto">
+          <i class="fab fa-whatsapp mr-2 text-xl"></i> Share Confirmation on WhatsApp
         </button>
       </div>
     </div>
 
-    <div id="errorSection" class="hidden text-center py-8">
-      <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
-        <i class="fas fa-exclamation-triangle text-red-500 text-2xl"></i>
+    <div id="successMessage" class="hidden glass-card rounded-2xl shadow-2xl p-8 text-center">
+      <div class="w-20 h-20 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg">
+        <i class="fas fa-check text-white text-4xl"></i>
       </div>
-      <h3 id="errorTitle" class="text-xl font-bold text-gray-800 mb-2">Booking Not Found</h3>
-      <p id="errorMessage" class="text-gray-600">Please check your reference code and try again.</p>
+      <h2 class="text-2xl font-bold mb-2">Booking Updated!</h2>
+      <p class="text-gray-300 mb-6">Thank you. Our team has been notified of your decision.</p>
+      <button onclick="location.reload()" class="bg-white/20 hover:bg-white/30 text-white font-bold py-3 px-6 rounded-xl transition">Back to Details</button>
     </div>
   </div>
 
   <script>
-    const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyf5hhEryhyJ_zEQ8l4Ji4W85rr-ihbdsO1yqU0rP4W-LyWF1JZ_B_tPsR4wojtRZL51g/exec';
-    let bookingData = null;
-    let currentLang = 'en';
+    const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycby1KTALKbcSXBJSLVlimnCr2e9cmzZL38oEKVGObksF0aUY2hqm6WOnkAUYcxzzBi3hGA/exec'; // REPLACE THIS WITH YOUR ACTUAL URL
+    let currentBooking = null;
+    let currentRow = null;
 
-    // Translations
-    const translations = {
-      en: {
-        pageTitle: 'Confirm Your Booking',
-        loading: 'Loading booking details...',
-        bookingTitle: 'Booking Details',
-        reference: 'Reference:',
-        name: 'Name:',
-        dateTime: 'Date & Time:',
-        pickup: 'Pickup:',
-        dropoff: 'Drop-off:',
-        totalPrice: 'Total Price:',
-        confirmBtn: '<i class="fas fa-check mr-2"></i>Confirm Booking',
-        declineBtn: '<i class="fas fa-times mr-2"></i>Decline Booking',
-        errorTitle: 'Booking Not Found',
-        errorMessage: 'Please check your reference code and try again.',
-        statusConfirmed: '✅ Booking Confirmed!',
-        statusDeclined: '❌ Booking Declined',
-        statusPending: '⏳ Awaiting Your Confirmation',
-        confirmedMessage: 'Thank you! Your booking has been confirmed. We will contact you shortly.',
-        declinedMessage: 'Your booking has been declined. If you have any questions, please contact us.',
-        pendingMessage: 'Please review your booking details and click Confirm or Decline below.'
-      },
-      es: {
-        pageTitle: 'Confirmar tu Reserva',
-        loading: 'Cargando detalles de la reserva...',
-        bookingTitle: 'Detalles de la Reserva',
-        reference: 'Referencia:',
-        name: 'Nombre:',
-        dateTime: 'Fecha y Hora:',
-        pickup: 'Recogida:',
-        dropoff: 'Destino:',
-        totalPrice: 'Precio Total:',
-        confirmBtn: '<i class="fas fa-check mr-2"></i>Confirmar Reserva',
-        declineBtn: '<i class="fas fa-times mr-2"></i>Rechazar Reserva',
-        errorTitle: 'Reserva No Encontrada',
-        errorMessage: 'Por favor verifica tu código de referencia e inténtalo de nuevo.',
-        statusConfirmed: '✅ Reserva Confirmada!',
-        statusDeclined: '❌ Reserva Rechazada',
-        statusPending: '⏳ Esperando tu Confirmación',
-        confirmedMessage: '¡Gracias! Tu reserva ha sido confirmada. Te contactaremos pronto.',
-        declinedMessage: 'Tu reserva ha sido rechazada. Si tienes alguna pregunta, contáctanos.',
-        pendingMessage: 'Por favor revisa los detalles de tu reserva y haz clic en Confirmar o Rechazar abajo.'
-      }
-    };
-
-    // Get URL parameter
-    function getUrlParameter(name) {
+    window.addEventListener('DOMContentLoaded', () => {
       const urlParams = new URLSearchParams(window.location.search);
-      return urlParams.get(name);
-    }
-
-    // Translate page
-    function translatePage(lang) {
-      currentLang = lang;
-      const t = translations[lang];
+      const code = urlParams.get('code');
       
-      document.getElementById('pageTitle').textContent = t.pageTitle;
-      document.getElementById('loadingText').textContent = t.loading;
-      document.getElementById('bookingTitle').textContent = t.bookingTitle;
-      document.getElementById('confirmBtn').innerHTML = t.confirmBtn;
-      document.getElementById('declineBtn').innerHTML = t.declineBtn;
-      document.getElementById('errorTitle').textContent = t.errorTitle;
-      document.getElementById('errorMessage').textContent = t.errorMessage;
-    }
-
-    // Fetch booking details
-    async function fetchBookingDetails() {
-      const refCode = getUrlParameter('code');
-      if (!refCode) {
-        showError();
+      if (!code) {
+        document.getElementById('loading').innerHTML = '<p class="text-red-400 font-bold">No booking code provided in URL.</p>';
         return;
       }
 
-      try {
-        const response = await fetch(APPS_SCRIPT_URL);
-        const data = await response.json();
-        
-        if (data.success) {
-          const booking = data.bookings.find(b => b['REF CODE'] === refCode);
-          
-          if (booking) {
-            bookingData = booking;
-            
-            // Auto-detect language from booking
-            const language = (booking['LANGUAGE'] || 'en').toLowerCase();
-            translatePage(language === 'es' ? 'es' : 'en');
-            
-            displayBookingDetails(booking);
-          } else {
-            showError();
+      fetch(APPS_SCRIPT_URL)
+        .then(res => res.json())
+        .then(data => {
+          if (data.success) {
+            const booking = data.bookings.find(b => b['REF CODE'] === code);
+            if (booking) {
+              currentBooking = booking;
+              currentRow = booking._rowNumber;
+              displayBooking(booking);
+            } else {
+              document.getElementById('loading').innerHTML = '<p class="text-red-400 font-bold">Booking not found.</p>';
+            }
           }
-        } else {
-          showError();
-        }
-      } catch (error) {
-        console.error('Error:', error);
-        showError();
-      }
-    }
+        })
+        .catch(err => {
+          document.getElementById('loading').innerHTML = '<p class="text-red-400 font-bold">Error loading data.</p>';
+          console.error(err);
+        });
+    });
 
-    // Display booking details
-    function displayBookingDetails(booking) {
+    function displayBooking(booking) {
       document.getElementById('loading').classList.add('hidden');
       document.getElementById('bookingDetails').classList.remove('hidden');
       
-      const date = booking.DATE ? new Date(booking.DATE).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) : 'N/A';
-      const time = booking.TIME || 'N/A';
-      
       document.getElementById('refCode').textContent = booking['REF CODE'];
-      document.getElementById('clientName').textContent = booking.NAME;
-      document.getElementById('dateTime').textContent = `${date} at ${time}`;
-      document.getElementById('pickup').textContent = booking['PICK UP'];
-      document.getElementById('dropoff').textContent = booking['DROP OFF'];
+      document.getElementById('statusBadge').textContent = 'Status: ' + (booking.STATUS || 'Pending');
+      document.getElementById('clientName').textContent = booking.NAME || 'N/A';
+      document.getElementById('pickup').textContent = booking['PICK UP'] || 'N/A';
+      document.getElementById('dropoff').textContent = booking['DROP OFF'] || 'N/A';
+      
+      const date = booking.DATE ? new Date(booking.DATE).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) : 'N/A';
+      document.getElementById('dateTime').textContent = date + ' at ' + (booking.TIME || 'N/A');
+      document.getElementById('vehicle').textContent = booking['VEHICLE TYPE'] || 'N/A';
       
       const price = parseFloat(booking['FINAL PRICE'] || booking['FARES'] || 0);
-      const surchargeType = booking['SURCHARGE'] || 'none';
-      const waitingMins = parseInt(booking['WAITING']) || 0;
-      
-      // Calculate total with surcharges
-      let total = price;
-      if (surchargeType === 'peak') total += 50;
-      else if (surchargeType === 'lateNight') total += Math.round(price * 0.15);
-      else if (surchargeType === 'earlyMorning') total += Math.round(price * 0.20);
-      else if (surchargeType === 'holiday') total += Math.round(price * 0.25);
-      
-      if (waitingMins > 15 && waitingMins <= 30) total += 50;
-      else if (waitingMins > 30 && waitingMins <= 60) total += 100;
-      else if (waitingMins > 60 && waitingMins <= 90) total += 200;
-      else if (waitingMins > 90) total += 300;
-      
-      const usdPrice = Math.round(total / 6.80);
-      
-      document.getElementById('totalPrice').textContent = `$${total.toFixed(2)} TTD`;
-      document.getElementById('totalPriceUSD').textContent = `$${usdPrice} USD`;
-      
-      // Show status
-      const status = booking.STATUS || 'Pending';
-      const t = translations[currentLang];
-      
-      const statusBadge = document.getElementById('statusBadge');
-      const statusMessage = document.getElementById('statusMessage');
-      
-      if (status === 'Confirmed') {
-        statusBadge.className = 'inline-block px-6 py-3 rounded-full font-bold text-lg mb-4 bg-green-100 text-green-700';
-        statusBadge.textContent = t.statusConfirmed;
-        statusMessage.textContent = t.confirmedMessage;
-        document.getElementById('actionButtons').classList.add('hidden');
-      } else if (status === 'Cancelled') {
-        statusBadge.className = 'inline-block px-6 py-3 rounded-full font-bold text-lg mb-4 bg-red-100 text-red-700';
-        statusBadge.textContent = t.statusDeclined;
-        statusMessage.textContent = t.declinedMessage;
-        document.getElementById('actionButtons').classList.add('hidden');
-      } else {
-        statusBadge.className = 'inline-block px-6 py-3 rounded-full font-bold text-lg mb-4 bg-yellow-100 text-yellow-700';
-        statusBadge.textContent = t.statusPending;
-        statusMessage.textContent = t.pendingMessage;
-      }
+      const usd = Math.round(price / 6.80);
+      document.getElementById('priceTTD').textContent = '$' + price.toFixed(2) + ' TTD';
+      document.getElementById('priceUSD').textContent = '$' + usd + ' USD';
     }
 
-    // Show error
-    function showError() {
-      document.getElementById('loading').classList.add('hidden');
-      document.getElementById('errorSection').classList.remove('hidden');
-    }
-
-    // Confirm booking
-    async function confirmBooking() {
-      if (!bookingData) return;
+    function updateBookingStatus(status) {
+      if (!confirm('Are you sure you want to ' + (status === 'Confirmed' ? 'confirm' : 'decline') + ' this booking?')) return;
       
-      const btn = document.getElementById('confirmBtn');
-      const originalHTML = btn.innerHTML;
-      btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Processing...';
-      btn.disabled = true;
-      
-      try {
-        const response = await fetch(APPS_SCRIPT_URL, {
-          method: 'POST',
-          body: new URLSearchParams({
-            action: 'updateStatus',
-            row: bookingData._rowNumber,
-            status: 'Confirmed'
-          })
-        });
-        
-        const result = await response.json();
-        
-        if (result.success) {
-          const t = translations[currentLang];
-          document.getElementById('statusBadge').className = 'inline-block px-6 py-3 rounded-full font-bold text-lg mb-4 bg-green-100 text-green-700';
-          document.getElementById('statusBadge').textContent = t.statusConfirmed;
-          document.getElementById('statusMessage').textContent = t.confirmedMessage;
-          document.getElementById('actionButtons').classList.add('hidden');
-        } else {
-          alert('Error confirming booking. Please try again.');
-          btn.innerHTML = originalHTML;
-          btn.disabled = false;
+      fetch(APPS_SCRIPT_URL, {
+        method: 'POST',
+        body: new URLSearchParams({ action: 'updateStatus', row: currentRow, status: status })
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.success) {
+          document.getElementById('bookingDetails').classList.add('hidden');
+          document.getElementById('successMessage').classList.remove('hidden');
         }
-      } catch (error) {
-        console.error('Error:', error);
-        alert('Network error. Please try again.');
-        btn.innerHTML = originalHTML;
-        btn.disabled = false;
-      }
+      })
+      .catch(err => alert('Error updating status.'));
     }
 
-    // Decline booking
-    async function declineBooking() {
-      if (!bookingData) return;
+    function shareOnWhatsApp() {
+      if (!currentBooking) return;
       
-      if (!confirm(currentLang === 'es' ? '¿Estás seguro de que deseas rechazar esta reserva?' : 'Are you sure you want to decline this booking?')) {
-        return;
-      }
+      const refCode = currentBooking['REF CODE'];
+      const pickup = currentBooking['PICK UP'] || 'N/A';
+      const dropoff = currentBooking['DROP OFF'] || 'N/A';
+      const date = currentBooking.DATE ? new Date(currentBooking.DATE).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) : 'N/A';
+      const time = currentBooking.TIME || 'N/A';
+      const price = parseFloat(currentBooking['FINAL PRICE'] || currentBooking['FARES'] || 0);
+      const usd = Math.round(price / 6.80);
       
-      const btn = document.getElementById('declineBtn');
-      const originalHTML = btn.innerHTML;
-      btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Processing...';
-      btn.disabled = true;
+      // Clean message with no weird symbols, proper spacing, and bold final price
+      let msg = `Hello HKJ Logistics,\n\n`;
+      msg += `I would like to confirm my booking ${refCode}.\n\n`;
+      msg += `Pickup: ${pickup}\n`;
+      msg += `Drop-off: ${dropoff}\n`;
+      msg += `Date: ${date} at ${time}\n\n`;
+      msg += `FINAL PRICE: $${price.toFixed(2)} TTD ($${usd} USD)\n\n`;
+      msg += `Thank you!`;
       
-      try {
-        const response = await fetch(APPS_SCRIPT_URL, {
-          method: 'POST',
-          body: new URLSearchParams({
-            action: 'updateStatus',
-            row: bookingData._rowNumber,
-            status: 'Cancelled'
-          })
-        });
-        
-        const result = await response.json();
-        
-        if (result.success) {
-          const t = translations[currentLang];
-          document.getElementById('statusBadge').className = 'inline-block px-6 py-3 rounded-full font-bold text-lg mb-4 bg-red-100 text-red-700';
-          document.getElementById('statusBadge').textContent = t.statusDeclined;
-          document.getElementById('statusMessage').textContent = t.declinedMessage;
-          document.getElementById('actionButtons').classList.add('hidden');
-        } else {
-          alert('Error declining booking. Please try again.');
-          btn.innerHTML = originalHTML;
-          btn.disabled = false;
-        }
-      } catch (error) {
-        console.error('Error:', error);
-        alert('Network error. Please try again.');
-        btn.innerHTML = originalHTML;
-        btn.disabled = false;
-      }
+      const phone = '18687800300'; // Your business number
+      const url = `https://wa.me/${phone}?text=${encodeURIComponent(msg)}`;
+      window.open(url, '_blank');
     }
-
-    // Initialize page
-    window.addEventListener('DOMContentLoaded', function() {
-      fetchBookingDetails();
-    });
   </script>
 </body>
 </html>
