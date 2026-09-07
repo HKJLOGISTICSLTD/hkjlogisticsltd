@@ -99,24 +99,28 @@
         let dStr = "N/A";
         let tStr = "N/A";
         
-        // Handle date
+        // Handle date - Force Trinidad timezone
         if (dateVal) {
             let d = new Date(dateVal);
             if (!isNaN(d.getTime())) { 
-                // Force Trinidad Date
-                dStr = d.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric', timeZone: 'America/Port_of_Spain' }); 
+                dStr = d.toLocaleDateString('en-US', { 
+                    year: 'numeric', 
+                    month: 'long', 
+                    day: 'numeric',
+                    timeZone: 'America/Port_of_Spain'
+                }); 
             } else { 
                 dStr = dateVal; 
             }
         }
         
-        // Handle time - MANUAL FIX FOR TRINIDAD TIMEZONE (UTC-4)
+        // Handle time - BULLETPROOF VERSION
         if (timeVal) {
             let timeString = timeVal.toString();
             
-            // If it's the Google Sheets "1899" bug (e.g., 1899-12-30T04:00:00.000Z)
+            // Case 1: Google Sheets Date object (e.g., "1899-12-30T04:00:00.000Z")
             if (timeString.includes('1899') || (timeString.includes('T') && timeString.includes('Z'))) {
-                // Extract the UTC time from the string (e.g., "04:00")
+                // Extract hours and minutes from the UTC time
                 let match = timeString.match(/T(\d{2}):(\d{2})/);
                 if (match) {
                     let utcHours = parseInt(match[1]);
@@ -124,21 +128,30 @@
                     
                     // Trinidad is UTC-4. Subtract 4 hours.
                     let trinidadHours = utcHours - 4;
-                    if (trinidadHours < 0) trinidadHours += 24; // Handle negative hours (previous day)
+                    if (trinidadHours < 0) trinidadHours += 24;
                     
                     // Convert to 12-hour format
                     let ampm = trinidadHours >= 12 ? 'PM' : 'AM';
                     let h = trinidadHours % 12;
-                    h = h ? h : 12; // the hour '0' should be '12'
+                    h = h ? h : 12;
                     
                     tStr = h + ':' + minutes + ' ' + ampm;
                 }
             } 
-            // If it's already a clean string like "12:00 AM"
+            // Case 2: Already has AM/PM (e.g., "12:00 AM" or "3:00:00 AM")
             else if (timeString.includes('AM') || timeString.includes('PM')) {
-                tStr = timeString;
+                // Extract just the hour and minute, ignore seconds
+                let match = timeString.match(/(\d{1,2}):(\d{2})/);
+                if (match) {
+                    let h = match[1];
+                    let m = match[2];
+                    let ampm = timeString.includes('PM') ? 'PM' : 'AM';
+                    tStr = h + ':' + m + ' ' + ampm;
+                } else {
+                    tStr = timeString;
+                }
             } 
-            // If it's 24-hour format like "00:00"
+            // Case 3: 24-hour format (e.g., "14:30" or "00:00")
             else if (timeString.includes(':')) {
                 let parts = timeString.split(':');
                 let h = parseInt(parts[0]);
@@ -148,6 +161,7 @@
                 h = h ? h : 12;
                 tStr = h + ':' + m + ' ' + ampm;
             }
+            // Case 4: Fallback
             else {
                 tStr = timeString;
             }
