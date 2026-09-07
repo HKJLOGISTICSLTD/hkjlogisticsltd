@@ -98,23 +98,57 @@
     function cleanDateTime(dateVal, timeVal) {
         let dStr = "N/A";
         let tStr = "N/A";
+        
+        // Handle date
         if (dateVal) {
             let d = new Date(dateVal);
-            if (!isNaN(d.getTime())) { dStr = d.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }); } 
-            else { dStr = dateVal; }
+            if (!isNaN(d.getTime())) { 
+                dStr = d.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }); 
+            } else { 
+                dStr = dateVal; 
+            }
         }
+        
+        // Handle time - extract directly from the string to avoid timezone issues
         if (timeVal) {
+            // If it's the Google Sheets 1899 format
             if (timeVal.toString().includes('1899')) {
-                let match = timeVal.toString().match(/T(\d{2}:\d{2})/);
+                let match = timeVal.toString().match(/T(\d{2}):(\d{2})/);
                 if (match) {
-                    let parts = match[1].split(':');
-                    let h = parseInt(parts[0]); let m = parts[1];
+                    let h = parseInt(match[1]);
+                    let m = match[2];
                     let ampm = h >= 12 ? 'PM' : 'AM';
-                    h = h % 12; h = h ? h : 12;
+                    h = h % 12; 
+                    h = h ? h : 12;
                     tStr = h + ':' + m + ' ' + ampm;
                 }
-            } else { tStr = timeVal; }
+            } 
+            // If it's already a time string like "12:00 AM" or "00:00"
+            else if (typeof timeVal === 'string') {
+                // If it contains AM/PM, use it as is
+                if (timeVal.includes('AM') || timeVal.includes('PM')) {
+                    tStr = timeVal;
+                } 
+                // If it's 24-hour format like "00:00" or "14:30"
+                else if (timeVal.includes(':')) {
+                    let parts = timeVal.split(':');
+                    let h = parseInt(parts[0]);
+                    let m = parts[1];
+                    let ampm = h >= 12 ? 'PM' : 'AM';
+                    h = h % 12;
+                    h = h ? h : 12;
+                    tStr = h + ':' + m + ' ' + ampm;
+                }
+                else {
+                    tStr = timeVal;
+                }
+            }
+            // Fallback
+            else {
+                tStr = timeVal.toString();
+            }
         }
+        
         return { date: dStr, time: tStr };
     }
 
@@ -122,25 +156,37 @@
       const urlParams = new URLSearchParams(window.location.search);
       const code = urlParams.get('code');
       if (!code) { document.getElementById('loading').innerHTML = '<p class="text-red-400 font-bold">No booking code provided.</p>'; return; }
+      
       fetch(APPS_SCRIPT_URL).then(res => res.json()).then(data => {
         if (data.success) {
           const booking = data.bookings.find(b => b['REF CODE'] === code);
-          if (booking) { currentBooking = booking; currentRow = booking._rowNumber; displayBooking(booking); } 
-          else { document.getElementById('loading').innerHTML = '<p class="text-red-400 font-bold">Booking not found.</p>'; }
+          if (booking) { 
+              currentBooking = booking; 
+              currentRow = booking._rowNumber; 
+              displayBooking(booking); 
+          } else { 
+              document.getElementById('loading').innerHTML = '<p class="text-red-400 font-bold">Booking not found.</p>'; 
+          }
         }
-      }).catch(err => { document.getElementById('loading').innerHTML = '<p class="text-red-400 font-bold">Error loading data.</p>'; });
+      }).catch(err => { 
+          document.getElementById('loading').innerHTML = '<p class="text-red-400 font-bold">Error loading data.</p>'; 
+          console.error(err); 
+      });
     });
 
     function displayBooking(booking) {
       document.getElementById('loading').classList.add('hidden');
       document.getElementById('bookingDetails').classList.remove('hidden');
+      
       document.getElementById('refCode').textContent = booking['REF CODE'];
       document.getElementById('statusBadge').textContent = 'Status: ' + (booking.STATUS || 'Pending');
       document.getElementById('clientName').textContent = booking.NAME || 'N/A';
       document.getElementById('pickup').textContent = booking['PICK UP'] || 'N/A';
       document.getElementById('dropoff').textContent = booking['DROP OFF'] || 'N/A';
+      
       const cleanDT = cleanDateTime(booking.DATE, booking.TIME);
       document.getElementById('dateTime').textContent = cleanDT.date + ' at ' + cleanDT.time;
+      
       const price = parseFloat(booking['FINAL PRICE'] || booking['FARES'] || 0);
       const usd = Math.round(price / 6.80);
       document.getElementById('priceTTD').textContent = '$' + price.toFixed(2) + ' TTD';
@@ -149,27 +195,40 @@
 
     function updateBookingStatus(status) {
       if (!confirm('Are you sure you want to ' + (status === 'Confirmed' ? 'confirm' : 'decline') + ' this booking?')) return;
-      fetch(APPS_SCRIPT_URL, { method: 'POST', body: new URLSearchParams({ action: 'updateStatus', row: currentRow, status: status }) })
-      .then(res => res.json()).then(data => {
-        if (data.success) { document.getElementById('bookingDetails').classList.add('hidden'); document.getElementById('successMessage').classList.remove('hidden'); }
-      }).catch(err => alert('Error updating status.'));
+      
+      fetch(APPS_SCRIPT_URL, { 
+          method: 'POST', 
+          body: new URLSearchParams({ action: 'updateStatus', row: currentRow, status: status }) 
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.success) { 
+            document.getElementById('bookingDetails').classList.add('hidden'); 
+            document.getElementById('successMessage').classList.remove('hidden'); 
+        }
+      })
+      .catch(err => alert('Error updating status.'));
     }
 
     function shareOnWhatsApp() {
       if (!currentBooking) return;
+      
       const refCode = currentBooking['REF CODE'];
       const pickup = currentBooking['PICK UP'] || 'N/A';
       const dropoff = currentBooking['DROP OFF'] || 'N/A';
       const cleanDT = cleanDateTime(currentBooking.DATE, currentBooking.TIME);
       const price = parseFloat(currentBooking['FINAL PRICE'] || currentBooking['FARES'] || 0);
       const usd = Math.round(price / 6.80);
-      let msg = 'Hello HKJ Logistics,\n\nI would like to confirm my booking ' + refCode + '.\n\n';
+      
+      let msg = 'Hello HKJ Logistics,\n\n';
+      msg += 'I would like to confirm my booking ' + refCode + '.\n\n';
       msg += 'PICKUP: ' + pickup + '\n\n';
       msg += 'DROP-OFF: ' + dropoff + '\n\n';
       msg += 'DATE: ' + cleanDT.date + '\n\n';
       msg += 'TIME: ' + cleanDT.time + '\n\n';
       msg += '*TOTAL PRICE: $' + price.toFixed(2) + ' TTD ($' + usd + ' USD)*\n\n';
       msg += 'Thank you!';
+      
       const phone = '18687800300'; 
       const url = 'https://wa.me/' + phone + '?text=' + encodeURIComponent(msg);
       window.open(url, '_blank');
