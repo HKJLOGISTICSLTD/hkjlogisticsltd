@@ -113,7 +113,7 @@
   </div>
 
   <script>
-    const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwVyYUxmhxqA01l1i1tDqT_qJekDTYREe5iv1PlFZaN7IjKCMt-nudsgZquPwXx2CFfxg/exec';
+    const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwVyYUxmhxqA01l1i1tDqT_qJekDTYREe5iv1PlFZaN7IjKCMt-nudsgZquPwXx2CFfxg/execE';
     const ADMIN_PASSWORD = 'hkj5762';
     const EXCHANGE_RATE = 6.80;
     let allBookings = [];
@@ -527,7 +527,6 @@
     
     function formatTime(timeString) { 
       if (!timeString) return 'N/A'; 
-      // Fix for Google Sheets 1899 date glitch
       if (timeString.toString().includes('1899')) {
         var match = timeString.toString().match(/T(\d{2}:\d{2})/);
         if (match) {
@@ -601,14 +600,20 @@
           if (language === 'es' || language === 'español' || language === 'spanish') {
             message = 'Hola ' + clientName + ',\n\n';
             message += 'Su reserva de HKJ Logistics ' + refCode + ' está lista para revisión.\n\n';
-            message += 'DATE: ' + date + '\n';
-            message += 'TIME: ' + time + '\n';
-            message += 'PICKUP: ' + pickup + '\n';
-            message += 'DROP-OFF: ' + dropoff + '\n';
+            
+            // Added extra \n for spacing
+            message += 'DATE: ' + date + '\n\n';
+            message += 'TIME: ' + time + '\n\n';
+            message += 'PICKUP: ' + pickup + '\n\n';
+            message += 'DROP-OFF: ' + dropoff + '\n\n';
             message += 'BASE PRICE: $' + price + ' TTD ($' + usdPrice + ' USD)\n';
+            
             if (surchargeAmount > 0) { message += 'SURCHARGE: +$' + surchargeAmount + ' TTD\n'; }
             if (waitingFee > 0) { message += 'WAITING TIME (' + waitingMins + ' min): +$' + waitingFee + ' TTD\n'; }
-            message += '\nTOTAL: $' + totalPrice.toFixed(2) + ' TTD ($' + totalUSD + ' USD)\n\n';
+            
+            // Added asterisks for BOLD
+            message += '\n*TOTAL: $' + totalPrice.toFixed(2) + ' TTD ($' + totalUSD + ' USD)*\n\n'; 
+            
             message += 'COMO FUNCIONA:\n';
             message += '1. Recibimos tu solicitud. (Hecho)\n';
             message += '2. Esta es tu cotización personalizada. (Hecho)\n';
@@ -620,14 +625,20 @@
           } else {
             message = 'Hello ' + clientName + ',\n\n';
             message += 'Your HKJ Logistics booking ' + refCode + ' is ready for review!\n\n';
-            message += 'DATE: ' + date + '\n';
-            message += 'TIME: ' + time + '\n';
-            message += 'PICKUP: ' + pickup + '\n';
-            message += 'DROP-OFF: ' + dropoff + '\n';
+            
+            // Added extra \n for spacing
+            message += 'DATE: ' + date + '\n\n';
+            message += 'TIME: ' + time + '\n\n';
+            message += 'PICKUP: ' + pickup + '\n\n';
+            message += 'DROP-OFF: ' + dropoff + '\n\n';
             message += 'BASE PRICE: $' + price + ' TTD ($' + usdPrice + ' USD)\n';
+            
             if (surchargeAmount > 0) { message += 'SURCHARGE: +$' + surchargeAmount + ' TTD\n'; }
             if (waitingFee > 0) { message += 'WAITING TIME (' + waitingMins + ' min): +$' + waitingFee + ' TTD\n'; }
-            message += '\nTOTAL: $' + totalPrice.toFixed(2) + ' TTD ($' + totalUSD + ' USD)\n\n';
+            
+            // Added asterisks for BOLD
+            message += '\n*TOTAL: $' + totalPrice.toFixed(2) + ' TTD ($' + totalUSD + ' USD)*\n\n'; 
+            
             message += 'HOW IT WORKS:\n';
             message += '1. We received your request. (Done)\n';
             message += '2. This is your personalized quote. (Done)\n';
@@ -661,7 +672,7 @@
     }
 
     async function updateStatus(row, status) { const originalText = event.target.innerHTML; event.target.disabled = true; try { const response = await fetch(APPS_SCRIPT_URL, { method: 'POST', body: new URLSearchParams({ action: 'updateStatus', row: row, status: status }) }); const result = await response.json(); if (result.success) { fetchBookings(); } else { alert('Error updating status.'); } } catch (error) { alert('Network error.'); } finally { event.target.disabled = false; } }
-    async function generateReport() { try { const response = await fetch(APPS_SCRIPT_URL); const data = await response.json(); if (data.success) { const bookings = data.bookings; let pending = 0, confirmed = 0, completed = 0, cancelled = 0, priceSent = 0, totalRevenue = 0; bookings.forEach(function(b) { const status = b.STATUS || 'Pending'; const price = parseFloat(b['FINAL PRICE'] || b['FARES']) || 0; const surchargeType = b['SURCHARGE'] || 'none'; const waitingMins = parseInt(b['WAITING']) || 0; const surchargeAmount = calculateSurcharge(price, surchargeType); const waitingFee = calculateWaitingTime(waitingMins); const totalPrice = price + surchargeAmount + waitingFee; if (status === 'Pending') pending++; else if (status === 'Price Sent') priceSent++; else if (status === 'Confirmed') confirmed++; else if (status === 'Completed') completed++; else if (status === 'Cancelled') cancelled++; if (totalPrice && ['Completed', 'Confirmed', 'Price Sent'].includes(status)) totalRevenue += totalPrice; }); const totalUSD = Math.round(totalRevenue / 6.80); const report = '📊 HKJ Logistics Report\n\n📋 BOOKING STATUS:\n─────────────────\nTotal Bookings: ' + bookings.length + '\n⏳ Pending: ' + pending + '\n💰 Price Sent: ' + priceSent + '\n✅ Confirmed: ' + confirmed + '\n✔️ Completed: ' + completed + '\n❌ Cancelled: ' + cancelled + '\n\n💵 TOTAL REVENUE (with surcharges & waiting):\n   $' + totalRevenue.toFixed(2) + ' TTD\n   $' + totalUSD + ' USD (rounded)\n─────────────────\nExchange Rate: 1 USD = 6.80 TTD\nGenerated: ' + new Date().toLocaleString(); alert(report); } } catch (error) { alert('Error generating report.'); } }
+    async function generateReport() { try { const response = await fetch(APPS_SCRIPT_URL); const data = await response.json(); if (data.success) { const bookings = data.bookings; let pending = 0, confirmed = 0, completed = 0, cancelled = 0, priceSent = 0, totalRevenue = 0; bookings.forEach(function(b) { const status = b.STATUS || 'Pending'; const price = parseFloat(b['FINAL PRICE'] || b['FARES']) || 0; const surchargeType = b['SURCHARGE'] || 'none'; const waitingMins = parseInt(b['WAITING']) || 0; const surchargeAmount = calculateSurcharge(price, surchargeType); const waitingFee = calculateWaitingTime(waitingMins); const totalPrice = price + surchargeAmount + waitingFee; if (status === 'Pending') pending++; else if (status === 'Price Sent') priceSent++; else if (status === 'Confirmed') confirmed++; else if (status === 'Completed') completed++; else if (status === 'Cancelled') cancelled++; if (totalPrice && ['Completed', 'Confirmed', 'Price Sent'].includes(status)) totalRevenue += totalPrice; }); const totalUSD = Math.round(totalRevenue / 6.80); const report = '📊 HKJ Logistics Report\n\n BOOKING STATUS:\n─────────────────\nTotal Bookings: ' + bookings.length + '\n⏳ Pending: ' + pending + '\n💰 Price Sent: ' + priceSent + '\n✅ Confirmed: ' + confirmed + '\n✔️ Completed: ' + completed + '\n❌ Cancelled: ' + cancelled + '\n\n💵 TOTAL REVENUE (with surcharges & waiting):\n   $' + totalRevenue.toFixed(2) + ' TTD\n   $' + totalUSD + ' USD (rounded)\n─────────────────\nExchange Rate: 1 USD = 6.80 TTD\nGenerated: ' + new Date().toLocaleString(); alert(report); } } catch (error) { alert('Error generating report.'); } }
     
     window.addEventListener('DOMContentLoaded', function() {
       const priceInputs = document.querySelectorAll('input[id^="price-"]');
