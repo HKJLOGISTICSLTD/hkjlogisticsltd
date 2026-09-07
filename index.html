@@ -786,11 +786,15 @@
                 
                 let displayText = item.display_name;
                 
-                // FIX: Custom labels for Maracas results
-                if (displayText.includes('Maracas') && displayText.includes('North Coast')) {
-                    displayText = 'Maracas Beach';
-                } else if (displayText.includes('Maracas') && displayText.includes('Tunapuna-Piarco')) {
-                    displayText = 'Maracas St Joseph';
+                                let displayText = item.display_name;
+                
+                // FIX: Force exact labels for Maracas results
+                if (displayText.toLowerCase().startsWith('maracas,')) {
+                    if (displayText.toLowerCase().includes('tunapuna-piarco') || displayText.toLowerCase().includes('st. joseph')) {
+                        displayText = 'Maracas St Joseph';
+                    } else {
+                        displayText = 'Maracas Beach';
+                    }
                 } else if (displayText.includes('San Juan-Laventille')) {
                     displayText = displayText.replace('San Juan-Laventille', 'North Coast');
                 }
