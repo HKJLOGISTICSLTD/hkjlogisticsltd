@@ -73,14 +73,33 @@
     /* Map Styles */
     #pickupMap { height: 250px; width: 100%; border-radius: 0.75rem; margin-top: 1rem; z-index: 1; border: 2px solid rgba(255,255,255,0.1); }
     .leaflet-container { background: #1e293b; }
-
-    /* MAKE PIN ICON BIGGER */
-    .leaflet-marker-icon {
-        transform: scale(1.6); /* Makes the pin 60% larger */
-        transform-origin: bottom center;
-        filter: drop-shadow(0px 3px 3px rgba(0,0,0,0.5));
-    }
     
+    /* Custom CSS Pin Icon - Guaranteed to show up */
+    .custom-pin {
+      background: transparent;
+      border: none;
+    }
+    .custom-pin div {
+      background-color: #ef4444; /* Red color */
+      width: 30px;
+      height: 30px;
+      border-radius: 50% 50% 50% 0;
+      transform: rotate(-45deg);
+      border: 2px solid white;
+      box-shadow: 0 3px 5px rgba(0,0,0,0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .custom-pin div::after {
+      content: '';
+      transform: rotate(45deg);
+      font-size: 16px;
+      position: absolute;
+      top: 2px;
+      left: 6px;
+    }
+
     /* FIXED Autocomplete Styles - Trinidad Only */
     .autocomplete-container { 
       position: relative; 
@@ -355,10 +374,10 @@
         <label class="block text-sm font-bold text-gray-300 mb-2"><i class="fas fa-map-marker-alt text-green-500 mr-2"></i><span data-en="Pickup Location" data-es="Lugar de Recogida">Pickup Location</span> *</label>
         <select onchange="document.getElementById('pickupAddress').value=this.value" class="w-full p-3 mb-3 border-2 border-gray-600 rounded-xl focus:outline-none bg-dark-input text-white text-sm">
           <option value="">-- Quick Select Popular Location --</option>
-          <optgroup label="✈️ Airports">
+          <optgroup label="️ Airports">
             <option value="Piarco International Airport, Trinidad">Piarco International Airport</option>
           </optgroup>
-          <optgroup label="️ Malls & Shopping">
+          <optgroup label="🛍️ Malls & Shopping">
             <option value="C3 Centre, Sir Solomon Hochoy Highway, San Fernando">C3 Centre (San Fernando)</option>
             <option value="Grand Bazaar, Chaguanas">Grand Bazaar (Chaguanas)</option>
             <option value="West Mall, Valsayn">West Mall (Valsayn)</option>
@@ -376,7 +395,7 @@
             <option value="Couva, Trinidad">Couva</option>
             <option value="Point Fortin, Trinidad">Point Fortin</option>
           </optgroup>
-          <optgroup label=" Port of Spain / St. Clair / St. Ann's / Cascade">
+          <optgroup label="🏨 Port of Spain / St. Clair / St. Ann's / Cascade">
             <option value="Hyatt Regency Trinidad — Port of Spain">Hyatt Regency Trinidad — Port of Spain</option>
             <option value="Hilton Trinidad & Conference Centre — Port of Spain">Hilton Trinidad & Conference Centre — Port of Spain</option>
             <option value="Courtyard by Marriott Port of Spain — Port of Spain">Courtyard by Marriott Port of Spain — Port of Spain</option>
@@ -419,7 +438,7 @@
             <option value="Hacienda Jacana — Talparo">Hacienda Jacana — Talparo</option>
             <option value="Ramel's Tropical Suites — Cunupia">Ramel's Tropical Suites — Cunupia</option>
           </optgroup>
-          <optgroup label=" South Trinidad">
+          <optgroup label="🏨 South Trinidad">
             <option value="Cara Hotels — Claxton Bay">Cara Hotels — Claxton Bay</option>
             <option value="Paria Suites Hotel — La Romaine">Paria Suites Hotel — La Romaine</option>
             <option value="Tradewinds Hotel — San Fernando">Tradewinds Hotel — San Fernando</option>
@@ -524,7 +543,7 @@
             <option value="Samise Villa — St. Ann's">Samise Villa — St. Ann's</option>
             <option value="Kiskadee Korner — St. Clair">Kiskadee Korner — St. Clair</option>
           </optgroup>
-          <optgroup label=" Piarco / Trincity / East Trinidad">
+          <optgroup label="🏨 Piarco / Trincity / East Trinidad">
             <option value="Holiday Inn Express & Suites Trincity Trinidad Airport by IHG — Trincity">Holiday Inn Express & Suites Trincity Trinidad Airport by IHG — Trincity</option>
             <option value="Regent Star Hotel — Piarco">Regent Star Hotel — Piarco</option>
             <option value="Runway Hotel and Restaurant — Piarco">Runway Hotel and Restaurant — Piarco</option>
@@ -543,7 +562,7 @@
             <option value="Hacienda Jacana — Talparo">Hacienda Jacana — Talparo</option>
             <option value="Ramel's Tropical Suites — Cunupia">Ramel's Tropical Suites — Cunupia</option>
           </optgroup>
-          <optgroup label=" South Trinidad">
+          <optgroup label="🏨 South Trinidad">
             <option value="Cara Hotels — Claxton Bay">Cara Hotels — Claxton Bay</option>
             <option value="Paria Suites Hotel — La Romaine">Paria Suites Hotel — La Romaine</option>
             <option value="Tradewinds Hotel — San Fernando">Tradewinds Hotel — San Fernando</option>
@@ -558,7 +577,7 @@
             <option value="Toco Beach, North Coast, Trinidad">Toco Beach</option>
             <option value="Sans Souci Beach, Toco, Trinidad">Sans Souci Beach, Toco</option>
           </optgroup>
-          <optgroup label=" North Coast / East Coast">
+          <optgroup label="🏨 North Coast / East Coast">
             <option value="Trinidad Maracas Bay Hotel — Maracas Bay">Trinidad Maracas Bay Hotel — Maracas Bay</option>
             <option value="Coral Cove Marina Hotel — Chaguaramas">Coral Cove Marina Hotel — Chaguaramas</option>
             <option value="CrewsInn Hotel — Chaguaramas">CrewsInn Hotel — Chaguaramas</option>
@@ -594,7 +613,7 @@
 
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div><label class="block text-sm font-bold text-gray-300 mb-2"><i class="fas fa-car text-indigo-400 mr-2"></i><span data-en="Vehicle Type" data-es="Tipo de Vehículo">Vehicle Type</span> *</label><select name="vehicleType" required class="w-full p-3 border rounded-xl focus:outline-none input-focus transition bg-dark-input"><option value="" data-en="Select a vehicle..." data-es="Selecciona un vehículo...">Select a vehicle...</option><option value="Standard Sedan (1-4 Passengers)" data-en="Standard Sedan (1-4 Passengers)" data-es="Sedán Estándar (1-4 Pasajeros)">Standard Sedan (1-4 Passengers)</option><option value="SUV (5-7 Passengers) - Security Deposit Required" data-en="SUV (5-7 Passengers) - Security Deposit Required" data-es="SUV (5-7 Pasajeros) - Depósito de Seguridad Requerido">SUV (5-7 Passengers) <span class="text-red-500 font-bold">- Security Deposit Required</span></option><option value="Van (8-12 Passengers) - Security Deposit Required" data-en="Van (8-12 Passengers) - Security Deposit Required" data-es="Furgoneta (8-12 Pasajeros) - Depósito de Seguridad Requerido">Van (8-12 Passengers) <span class="text-red-500 font-bold">- Security Deposit Required</span></option><option value="Luxury Vehicle - Security Deposit Required" data-en="Luxury Vehicle - Security Deposit Required" data-es="Vehículo de Lujo - Depósito de Seguridad Requerido">Luxury Vehicle <span class="text-red-500 font-bold">- Security Deposit Required</span></option></select></div>
-        <div><label class="block text-sm font-bold text-gray-300 mb-2"><i class="fas fa-concierge-bell text-pink-400 mr-2"></i><span data-en="Service Type" data-es="Tipo de Servicio">Service Type</span> *</label><select name="serviceType" id="serviceType" required onchange="handleServiceTypeChange()" class="w-full p-3 border rounded-xl focus:outline-none input-focus transition bg-dark-input"><option value="" data-en="Select a service..." data-es="Selecciona un servicio...">Select a service...</option><option value="private" data-en="🚗 Private Transfer (single person)" data-es="🚗 Private Transfer (single person)"> Private Transfer (single person)</option><option value="shared" data-en="👥 Shared Ride (groups)" data-es="👥 Shared Ride (groups)">👥 Shared Ride (groups)</option><option value="hourly" data-en="⏰ Hourly Charter (add $100.00 per hour rate automatically)" data-es="⏰ Hourly Charter (add $100.00 per hour rate automatically)">⏰ Hourly Charter (add $100.00 per hour rate automatically)</option><option value="caroni" data-en=" Caroni Bird Sanctuary Tour Taxi Service" data-es="🦜 Caroni Bird Sanctuary Tour Taxi Service">🦜 Caroni Bird Sanctuary Tour Taxi Service</option></select></div>
+        <div><label class="block text-sm font-bold text-gray-300 mb-2"><i class="fas fa-concierge-bell text-pink-400 mr-2"></i><span data-en="Service Type" data-es="Tipo de Servicio">Service Type</span> *</label><select name="serviceType" id="serviceType" required onchange="handleServiceTypeChange()" class="w-full p-3 border rounded-xl focus:outline-none input-focus transition bg-dark-input"><option value="" data-en="Select a service..." data-es="Selecciona un servicio...">Select a service...</option><option value="private" data-en="🚗 Private Transfer (single person)" data-es="🚗 Private Transfer (single person)"> Private Transfer (single person)</option><option value="shared" data-en="👥 Shared Ride (groups)" data-es="👥 Shared Ride (groups)"> Shared Ride (groups)</option><option value="hourly" data-en="⏰ Hourly Charter (add $100.00 per hour rate automatically)" data-es="⏰ Hourly Charter (add $100.00 per hour rate automatically)">⏰ Hourly Charter (add $100.00 per hour rate automatically)</option><option value="caroni" data-en=" Caroni Bird Sanctuary Tour Taxi Service" data-es="🦜 Caroni Bird Sanctuary Tour Taxi Service">🦜 Caroni Bird Sanctuary Tour Taxi Service</option></select></div>
       </div>
       
       <!-- Service Type Warning Messages -->
@@ -668,12 +687,12 @@
         translatePage();
       }
       
-      // FIX FOR MISSING LEAFLET PIN ICON
-      delete L.Icon.Default.prototype._getIconUrl;
-      L.Icon.Default.mergeOptions({
-          iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon-2x.png',
-          iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon.png',
-          shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png',
+      // CUSTOM CSS PIN ICON (Guaranteed to show up)
+      var customIcon = L.divIcon({
+        className: 'custom-pin',
+        html: '<div></div>',
+        iconSize: [30, 42],
+        iconAnchor: [15, 42]
       });
 
       // INITIALIZE THE PIN DROP MAP WITH AUTO-ADDRESS
@@ -707,7 +726,8 @@
 
       map.on('click', function(e) {
         if (marker) map.removeLayer(marker);
-        marker = L.marker(e.latlng).addTo(map);
+        // USE CUSTOM ICON HERE
+        marker = L.marker(e.latlng, {icon: customIcon}).addTo(map);
         document.getElementById('pickupLat').value = e.latlng.lat;
         document.getElementById('pickupLng').value = e.latlng.lng;
         fetchAddress(e.latlng.lat, e.latlng.lng);
@@ -716,7 +736,7 @@
       var locateControl = L.control({position: 'topright'});
       locateControl.onAdd = function(map) {
         var div = L.DomUtil.create('div', 'leaflet-bar leaflet-control');
-        div.innerHTML = '<a href="#" title="Use my current location" style="display:block;width:30px;height:30px;line-height:30px;text-align:center;font-size:16px;background:#fff;color:#000;"></a>';
+        div.innerHTML = '<a href="#" title="Use my current location" style="display:block;width:30px;height:30px;line-height:30px;text-align:center;font-size:16px;background:#fff;color:#000;">📍</a>';
         div.onclick = function(e) {
           e.preventDefault();
           if (navigator.geolocation) {
@@ -725,7 +745,8 @@
               var lng = position.coords.longitude;
               map.setView([lat, lng], 16);
               if (marker) map.removeLayer(marker);
-              marker = L.marker([lat, lng]).addTo(map);
+              // USE CUSTOM ICON HERE
+              marker = L.marker([lat, lng], {icon: customIcon}).addTo(map);
               document.getElementById('pickupLat').value = lat;
               document.getElementById('pickupLng').value = lng;
               fetchAddress(lat, lng);
@@ -786,7 +807,8 @@
                     if (map) {
                       const existingMarker = document.querySelector('.leaflet-marker-icon');
                       if (existingMarker) existingMarker.remove();
-                      const marker = L.marker([parseFloat(item.lat), parseFloat(item.lon)]).addTo(map);
+                      // USE CUSTOM ICON HERE
+                      const marker = L.marker([parseFloat(item.lat), parseFloat(item.lon)], {icon: customIcon}).addTo(map);
                       map.setView([parseFloat(item.lat), parseFloat(item.lon)], 16);
                       document.getElementById('pickupLat').value = item.lat;
                       document.getElementById('pickupLng').value = item.lon;
@@ -826,7 +848,7 @@
         suggestedPriceInput.value = "300";
         
         warningDiv.classList.remove('hidden');
-        warningTitle.textContent = ' Caroni Bird Sanctuary Tour Taxi Service';
+        warningTitle.textContent = '🦜 Caroni Bird Sanctuary Tour Taxi Service';
         warningText.textContent = 'Base price set to $300 TTD. Final price may vary based on pickup location and will be confirmed via email/WhatsApp.';
       } else if (serviceType === 'hourly') {
         // Re-enable dropoff if it was locked
@@ -835,7 +857,7 @@
         suggestedPriceInput.value = "";
         
         warningDiv.classList.remove('hidden');
-        warningTitle.textContent = '⏰ Hourly Charter Pricing';
+        warningTitle.textContent = ' Hourly Charter Pricing';
         warningText.textContent = '$100 TTD per hour. Minimum 2 hours booking required. Final price calculated based on total hours.';
       } else {
         // Re-enable dropoff if it was locked
