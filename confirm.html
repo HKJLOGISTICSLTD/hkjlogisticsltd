@@ -164,11 +164,12 @@
       const price = parseFloat(currentBooking['FINAL PRICE'] || currentBooking['FARES'] || 0);
       const usd = Math.round(price / 6.80);
       let msg = 'Hello HKJ Logistics,\n\nI would like to confirm my booking ' + refCode + '.\n\n';
-      msg += 'PICKUP: ' + pickup + '\n';
-      msg += 'DROP-OFF: ' + dropoff + '\n';
-      msg += 'DATE: ' + cleanDT.date + '\n';
+      msg += 'PICKUP: ' + pickup + '\n\n';
+      msg += 'DROP-OFF: ' + dropoff + '\n\n';
+      msg += 'DATE: ' + cleanDT.date + '\n\n';
       msg += 'TIME: ' + cleanDT.time + '\n\n';
-      msg += 'TOTAL PRICE: $' + price.toFixed(2) + ' TTD ($' + usd + ' USD)\n\nThank you!';
+      msg += '*TOTAL PRICE: $' + price.toFixed(2) + ' TTD ($' + usd + ' USD)*\n\n';
+      msg += 'Thank you!';
       const phone = '18687800300'; 
       const url = 'https://wa.me/' + phone + '?text=' + encodeURIComponent(msg);
       window.open(url, '_blank');
