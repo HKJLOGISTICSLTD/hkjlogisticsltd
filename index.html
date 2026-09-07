@@ -73,6 +73,13 @@
     /* Map Styles */
     #pickupMap { height: 250px; width: 100%; border-radius: 0.75rem; margin-top: 1rem; z-index: 1; border: 2px solid rgba(255,255,255,0.1); }
     .leaflet-container { background: #1e293b; }
+
+    /* MAKE PIN ICON BIGGER */
+    .leaflet-marker-icon {
+        transform: scale(1.6); /* Makes the pin 60% larger */
+        transform-origin: bottom center;
+        filter: drop-shadow(0px 3px 3px rgba(0,0,0,0.5));
+    }
     
     /* FIXED Autocomplete Styles - Trinidad Only */
     .autocomplete-container { 
@@ -351,7 +358,7 @@
           <optgroup label="✈️ Airports">
             <option value="Piarco International Airport, Trinidad">Piarco International Airport</option>
           </optgroup>
-          <optgroup label="️ Malls & Shopping">
+          <optgroup label="🛍️ Malls & Shopping">
             <option value="C3 Centre, Sir Solomon Hochoy Highway, San Fernando">C3 Centre (San Fernando)</option>
             <option value="Grand Bazaar, Chaguanas">Grand Bazaar (Chaguanas)</option>
             <option value="West Mall, Valsayn">West Mall (Valsayn)</option>
@@ -393,7 +400,7 @@
             <option value="Samise Villa — St. Ann's">Samise Villa — St. Ann's</option>
             <option value="Kiskadee Korner — St. Clair">Kiskadee Korner — St. Clair</option>
           </optgroup>
-          <optgroup label="🏨 Piarco / Trincity / East Trinidad">
+          <optgroup label=" Piarco / Trincity / East Trinidad">
             <option value="Holiday Inn Express & Suites Trincity Trinidad Airport by IHG — Trincity">Holiday Inn Express & Suites Trincity Trinidad Airport by IHG — Trincity</option>
             <option value="Regent Star Hotel — Piarco">Regent Star Hotel — Piarco</option>
             <option value="Runway Hotel and Restaurant — Piarco">Runway Hotel and Restaurant — Piarco</option>
@@ -412,7 +419,7 @@
             <option value="Hacienda Jacana — Talparo">Hacienda Jacana — Talparo</option>
             <option value="Ramel's Tropical Suites — Cunupia">Ramel's Tropical Suites — Cunupia</option>
           </optgroup>
-          <optgroup label="🏨 South Trinidad">
+          <optgroup label=" South Trinidad">
             <option value="Cara Hotels — Claxton Bay">Cara Hotels — Claxton Bay</option>
             <option value="Paria Suites Hotel — La Romaine">Paria Suites Hotel — La Romaine</option>
             <option value="Tradewinds Hotel — San Fernando">Tradewinds Hotel — San Fernando</option>
@@ -420,7 +427,7 @@
             <option value="South Western Court — Point Fortin">South Western Court — Point Fortin</option>
             <option value="Seven Days Guest House — Esmeralda">Seven Days Guest House — Esmeralda</option>
           </optgroup>
-          <optgroup label="️ North Coast Beaches ($700 TTD)">
+          <optgroup label="🏖️ North Coast Beaches ($700 TTD)">
             <option value="Maracas Beach, North Coast, Trinidad">Maracas Beach</option>
             <option value="Las Cuevas Beach, North Coast, Trinidad">Las Cuevas Beach</option>
             <option value="Blanchisseuse Beach, North Coast, Trinidad">Blanchisseuse Beach</option>
@@ -536,7 +543,7 @@
             <option value="Hacienda Jacana — Talparo">Hacienda Jacana — Talparo</option>
             <option value="Ramel's Tropical Suites — Cunupia">Ramel's Tropical Suites — Cunupia</option>
           </optgroup>
-          <optgroup label="🏨 South Trinidad">
+          <optgroup label=" South Trinidad">
             <option value="Cara Hotels — Claxton Bay">Cara Hotels — Claxton Bay</option>
             <option value="Paria Suites Hotel — La Romaine">Paria Suites Hotel — La Romaine</option>
             <option value="Tradewinds Hotel — San Fernando">Tradewinds Hotel — San Fernando</option>
@@ -551,7 +558,7 @@
             <option value="Toco Beach, North Coast, Trinidad">Toco Beach</option>
             <option value="Sans Souci Beach, Toco, Trinidad">Sans Souci Beach, Toco</option>
           </optgroup>
-          <optgroup label="🏨 North Coast / East Coast">
+          <optgroup label=" North Coast / East Coast">
             <option value="Trinidad Maracas Bay Hotel — Maracas Bay">Trinidad Maracas Bay Hotel — Maracas Bay</option>
             <option value="Coral Cove Marina Hotel — Chaguaramas">Coral Cove Marina Hotel — Chaguaramas</option>
             <option value="CrewsInn Hotel — Chaguaramas">CrewsInn Hotel — Chaguaramas</option>
@@ -587,7 +594,7 @@
 
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div><label class="block text-sm font-bold text-gray-300 mb-2"><i class="fas fa-car text-indigo-400 mr-2"></i><span data-en="Vehicle Type" data-es="Tipo de Vehículo">Vehicle Type</span> *</label><select name="vehicleType" required class="w-full p-3 border rounded-xl focus:outline-none input-focus transition bg-dark-input"><option value="" data-en="Select a vehicle..." data-es="Selecciona un vehículo...">Select a vehicle...</option><option value="Standard Sedan (1-4 Passengers)" data-en="Standard Sedan (1-4 Passengers)" data-es="Sedán Estándar (1-4 Pasajeros)">Standard Sedan (1-4 Passengers)</option><option value="SUV (5-7 Passengers) - Security Deposit Required" data-en="SUV (5-7 Passengers) - Security Deposit Required" data-es="SUV (5-7 Pasajeros) - Depósito de Seguridad Requerido">SUV (5-7 Passengers) <span class="text-red-500 font-bold">- Security Deposit Required</span></option><option value="Van (8-12 Passengers) - Security Deposit Required" data-en="Van (8-12 Passengers) - Security Deposit Required" data-es="Furgoneta (8-12 Pasajeros) - Depósito de Seguridad Requerido">Van (8-12 Passengers) <span class="text-red-500 font-bold">- Security Deposit Required</span></option><option value="Luxury Vehicle - Security Deposit Required" data-en="Luxury Vehicle - Security Deposit Required" data-es="Vehículo de Lujo - Depósito de Seguridad Requerido">Luxury Vehicle <span class="text-red-500 font-bold">- Security Deposit Required</span></option></select></div>
-        <div><label class="block text-sm font-bold text-gray-300 mb-2"><i class="fas fa-concierge-bell text-pink-400 mr-2"></i><span data-en="Service Type" data-es="Tipo de Servicio">Service Type</span> *</label><select name="serviceType" id="serviceType" required onchange="handleServiceTypeChange()" class="w-full p-3 border rounded-xl focus:outline-none input-focus transition bg-dark-input"><option value="" data-en="Select a service..." data-es="Selecciona un servicio...">Select a service...</option><option value="private" data-en="🚗 Private Transfer (single person)" data-es="🚗 Private Transfer (single person)">🚗 Private Transfer (single person)</option><option value="shared" data-en="👥 Shared Ride (groups)" data-es=" Shared Ride (groups)">👥 Shared Ride (groups)</option><option value="hourly" data-en="⏰ Hourly Charter (add $100.00 per hour rate automatically)" data-es="⏰ Hourly Charter (add $100.00 per hour rate automatically)">⏰ Hourly Charter (add $100.00 per hour rate automatically)</option><option value="caroni" data-en="🦜 Caroni Bird Sanctuary Tour Taxi Service" data-es="🦜 Caroni Bird Sanctuary Tour Taxi Service">🦜 Caroni Bird Sanctuary Tour Taxi Service</option></select></div>
+        <div><label class="block text-sm font-bold text-gray-300 mb-2"><i class="fas fa-concierge-bell text-pink-400 mr-2"></i><span data-en="Service Type" data-es="Tipo de Servicio">Service Type</span> *</label><select name="serviceType" id="serviceType" required onchange="handleServiceTypeChange()" class="w-full p-3 border rounded-xl focus:outline-none input-focus transition bg-dark-input"><option value="" data-en="Select a service..." data-es="Selecciona un servicio...">Select a service...</option><option value="private" data-en="🚗 Private Transfer (single person)" data-es="🚗 Private Transfer (single person)"> Private Transfer (single person)</option><option value="shared" data-en="👥 Shared Ride (groups)" data-es="👥 Shared Ride (groups)">👥 Shared Ride (groups)</option><option value="hourly" data-en="⏰ Hourly Charter (add $100.00 per hour rate automatically)" data-es="⏰ Hourly Charter (add $100.00 per hour rate automatically)">⏰ Hourly Charter (add $100.00 per hour rate automatically)</option><option value="caroni" data-en=" Caroni Bird Sanctuary Tour Taxi Service" data-es="🦜 Caroni Bird Sanctuary Tour Taxi Service">🦜 Caroni Bird Sanctuary Tour Taxi Service</option></select></div>
       </div>
       
       <!-- Service Type Warning Messages -->
@@ -747,7 +754,15 @@
               data.forEach(item => {
                 const div = document.createElement('div');
                 div.className = 'autocomplete-result';
-                div.textContent = item.display_name;
+                
+                // FIX: Replace "San Juan-Laventille" with "North Coast" in the display text
+                let displayText = item.display_name;
+                if (displayText.includes('San Juan-Laventille')) {
+                    displayText = displayText.replace('San Juan-Laventille', 'North Coast');
+                }
+                
+                div.textContent = displayText;
+                
                 div.onclick = function() {
                   document.getElementById(resultsId === 'pickupResults' ? 'pickupAddress' : 'dropoffAddress').value = item.display_name;
                   resultsDiv.style.display = 'none';
