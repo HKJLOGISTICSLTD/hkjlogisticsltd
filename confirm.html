@@ -99,41 +99,57 @@
         let dStr = "N/A";
         let tStr = "N/A";
         
-        // Handle date - FORCE TRINIDAD TIMEZONE
+        // Handle date
         if (dateVal) {
             let d = new Date(dateVal);
             if (!isNaN(d.getTime())) { 
+                // Force Trinidad Date
                 dStr = d.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric', timeZone: 'America/Port_of_Spain' }); 
             } else { 
                 dStr = dateVal; 
             }
         }
         
-        // Handle time - FORCE TRINIDAD TIMEZONE
+        // Handle time - MANUAL FIX FOR TRINIDAD TIMEZONE (UTC-4)
         if (timeVal) {
-            // If it's the Google Sheets 1899 date object
-            if (timeVal.toString().includes('1899') || timeVal.toString().includes('T')) {
-                let d = new Date(timeVal);
-                if (!isNaN(d.getTime())) {
-                    // MAGIC FIX: Force it to display in Trinidad time
-                    tStr = d.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', timeZone: 'America/Port_of_Spain' });
+            let timeString = timeVal.toString();
+            
+            // If it's the Google Sheets "1899" bug (e.g., 1899-12-30T04:00:00.000Z)
+            if (timeString.includes('1899') || (timeString.includes('T') && timeString.includes('Z'))) {
+                // Extract the UTC time from the string (e.g., "04:00")
+                let match = timeString.match(/T(\d{2}):(\d{2})/);
+                if (match) {
+                    let utcHours = parseInt(match[1]);
+                    let minutes = match[2];
+                    
+                    // Trinidad is UTC-4. Subtract 4 hours.
+                    let trinidadHours = utcHours - 4;
+                    if (trinidadHours < 0) trinidadHours += 24; // Handle negative hours (previous day)
+                    
+                    // Convert to 12-hour format
+                    let ampm = trinidadHours >= 12 ? 'PM' : 'AM';
+                    let h = trinidadHours % 12;
+                    h = h ? h : 12; // the hour '0' should be '12'
+                    
+                    tStr = h + ':' + minutes + ' ' + ampm;
                 }
             } 
             // If it's already a clean string like "12:00 AM"
-            else if (typeof timeVal === 'string' && timeVal.includes(':')) {
-                if (timeVal.includes('AM') || timeVal.includes('PM')) {
-                    tStr = timeVal;
-                } else {
-                    let parts = timeVal.split(':');
-                    let h = parseInt(parts[0]);
-                    let m = parts[1];
-                    let ampm = h >= 12 ? 'PM' : 'AM';
-                    h = h % 12;
-                    h = h ? h : 12;
-                    tStr = h + ':' + m + ' ' + ampm;
-                }
-            } else {
-                tStr = timeVal.toString();
+            else if (timeString.includes('AM') || timeString.includes('PM')) {
+                tStr = timeString;
+            } 
+            // If it's 24-hour format like "00:00"
+            else if (timeString.includes(':')) {
+                let parts = timeString.split(':');
+                let h = parseInt(parts[0]);
+                let m = parts[1];
+                let ampm = h >= 12 ? 'PM' : 'AM';
+                h = h % 12;
+                h = h ? h : 12;
+                tStr = h + ':' + m + ' ' + ampm;
+            }
+            else {
+                tStr = timeString;
             }
         }
         
@@ -145,15 +161,24 @@
       const code = urlParams.get('code');
       if (!code) { document.getElementById('loading').innerHTML = '<p class="text-red-400 font-bold">No booking code provided.</p>'; return; }
       
+      // Clean the input code: remove dashes/spaces and make uppercase
+      const cleanInputCode = code.toString().toUpperCase().replace(/[^A-Z0-9]/g, '');
+
       fetch(APPS_SCRIPT_URL).then(res => res.json()).then(data => {
         if (data.success) {
-          const booking = data.bookings.find(b => b['REF CODE'] === code);
+          // Find booking by comparing cleaned codes (ignoring case and dashes)
+          const booking = data.bookings.find(b => {
+              const refCode = b['REF CODE'] ? b['REF CODE'].toString() : '';
+              const cleanRef = refCode.toUpperCase().replace(/[^A-Z0-9]/g, '');
+              return cleanRef === cleanInputCode;
+          });
+
           if (booking) { 
               currentBooking = booking; 
               currentRow = booking._rowNumber; 
               displayBooking(booking); 
           } else { 
-              document.getElementById('loading').innerHTML = '<p class="text-red-400 font-bold">Booking not found.</p>'; 
+              document.getElementById('loading').innerHTML = '<p class="text-red-400 font-bold">Booking not found. Check your code.</p>'; 
           }
         }
       }).catch(err => { 
