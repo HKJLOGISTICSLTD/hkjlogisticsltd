@@ -109,36 +109,31 @@
             }
         }
         
-        // BULLETPROOF TIME PARSING
+        // AGGRESSIVE TIME FIX FOR TRINIDAD
         if (timeVal !== null && timeVal !== undefined && timeVal !== "") {
             let timeString = timeVal.toString();
             
-            // CASE 1: Google Sheets Serial Number (e.g. 0.5 for 12:00 PM)
-            if (typeof timeVal === 'number') {
-                let totalMinutes = Math.round(timeVal * 24 * 60);
-                let hours = Math.floor(totalMinutes / 60);
-                let minutes = totalMinutes % 60;
-                let ampm = hours >= 12 ? 'PM' : 'AM';
-                let h = hours % 12;
-                h = h ? h : 12;
-                tStr = h + ':' + (minutes < 10 ? '0' : '') + minutes + ' ' + ampm;
-            }
-            // CASE 2: ISO String with Z (UTC) - e.g. "1899-12-30T04:00:00.000Z"
-            else if (timeString.includes('T') && timeString.includes('Z')) {
-                let match = timeString.match(/T(\d{2}):(\d{2})/);
-                if (match) {
-                    let utcHours = parseInt(match[1]);
-                    let minutes = match[2];
-                    // MANUAL FIX: Trinidad is UTC-4. Subtract 4 hours.
-                    let trinidadHours = utcHours - 4;
-                    if (trinidadHours < 0) trinidadHours += 24;
-                    let ampm = trinidadHours >= 12 ? 'PM' : 'AM';
-                    let h = trinidadHours % 12;
-                    h = h ? h : 12;
-                    tStr = h + ':' + minutes + ' ' + ampm;
+            // If it's a Google Sheets UTC timestamp (contains 'T' and 'Z')
+            if (timeString.includes('T') && timeString.includes('Z')) {
+                // Extract the time parts manually
+                let timeMatch = timeString.match(/T(\d{2}):(\d{2}):\d{2}/);
+                if (timeMatch) {
+                    let utcHour = parseInt(timeMatch[1]);
+                    let minutes = timeMatch[2];
+                    
+                    // Trinidad is UTC-4, so subtract 4 hours
+                    let trinidadHour = utcHour - 4;
+                    if (trinidadHour < 0) trinidadHour += 24;
+                    
+                    // Convert to 12-hour format
+                    let ampm = trinidadHour >= 12 ? 'PM' : 'AM';
+                    let displayHour = trinidadHour % 12;
+                    if (displayHour === 0) displayHour = 12;
+                    
+                    tStr = displayHour + ':' + minutes + ' ' + ampm;
                 }
             }
-            // CASE 3: Already has AM/PM (e.g. "12:00 AM" or "3:00:00 AM")
+            // If it already has AM/PM, use it as-is
             else if (timeString.includes('AM') || timeString.includes('PM')) {
                 let match = timeString.match(/(\d{1,2}):(\d{2})/);
                 if (match) {
@@ -147,17 +142,16 @@
                     tStr = timeString;
                 }
             }
-            // CASE 4: 24-hour format string (e.g. "14:30")
+            // If it's 24-hour format
             else if (timeString.includes(':')) {
                 let parts = timeString.split(':');
                 let h = parseInt(parts[0]);
                 let m = parts[1];
                 let ampm = h >= 12 ? 'PM' : 'AM';
-                h = h % 12;
-                h = h ? h : 12;
-                tStr = h + ':' + m + ' ' + ampm;
+                let displayHour = h % 12;
+                if (displayHour === 0) displayHour = 12;
+                tStr = displayHour + ':' + m + ' ' + ampm;
             }
-            // CASE 5: Fallback
             else {
                 tStr = timeString;
             }
@@ -186,14 +180,16 @@
           if (booking) { 
               currentBooking = booking; 
               currentRow = booking._rowNumber; 
+              console.log('Booking found:', booking); // Debug log
+              console.log('Raw time value:', booking.TIME); // Debug log
               displayBooking(booking); 
           } else { 
               document.getElementById('loading').innerHTML = '<p class="text-red-400 font-bold">Booking not found. Check your code.</p>'; 
           }
         }
       }).catch(err => { 
-          document.getElementById('loading').innerHTML = '<p class="text-red-400 font-bold">Error loading data.</p>'; 
-          console.error(err); 
+          console.error('Error:', err);
+          document.getElementById('loading').innerHTML = '<p class="text-red-400 font-bold">Error loading data. Check console.</p>'; 
       });
     });
 
