@@ -527,24 +527,49 @@
     
     function formatTime(timeString) { 
       if (!timeString) return 'N/A'; 
-      if (timeString.toString().includes('1899')) {
-        var match = timeString.toString().match(/T(\d{2}:\d{2})/);
-        if (match) {
-          var parts = match[1].split(':');
-          var h = parseInt(parts[0]);
-          var m = parts[1];
-          var ampm = h >= 12 ? 'PM' : 'AM';
-          h = h % 12; 
-          h = h ? h : 12;
-          return h + ':' + m + ' ' + ampm;
+      
+      let timeStr = timeString.toString();
+      
+      // If it's a Google Sheets UTC timestamp (contains 'T' and 'Z')
+      if (timeStr.includes('T') && timeStr.includes('Z')) {
+        // Extract the time parts manually
+        let timeMatch = timeStr.match(/T(\d{2}):(\d{2}):\d{2}/);
+        if (timeMatch) {
+          let utcHour = parseInt(timeMatch[1]);
+          let minutes = timeMatch[2];
+          
+          // Trinidad is UTC-4, so subtract 4 hours
+          let trinidadHour = utcHour - 4;
+          if (trinidadHour < 0) trinidadHour += 24;
+          
+          // Convert to 12-hour format
+          let ampm = trinidadHour >= 12 ? 'PM' : 'AM';
+          let displayHour = trinidadHour % 12;
+          if (displayHour === 0) displayHour = 12;
+          
+          return displayHour + ':' + minutes + ' ' + ampm;
         }
       }
-      try { 
-        var date = new Date(timeString); 
-        if (!isNaN(date.getTime())) {
-           return date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }); 
+      
+      // If it already has AM/PM, use it as-is
+      if (timeStr.includes('AM') || timeStr.includes('PM')) {
+        let match = timeStr.match(/(\d{1,2}):(\d{2})/);
+        if (match) {
+          return match[1] + ':' + match[2] + (timeStr.includes('PM') ? ' PM' : ' AM');
         }
-      } catch (e) { return timeString; } 
+      }
+      
+      // If it's 24-hour format
+      if (timeStr.includes(':')) {
+        let parts = timeStr.split(':');
+        let h = parseInt(parts[0]);
+        let m = parts[1];
+        let ampm = h >= 12 ? 'PM' : 'AM';
+        let displayHour = h % 12;
+        if (displayHour === 0) displayHour = 12;
+        return displayHour + ':' + m + ' ' + ampm;
+      }
+      
       return timeString;
     }
 
