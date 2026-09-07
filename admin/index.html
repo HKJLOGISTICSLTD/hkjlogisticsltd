@@ -113,7 +113,7 @@
   </div>
 
   <script>
-    const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbz1-iupaLFwIaLHfiZgZt16dg_MfooRRtdXyF9QXE0PC3xUbsVd9hfpEkClPcKrVjzSFw/exec';
+    const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwVyYUxmhxqA01l1i1tDqT_qJekDTYREe5iv1PlFZaN7IjKCMt-nudsgZquPwXx2CFfxg/exec';
     const ADMIN_PASSWORD = 'hkj5762';
     const EXCHANGE_RATE = 6.80;
     let allBookings = [];
@@ -524,7 +524,30 @@
     function setQuickPrice(row, price) { const input = document.getElementById('price-' + row); input.value = price; input.classList.add('price-flash'); setTimeout(function() { input.classList.remove('price-flash'); }, 1000); const dropdown = document.getElementById('priceDropdown-' + row); dropdown.classList.remove('show'); autoSavePrice(row, price); }
     document.addEventListener('click', function(e) { if (!e.target.closest('.price-dropdown')) { document.querySelectorAll('.price-dropdown-content').forEach(function(dropdown) { dropdown.classList.remove('show'); }); } });
     function formatDate(dateString) { if (!dateString) return 'N/A'; try { const date = new Date(dateString); return date.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }); } catch (e) { return dateString; } }
-    function formatTime(timeString) { if (!timeString) return 'N/A'; try { const time = new Date(timeString); return time.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }); } catch (e) { return timeString; } }
+    
+    function formatTime(timeString) { 
+      if (!timeString) return 'N/A'; 
+      // Fix for Google Sheets 1899 date glitch
+      if (timeString.toString().includes('1899')) {
+        var match = timeString.toString().match(/T(\d{2}:\d{2})/);
+        if (match) {
+          var parts = match[1].split(':');
+          var h = parseInt(parts[0]);
+          var m = parts[1];
+          var ampm = h >= 12 ? 'PM' : 'AM';
+          h = h % 12; 
+          h = h ? h : 12;
+          return h + ':' + m + ' ' + ampm;
+        }
+      }
+      try { 
+        var date = new Date(timeString); 
+        if (!isNaN(date.getTime())) {
+           return date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }); 
+        }
+      } catch (e) { return timeString; } 
+      return timeString;
+    }
 
     async function sendPriceEmail(row) { const price = document.getElementById('price-' + row).value; if (!price || price === '0' || price === '0.00') { alert('Please enter a valid price first.'); return; } const btn = event.target.closest('button'); const originalHTML = btn.innerHTML; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...'; btn.disabled = true; try { const response = await fetch(APPS_SCRIPT_URL, { method: 'POST', body: new URLSearchParams({ action: 'sendPriceEmail', row: row, price: price }) }); const result = await response.json(); if (result.success) { alert('✅ Price email sent successfully!'); fetchBookings(); } else { alert(' Error sending email: ' + (result.message || 'Unknown error')); } } catch (error) { console.error('Error:', error); alert('❌ Network error. Please try again.'); } finally { btn.innerHTML = originalHTML; btn.disabled = false; } }
 
@@ -578,36 +601,38 @@
           if (language === 'es' || language === 'español' || language === 'spanish') {
             message = 'Hola ' + clientName + ',\n\n';
             message += 'Su reserva de HKJ Logistics ' + refCode + ' está lista para revisión.\n\n';
-            message += '📅 Fecha: ' + date + ' a las ' + time + '\n';
-            message += '📍 Recogida: ' + pickup + '\n';
-            message += '🏁 Destino: ' + dropoff + '\n';
-            message += '💵 Precio Base: $' + price + ' TTD ($' + usdPrice + ' USD)\n';
-            if (surchargeAmount > 0) { message += '⚠️ Recargo: +$' + surchargeAmount + ' TTD\n'; }
-            if (waitingFee > 0) { message += '⏳ Tiempo de Espera (' + waitingMins + ' min): +$' + waitingFee + ' TTD\n'; }
-            message += '\n💰 *TOTAL: $' + totalPrice.toFixed(2) + ' TTD ($' + totalUSD + ' USD)*\n\n';
-            message += 'CÓMO FUNCIONA:\n';
-            message += '1. ✅ Recibimos tu solicitud.\n';
-            message += '2. ✅ Esta es tu cotización personalizada.\n';
-            message += '3. 👇 Haz clic en el enlace de abajo para CONFIRMAR o RECHAZAR tu reserva.\n\n';
-            message += '🔗 Confirmar o Rechazar aquí:\n';
+            message += 'DATE: ' + date + '\n';
+            message += 'TIME: ' + time + '\n';
+            message += 'PICKUP: ' + pickup + '\n';
+            message += 'DROP-OFF: ' + dropoff + '\n';
+            message += 'BASE PRICE: $' + price + ' TTD ($' + usdPrice + ' USD)\n';
+            if (surchargeAmount > 0) { message += 'SURCHARGE: +$' + surchargeAmount + ' TTD\n'; }
+            if (waitingFee > 0) { message += 'WAITING TIME (' + waitingMins + ' min): +$' + waitingFee + ' TTD\n'; }
+            message += '\nTOTAL: $' + totalPrice.toFixed(2) + ' TTD ($' + totalUSD + ' USD)\n\n';
+            message += 'COMO FUNCIONA:\n';
+            message += '1. Recibimos tu solicitud. (Hecho)\n';
+            message += '2. Esta es tu cotización personalizada. (Hecho)\n';
+            message += '3. Haz clic en el enlace de abajo para CONFIRMAR o RECHAZAR tu reserva.\n\n';
+            message += 'Confirmar o Rechazar aquí:\n';
             message += 'https://hkjlogisticsltdtt.vercel.app/confirm.html?code=' + refCode + '\n\n';
             message += 'Nuestro equipo administrativo revisará su solicitud y le enviará la cotización formal en breve.\n\n';
             message += 'Gracias,\nHayden Joseph\nDirector Gerente, HKJ Logistics Ltd\n+1 (868) 780-0300';
           } else {
             message = 'Hello ' + clientName + ',\n\n';
             message += 'Your HKJ Logistics booking ' + refCode + ' is ready for review!\n\n';
-            message += '📅 Date: ' + date + ' at ' + time + '\n';
-            message += '📍 Pickup: ' + pickup + '\n';
-            message += '🏁 Drop-off: ' + dropoff + '\n';
-            message += '💵 Base Price: $' + price + ' TTD ($' + usdPrice + ' USD)\n';
-            if (surchargeAmount > 0) { message += '⚠️ Surcharge: +$' + surchargeAmount + ' TTD\n'; }
-            if (waitingFee > 0) { message += '⏳ Waiting Time (' + waitingMins + ' min): +$' + waitingFee + ' TTD\n'; }
-            message += '\n💰 *TOTAL: $' + totalPrice.toFixed(2) + ' TTD ($' + totalUSD + ' USD)*\n\n';
+            message += 'DATE: ' + date + '\n';
+            message += 'TIME: ' + time + '\n';
+            message += 'PICKUP: ' + pickup + '\n';
+            message += 'DROP-OFF: ' + dropoff + '\n';
+            message += 'BASE PRICE: $' + price + ' TTD ($' + usdPrice + ' USD)\n';
+            if (surchargeAmount > 0) { message += 'SURCHARGE: +$' + surchargeAmount + ' TTD\n'; }
+            if (waitingFee > 0) { message += 'WAITING TIME (' + waitingMins + ' min): +$' + waitingFee + ' TTD\n'; }
+            message += '\nTOTAL: $' + totalPrice.toFixed(2) + ' TTD ($' + totalUSD + ' USD)\n\n';
             message += 'HOW IT WORKS:\n';
-            message += '1. ✅ We received your request.\n';
-            message += '2. ✅ This is your personalized quote.\n';
-            message += '3. 👇 Click the link below to CONFIRM or DECLINE your booking.\n\n';
-            message += '🔗 Confirm or Decline here:\n';
+            message += '1. We received your request. (Done)\n';
+            message += '2. This is your personalized quote. (Done)\n';
+            message += '3. Click the link below to CONFIRM or DECLINE your booking.\n\n';
+            message += 'Confirm or Decline here:\n';
             message += 'https://hkjlogisticsltdtt.vercel.app/confirm.html?code=' + refCode + '\n\n';
             message += 'Our admin team will review your request and send the formal quotation shortly.\n\n';
             message += 'Thank you,\nHayden Joseph\nManaging Director, HKJ Logistics Ltd\n+1 (868) 780-0300';
