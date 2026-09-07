@@ -56,10 +56,6 @@
           <i class="fas fa-calendar-alt text-purple-400 mt-1 mr-3"></i>
           <div><p class="text-xs text-gray-400 uppercase font-bold">Date & Time</p><p class="font-semibold" id="dateTime">-</p></div>
         </div>
-        <div class="flex items-start bg-white/5 p-4 rounded-xl">
-          <i class="fas fa-car text-indigo-400 mt-1 mr-3"></i>
-          <div><p class="text-xs text-gray-400 uppercase font-bold">Vehicle</p><p class="font-semibold" id="vehicle">-</p></div>
-        </div>
       </div>
 
       <div class="bg-yellow-400/10 border border-yellow-400/30 rounded-xl p-6 text-center mb-6">
@@ -95,40 +91,29 @@
   </div>
 
   <script>
-    const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycby1KTALKbcSXBJSLVlimnCr2e9cmzZL38oEKVGObksF0aUY2hqm6WOnkAUYcxzzBi3hGA/exec'; // REPLACE THIS WITH YOUR ACTUAL URL
+    const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbz1-iupaLFwIaLHfiZgZt16dg_MfooRRtdXyF9QXE0PC3xUbsVd9hfpEkClPcKrVjzSFw/exec'; 
     let currentBooking = null;
     let currentRow = null;
 
-    // Helper to fix the Google Sheets 1899 date glitch
     function cleanDateTime(dateVal, timeVal) {
         let dStr = "N/A";
         let tStr = "N/A";
-
         if (dateVal) {
             let d = new Date(dateVal);
-            if (!isNaN(d.getTime())) {
-                dStr = d.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
-            } else {
-                dStr = dateVal;
-            }
+            if (!isNaN(d.getTime())) { dStr = d.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }); } 
+            else { dStr = dateVal; }
         }
-
         if (timeVal) {
-            // Check if it's the weird Google Sheets 1899 date
             if (timeVal.toString().includes('1899')) {
                 let match = timeVal.toString().match(/T(\d{2}:\d{2})/);
                 if (match) {
                     let parts = match[1].split(':');
-                    let h = parseInt(parts[0]);
-                    let m = parts[1];
+                    let h = parseInt(parts[0]); let m = parts[1];
                     let ampm = h >= 12 ? 'PM' : 'AM';
-                    h = h % 12;
-                    h = h ? h : 12;
+                    h = h % 12; h = h ? h : 12;
                     tStr = h + ':' + m + ' ' + ampm;
                 }
-            } else {
-                tStr = timeVal; // It's already a string like "12:00 PM"
-            }
+            } else { tStr = timeVal; }
         }
         return { date: dStr, time: tStr };
     }
@@ -136,48 +121,26 @@
     window.addEventListener('DOMContentLoaded', () => {
       const urlParams = new URLSearchParams(window.location.search);
       const code = urlParams.get('code');
-      
-      if (!code) {
-        document.getElementById('loading').innerHTML = '<p class="text-red-400 font-bold">No booking code provided in URL.</p>';
-        return;
-      }
-
-      fetch(APPS_SCRIPT_URL)
-        .then(res => res.json())
-        .then(data => {
-          if (data.success) {
-            const booking = data.bookings.find(b => b['REF CODE'] === code);
-            if (booking) {
-              currentBooking = booking;
-              currentRow = booking._rowNumber;
-              displayBooking(booking);
-            } else {
-              document.getElementById('loading').innerHTML = '<p class="text-red-400 font-bold">Booking not found.</p>';
-            }
-          }
-        })
-        .catch(err => {
-          document.getElementById('loading').innerHTML = '<p class="text-red-400 font-bold">Error loading data.</p>';
-          console.error(err);
-        });
+      if (!code) { document.getElementById('loading').innerHTML = '<p class="text-red-400 font-bold">No booking code provided.</p>'; return; }
+      fetch(APPS_SCRIPT_URL).then(res => res.json()).then(data => {
+        if (data.success) {
+          const booking = data.bookings.find(b => b['REF CODE'] === code);
+          if (booking) { currentBooking = booking; currentRow = booking._rowNumber; displayBooking(booking); } 
+          else { document.getElementById('loading').innerHTML = '<p class="text-red-400 font-bold">Booking not found.</p>'; }
+        }
+      }).catch(err => { document.getElementById('loading').innerHTML = '<p class="text-red-400 font-bold">Error loading data.</p>'; });
     });
 
     function displayBooking(booking) {
       document.getElementById('loading').classList.add('hidden');
       document.getElementById('bookingDetails').classList.remove('hidden');
-      
       document.getElementById('refCode').textContent = booking['REF CODE'];
       document.getElementById('statusBadge').textContent = 'Status: ' + (booking.STATUS || 'Pending');
       document.getElementById('clientName').textContent = booking.NAME || 'N/A';
       document.getElementById('pickup').textContent = booking['PICK UP'] || 'N/A';
       document.getElementById('dropoff').textContent = booking['DROP OFF'] || 'N/A';
-      
-      // Use the helper to fix the date/time
       const cleanDT = cleanDateTime(booking.DATE, booking.TIME);
       document.getElementById('dateTime').textContent = cleanDT.date + ' at ' + cleanDT.time;
-      
-      document.getElementById('vehicle').textContent = booking['VEHICLE TYPE'] || 'N/A';
-      
       const price = parseFloat(booking['FINAL PRICE'] || booking['FARES'] || 0);
       const usd = Math.round(price / 6.80);
       document.getElementById('priceTTD').textContent = '$' + price.toFixed(2) + ' TTD';
@@ -186,43 +149,27 @@
 
     function updateBookingStatus(status) {
       if (!confirm('Are you sure you want to ' + (status === 'Confirmed' ? 'confirm' : 'decline') + ' this booking?')) return;
-      
-      fetch(APPS_SCRIPT_URL, {
-        method: 'POST',
-        body: new URLSearchParams({ action: 'updateStatus', row: currentRow, status: status })
-      })
-      .then(res => res.json())
-      .then(data => {
-        if (data.success) {
-          document.getElementById('bookingDetails').classList.add('hidden');
-          document.getElementById('successMessage').classList.remove('hidden');
-        }
-      })
-      .catch(err => alert('Error updating status.'));
+      fetch(APPS_SCRIPT_URL, { method: 'POST', body: new URLSearchParams({ action: 'updateStatus', row: currentRow, status: status }) })
+      .then(res => res.json()).then(data => {
+        if (data.success) { document.getElementById('bookingDetails').classList.add('hidden'); document.getElementById('successMessage').classList.remove('hidden'); }
+      }).catch(err => alert('Error updating status.'));
     }
 
     function shareOnWhatsApp() {
       if (!currentBooking) return;
-      
       const refCode = currentBooking['REF CODE'];
       const pickup = currentBooking['PICK UP'] || 'N/A';
       const dropoff = currentBooking['DROP OFF'] || 'N/A';
-      
       const cleanDT = cleanDateTime(currentBooking.DATE, currentBooking.TIME);
       const price = parseFloat(currentBooking['FINAL PRICE'] || currentBooking['FARES'] || 0);
       const usd = Math.round(price / 6.80);
-      
-      // Clean message with NO emojis to prevent diamonds
-      let msg = 'Hello HKJ Logistics,\n\n';
-      msg += 'I would like to confirm my booking ' + refCode + '.\n\n';
+      let msg = 'Hello HKJ Logistics,\n\nI would like to confirm my booking ' + refCode + '.\n\n';
       msg += 'PICKUP: ' + pickup + '\n';
       msg += 'DROP-OFF: ' + dropoff + '\n';
       msg += 'DATE: ' + cleanDT.date + '\n';
       msg += 'TIME: ' + cleanDT.time + '\n\n';
-      msg += 'TOTAL PRICE: $' + price.toFixed(2) + ' TTD ($' + usd + ' USD)\n\n';
-      msg += 'Thank you!';
-      
-      const phone = '18687800300'; // Your business number
+      msg += 'TOTAL PRICE: $' + price.toFixed(2) + ' TTD ($' + usd + ' USD)\n\nThank you!';
+      const phone = '18687800300'; 
       const url = 'https://wa.me/' + phone + '?text=' + encodeURIComponent(msg);
       window.open(url, '_blank');
     }
