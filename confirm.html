@@ -99,59 +99,55 @@
         let dStr = "N/A";
         let tStr = "N/A";
         
-        // Handle date - Force Trinidad timezone
+        // Handle date
         if (dateVal) {
             let d = new Date(dateVal);
             if (!isNaN(d.getTime())) { 
-                dStr = d.toLocaleDateString('en-US', { 
-                    year: 'numeric', 
-                    month: 'long', 
-                    day: 'numeric',
-                    timeZone: 'America/Port_of_Spain'
-                }); 
+                dStr = d.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }); 
             } else { 
                 dStr = dateVal; 
             }
         }
         
-        // Handle time - BULLETPROOF VERSION
-        if (timeVal) {
+        // BULLETPROOF TIME PARSING
+        if (timeVal !== null && timeVal !== undefined && timeVal !== "") {
             let timeString = timeVal.toString();
             
-            // Case 1: Google Sheets Date object (e.g., "1899-12-30T04:00:00.000Z")
-            if (timeString.includes('1899') || (timeString.includes('T') && timeString.includes('Z'))) {
-                // Extract hours and minutes from the UTC time
+            // CASE 1: Google Sheets Serial Number (e.g. 0.5 for 12:00 PM)
+            if (typeof timeVal === 'number') {
+                let totalMinutes = Math.round(timeVal * 24 * 60);
+                let hours = Math.floor(totalMinutes / 60);
+                let minutes = totalMinutes % 60;
+                let ampm = hours >= 12 ? 'PM' : 'AM';
+                let h = hours % 12;
+                h = h ? h : 12;
+                tStr = h + ':' + (minutes < 10 ? '0' : '') + minutes + ' ' + ampm;
+            }
+            // CASE 2: ISO String with Z (UTC) - e.g. "1899-12-30T04:00:00.000Z"
+            else if (timeString.includes('T') && timeString.includes('Z')) {
                 let match = timeString.match(/T(\d{2}):(\d{2})/);
                 if (match) {
                     let utcHours = parseInt(match[1]);
                     let minutes = match[2];
-                    
-                    // Trinidad is UTC-4. Subtract 4 hours.
+                    // MANUAL FIX: Trinidad is UTC-4. Subtract 4 hours.
                     let trinidadHours = utcHours - 4;
                     if (trinidadHours < 0) trinidadHours += 24;
-                    
-                    // Convert to 12-hour format
                     let ampm = trinidadHours >= 12 ? 'PM' : 'AM';
                     let h = trinidadHours % 12;
                     h = h ? h : 12;
-                    
                     tStr = h + ':' + minutes + ' ' + ampm;
                 }
-            } 
-            // Case 2: Already has AM/PM (e.g., "12:00 AM" or "3:00:00 AM")
+            }
+            // CASE 3: Already has AM/PM (e.g. "12:00 AM" or "3:00:00 AM")
             else if (timeString.includes('AM') || timeString.includes('PM')) {
-                // Extract just the hour and minute, ignore seconds
                 let match = timeString.match(/(\d{1,2}):(\d{2})/);
                 if (match) {
-                    let h = match[1];
-                    let m = match[2];
-                    let ampm = timeString.includes('PM') ? 'PM' : 'AM';
-                    tStr = h + ':' + m + ' ' + ampm;
+                    tStr = match[1] + ':' + match[2] + (timeString.includes('PM') ? ' PM' : ' AM');
                 } else {
                     tStr = timeString;
                 }
-            } 
-            // Case 3: 24-hour format (e.g., "14:30" or "00:00")
+            }
+            // CASE 4: 24-hour format string (e.g. "14:30")
             else if (timeString.includes(':')) {
                 let parts = timeString.split(':');
                 let h = parseInt(parts[0]);
@@ -161,7 +157,7 @@
                 h = h ? h : 12;
                 tStr = h + ':' + m + ' ' + ampm;
             }
-            // Case 4: Fallback
+            // CASE 5: Fallback
             else {
                 tStr = timeString;
             }
