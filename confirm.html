@@ -23,12 +23,12 @@
         <i class="fas fa-truck text-black text-2xl"></i>
       </div>
       <h1 class="text-3xl font-bold">HKJ <span class="text-yellow-400">Logistics</span></h1>
-      <p class="text-gray-300 mt-2">Booking Confirmation</p>
+      <p class="text-gray-300 mt-2" data-i18n="bookingConfirmation">Booking Confirmation</p>
     </div>
 
     <div id="loading" class="text-center py-12">
       <div class="inline-block animate-spin rounded-full h-12 w-12 border-4 border-yellow-400 border-t-transparent"></div>
-      <p class="mt-4 text-lg">Loading booking details...</p>
+      <p class="mt-4 text-lg" data-i18n="loadingDetails">Loading booking details...</p>
     </div>
 
     <div id="bookingDetails" class="hidden glass-card rounded-2xl shadow-2xl p-6 md:p-8">
@@ -42,40 +42,40 @@
       <div class="space-y-4 mb-6">
         <div class="flex items-start bg-white/5 p-4 rounded-xl">
           <i class="fas fa-user text-blue-400 mt-1 mr-3"></i>
-          <div><p class="text-xs text-gray-400 uppercase font-bold">Client Name</p><p class="font-semibold" id="clientName">-</p></div>
+          <div><p class="text-xs text-gray-400 uppercase font-bold" data-i18n="clientName">Client Name</p><p class="font-semibold" id="clientName">-</p></div>
         </div>
         <div class="flex items-start bg-white/5 p-4 rounded-xl">
           <i class="fas fa-map-marker-alt text-green-400 mt-1 mr-3"></i>
-          <div><p class="text-xs text-gray-400 uppercase font-bold">Pickup</p><p class="font-semibold" id="pickup">-</p></div>
+          <div><p class="text-xs text-gray-400 uppercase font-bold" data-i18n="pickup">Pickup</p><p class="font-semibold" id="pickup">-</p></div>
         </div>
         <div class="flex items-start bg-white/5 p-4 rounded-xl">
           <i class="fas fa-flag-checkered text-red-400 mt-1 mr-3"></i>
-          <div><p class="text-xs text-gray-400 uppercase font-bold">Drop-off</p><p class="font-semibold" id="dropoff">-</p></div>
+          <div><p class="text-xs text-gray-400 uppercase font-bold" data-i18n="dropoff">Drop-off</p><p class="font-semibold" id="dropoff">-</p></div>
         </div>
         <div class="flex items-start bg-white/5 p-4 rounded-xl">
           <i class="fas fa-calendar-alt text-purple-400 mt-1 mr-3"></i>
-          <div><p class="text-xs text-gray-400 uppercase font-bold">Date & Time</p><p class="font-semibold" id="dateTime">-</p></div>
+          <div><p class="text-xs text-gray-400 uppercase font-bold" data-i18n="dateTime">Date & Time</p><p class="font-semibold" id="dateTime">-</p></div>
         </div>
       </div>
 
       <div class="bg-yellow-400/10 border border-yellow-400/30 rounded-xl p-6 text-center mb-6">
-        <p class="text-sm text-yellow-200 uppercase font-bold mb-2">Quoted Final Price</p>
+        <p class="text-sm text-yellow-200 uppercase font-bold mb-2" data-i18n="quotedFinalPrice">Quoted Final Price</p>
         <p class="text-4xl font-bold text-white" id="priceTTD">$0.00 TTD</p>
         <p class="text-xl font-semibold text-blue-300" id="priceUSD">$0 USD</p>
       </div>
 
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <button onclick="updateBookingStatus('Confirmed')" class="btn-confirm text-white font-bold py-4 rounded-xl shadow-lg hover:opacity-90 transition flex items-center justify-center">
+        <button onclick="updateBookingStatus('Confirmed')" class="btn-confirm text-white font-bold py-4 rounded-xl shadow-lg hover:opacity-90 transition flex items-center justify-center" data-i18n="confirmBooking">
           <i class="fas fa-check mr-2"></i> Confirm Booking
         </button>
-        <button onclick="updateBookingStatus('Cancelled')" class="btn-decline text-white font-bold py-4 rounded-xl shadow-lg hover:opacity-90 transition flex items-center justify-center">
+        <button onclick="updateBookingStatus('Cancelled')" class="btn-decline text-white font-bold py-4 rounded-xl shadow-lg hover:opacity-90 transition flex items-center justify-center" data-i18n="declineBooking">
           <i class="fas fa-times mr-2"></i> Decline Booking
         </button>
       </div>
 
       <div class="mt-6 text-center">
         <button onclick="shareOnWhatsApp()" class="btn-whatsapp text-white font-bold py-3 px-6 rounded-xl shadow-lg hover:opacity-90 transition flex items-center justify-center mx-auto">
-          <i class="fab fa-whatsapp mr-2 text-xl"></i> Share Confirmation on WhatsApp
+          <i class="fab fa-whatsapp mr-2 text-xl"></i> <span data-i18n="shareWhatsApp">Share Confirmation on WhatsApp</span>
         </button>
       </div>
     </div>
@@ -84,9 +84,9 @@
       <div class="w-20 h-20 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg">
         <i class="fas fa-check text-white text-4xl"></i>
       </div>
-      <h2 class="text-2xl font-bold mb-2">Booking Updated!</h2>
-      <p class="text-gray-300 mb-6">Thank you. Our team has been notified of your decision.</p>
-      <button onclick="location.reload()" class="bg-white/20 hover:bg-white/30 text-white font-bold py-3 px-6 rounded-xl transition">Back to Details</button>
+      <h2 class="text-2xl font-bold mb-2" data-i18n="bookingUpdated">Booking Updated!</h2>
+      <p class="text-gray-300 mb-6" data-i18n="teamNotified">Thank you. Our team has been notified of your decision.</p>
+      <button onclick="location.reload()" class="bg-white/20 hover:bg-white/30 text-white font-bold py-3 px-6 rounded-xl transition" data-i18n="backToDetails">Back to Details</button>
     </div>
   </div>
 
@@ -94,46 +94,81 @@
     const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwVyYUxmhxqA01l1i1tDqT_qJekDTYREe5iv1PlFZaN7IjKCMt-nudsgZquPwXx2CFfxg/exec'; 
     let currentBooking = null;
     let currentRow = null;
+    let currentLanguage = 'en';
+
+    // Translations
+    const translations = {
+      en: {
+        bookingConfirmation: 'Booking Confirmation',
+        loadingDetails: 'Loading booking details...',
+        clientName: 'Client Name',
+        pickup: 'Pickup',
+        dropoff: 'Drop-off',
+        dateTime: 'Date & Time',
+        quotedFinalPrice: 'Quoted Final Price',
+        confirmBooking: '<i class="fas fa-check mr-2"></i> Confirm Booking',
+        declineBooking: '<i class="fas fa-times mr-2"></i> Decline Booking',
+        shareWhatsApp: 'Share Confirmation on WhatsApp',
+        bookingUpdated: 'Booking Updated!',
+        teamNotified: 'Thank you. Our team has been notified of your decision.',
+        backToDetails: 'Back to Details',
+        statusPending: 'Status: Pending',
+        statusPriceSent: 'Status: Price Sent',
+        statusConfirmed: 'Status: Confirmed',
+        statusCompleted: 'Status: Completed',
+        statusCancelled: 'Status: Cancelled'
+      },
+      es: {
+        bookingConfirmation: 'Confirmación de Reserva',
+        loadingDetails: 'Cargando detalles de la reserva...',
+        clientName: 'Nombre del Cliente',
+        pickup: 'Recogida',
+        dropoff: 'Destino',
+        dateTime: 'Fecha y Hora',
+        quotedFinalPrice: 'Precio Final Cotizado',
+        confirmBooking: '<i class="fas fa-check mr-2"></i> Confirmar Reserva',
+        declineBooking: '<i class="fas fa-times mr-2"></i> Rechazar Reserva',
+        shareWhatsApp: 'Compartir Confirmación en WhatsApp',
+        bookingUpdated: '¡Reserva Actualizada!',
+        teamNotified: 'Gracias. Nuestro equipo ha sido notificado de su decisión.',
+        backToDetails: 'Volver a los Detalles',
+        statusPending: 'Estado: Pendiente',
+        statusPriceSent: 'Estado: Precio Enviado',
+        statusConfirmed: 'Estado: Confirmado',
+        statusCompleted: 'Estado: Completado',
+        statusCancelled: 'Estado: Cancelado'
+      }
+    };
 
     function cleanDateTime(dateVal, timeVal) {
         let dStr = "N/A";
         let tStr = "N/A";
         
-        // Handle date
         if (dateVal) {
             let d = new Date(dateVal);
             if (!isNaN(d.getTime())) { 
-                dStr = d.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }); 
+                dStr = d.toLocaleDateString(currentLanguage === 'es' ? 'es-ES' : 'en-US', { year: 'numeric', month: 'long', day: 'numeric' }); 
             } else { 
                 dStr = dateVal; 
             }
         }
         
-        // AGGRESSIVE TIME FIX FOR TRINIDAD
-        if (timeVal !== null && timeVal !== undefined && timeVal !== "") {
+        if (timeVal) {
             let timeString = timeVal.toString();
             
-            // If it's a Google Sheets UTC timestamp (contains 'T' and 'Z')
             if (timeString.includes('T') && timeString.includes('Z')) {
-                // Extract the time parts manually
-                let timeMatch = timeString.match(/T(\d{2}):(\d{2}):\d{2}/);
-                if (timeMatch) {
-                    let utcHour = parseInt(timeMatch[1]);
-                    let minutes = timeMatch[2];
-                    
-                    // Trinidad is UTC-4, so subtract 4 hours
+                let match = timeString.match(/T(\d{2}):(\d{2}):\d{2}/);
+                if (match) {
+                    let utcHour = parseInt(match[1]);
+                    let minutes = match[2];
                     let trinidadHour = utcHour - 4;
                     if (trinidadHour < 0) trinidadHour += 24;
-                    
-                    // Convert to 12-hour format
                     let ampm = trinidadHour >= 12 ? 'PM' : 'AM';
                     let displayHour = trinidadHour % 12;
                     if (displayHour === 0) displayHour = 12;
-                    
                     tStr = displayHour + ':' + minutes + ' ' + ampm;
                 }
             }
-            // If it already has AM/PM, use it as-is
             else if (timeString.includes('AM') || timeString.includes('PM')) {
                 let match = timeString.match(/(\d{1,2}):(\d{2})/);
                 if (match) {
@@ -142,7 +177,6 @@
                     tStr = timeString;
                 }
             }
-            // If it's 24-hour format
             else if (timeString.includes(':')) {
                 let parts = timeString.split(':');
                 let h = parseInt(parts[0]);
@@ -160,17 +194,25 @@
         return { date: dStr, time: tStr };
     }
 
+    function applyTranslations() {
+      const t = translations[currentLanguage];
+      document.querySelectorAll('[data-i18n]').forEach(element => {
+        const key = element.getAttribute('data-i18n');
+        if (t[key]) {
+          element.innerHTML = t[key];
+        }
+      });
+    }
+
     window.addEventListener('DOMContentLoaded', () => {
       const urlParams = new URLSearchParams(window.location.search);
       const code = urlParams.get('code');
       if (!code) { document.getElementById('loading').innerHTML = '<p class="text-red-400 font-bold">No booking code provided.</p>'; return; }
       
-      // Clean the input code: remove dashes/spaces and make uppercase
       const cleanInputCode = code.toString().toUpperCase().replace(/[^A-Z0-9]/g, '');
 
       fetch(APPS_SCRIPT_URL).then(res => res.json()).then(data => {
         if (data.success) {
-          // Find booking by comparing cleaned codes (ignoring case and dashes)
           const booking = data.bookings.find(b => {
               const refCode = b['REF CODE'] ? b['REF CODE'].toString() : '';
               const cleanRef = refCode.toUpperCase().replace(/[^A-Z0-9]/g, '');
@@ -180,16 +222,22 @@
           if (booking) { 
               currentBooking = booking; 
               currentRow = booking._rowNumber; 
-              console.log('Booking found:', booking); // Debug log
-              console.log('Raw time value:', booking.TIME); // Debug log
+              
+              // Detect language from booking
+              const lang = (booking.LANGUAGE || 'en').toString().toLowerCase();
+              currentLanguage = lang.startsWith('es') ? 'es' : 'en';
+              
+              // Apply translations
+              applyTranslations();
+              
               displayBooking(booking); 
           } else { 
               document.getElementById('loading').innerHTML = '<p class="text-red-400 font-bold">Booking not found. Check your code.</p>'; 
           }
         }
       }).catch(err => { 
-          console.error('Error:', err);
-          document.getElementById('loading').innerHTML = '<p class="text-red-400 font-bold">Error loading data. Check console.</p>'; 
+          document.getElementById('loading').innerHTML = '<p class="text-red-400 font-bold">Error loading data.</p>'; 
+          console.error(err); 
       });
     });
 
@@ -198,7 +246,12 @@
       document.getElementById('bookingDetails').classList.remove('hidden');
       
       document.getElementById('refCode').textContent = booking['REF CODE'];
-      document.getElementById('statusBadge').textContent = 'Status: ' + (booking.STATUS || 'Pending');
+      
+      const status = booking.STATUS || 'Pending';
+      const statusKey = 'status' + status.replace(' ', '');
+      const t = translations[currentLanguage];
+      document.getElementById('statusBadge').textContent = t[statusKey] || 'Status: ' + status;
+      
       document.getElementById('clientName').textContent = booking.NAME || 'N/A';
       document.getElementById('pickup').textContent = booking['PICK UP'] || 'N/A';
       document.getElementById('dropoff').textContent = booking['DROP OFF'] || 'N/A';
@@ -213,7 +266,12 @@
     }
 
     function updateBookingStatus(status) {
-      if (!confirm('Are you sure you want to ' + (status === 'Confirmed' ? 'confirm' : 'decline') + ' this booking?')) return;
+      const t = translations[currentLanguage];
+      const confirmMsg = currentLanguage === 'es' 
+        ? '¿Está seguro de que desea ' + (status === 'Confirmed' ? 'confirmar' : 'rechazar') + ' esta reserva?'
+        : 'Are you sure you want to ' + (status === 'Confirmed' ? 'confirm' : 'decline') + ' this booking?';
+      
+      if (!confirm(confirmMsg)) return;
       
       fetch(APPS_SCRIPT_URL, { 
           method: 'POST', 
@@ -239,14 +297,26 @@
       const price = parseFloat(currentBooking['FINAL PRICE'] || currentBooking['FARES'] || 0);
       const usd = Math.round(price / 6.80);
       
-      let msg = 'Hello HKJ Logistics,\n\n';
-      msg += 'I would like to confirm my booking ' + refCode + '.\n\n';
-      msg += 'PICKUP: ' + pickup + '\n\n';
-      msg += 'DROP-OFF: ' + dropoff + '\n\n';
-      msg += 'DATE: ' + cleanDT.date + '\n\n';
-      msg += 'TIME: ' + cleanDT.time + '\n\n';
-      msg += '*TOTAL PRICE: $' + price.toFixed(2) + ' TTD ($' + usd + ' USD)*\n\n';
-      msg += 'Thank you!';
+      let msg;
+      if (currentLanguage === 'es') {
+        msg = 'Hola HKJ Logistics,\n\n';
+        msg += 'Me gustaría confirmar mi reserva ' + refCode + '.\n\n';
+        msg += 'RECOGIDA: ' + pickup + '\n\n';
+        msg += 'DESTINO: ' + dropoff + '\n\n';
+        msg += 'FECHA: ' + cleanDT.date + '\n\n';
+        msg += 'HORA: ' + cleanDT.time + '\n\n';
+        msg += '*PRECIO TOTAL: $' + price.toFixed(2) + ' TTD ($' + usd + ' USD)*\n\n';
+        msg += '¡Gracias!';
+      } else {
+        msg = 'Hello HKJ Logistics,\n\n';
+        msg += 'I would like to confirm my booking ' + refCode + '.\n\n';
+        msg += 'PICKUP: ' + pickup + '\n\n';
+        msg += 'DROP-OFF: ' + dropoff + '\n\n';
+        msg += 'DATE: ' + cleanDT.date + '\n\n';
+        msg += 'TIME: ' + cleanDT.time + '\n\n';
+        msg += '*TOTAL PRICE: $' + price.toFixed(2) + ' TTD ($' + usd + ' USD)*\n\n';
+        msg += 'Thank you!';
+      }
       
       const phone = '18687800300'; 
       const url = 'https://wa.me/' + phone + '?text=' + encodeURIComponent(msg);
