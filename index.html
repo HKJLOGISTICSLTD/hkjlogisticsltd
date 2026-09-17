@@ -1039,7 +1039,7 @@
     });
 
     // ==========================================
-    // NEW: Proactive Chat Notification Logic
+    // FIXED: Proactive Chat Notification Logic
     // ==========================================
     
     // Show the popup after 3 seconds
@@ -1051,47 +1051,29 @@
     }, 3000);
 
     function openChatbot() {
-      // Hide the notification
       closeChatNotify();
-      
-      // Wait a moment for the popup to close smoothly
       setTimeout(function() {
-        // Try multiple methods to open the Botpress chat
-        const selectors = [
-          'button[aria-label="Open chat"]',
-          'button[aria-label="Toggle chat"]',
-          '.bpw-layout',
-          '[data-testid="webchat-toggle"]',
-          'button.bpw-open-chat',
-          '.botpress-webchat-toggle'
-        ];
-        
-        let chatOpened = false;
-        
-        // Try each selector
+        // Method 1: Official Botpress API (Most reliable for v5)
+        if (window.botpressWebChat) {
+          window.botpressWebChat.sendEvent({ type: 'show' });
+          console.log('✅ Chat opened via Botpress API');
+          return;
+        }
+        // Method 2: Standard Selectors
+        const selectors = ['button[aria-label="Open chat"]', 'button[aria-label="Toggle chat"]', '.bpw-open-chat', '.bpw-layout', '#botpress-webchat button'];
         for (let selector of selectors) {
-          const chatButton = document.querySelector(selector);
-          if (chatButton && !chatOpened) {
-            chatButton.click();
-            chatOpened = true;
-            console.log('Chat opened using:', selector);
-            break;
-          }
+          const el = document.querySelector(selector);
+          if (el) { el.click(); console.log('✅ Chat opened via selector:', selector); return; }
         }
-        
-        // If not found, try to trigger Botpress event or fallback
-        if (!chatOpened) {
-          window.postMessage({ type: 'botpress.openChat' }, '*');
-          
-          setTimeout(function() {
-            const chatBubble = document.querySelector('.bpw-layout') || document.querySelector('[class*="chat"]');
-            if (chatBubble) {
-              chatBubble.scrollIntoView({ behavior: 'smooth', block: 'end' });
-              chatBubble.click();
-            }
-          }, 100);
-        }
-      }, 150);
+        // Method 3: Retry mechanism (in case widget loads slightly after)
+        let attempts = 0;
+        const interval = setInterval(() => {
+          attempts++;
+          if (window.botpressWebChat) { window.botpressWebChat.sendEvent({ type: 'show' }); clearInterval(interval); } 
+          else { const el = document.querySelector('button[aria-label="Open chat"]'); if (el) { el.click(); clearInterval(interval); } }
+          if (attempts > 5) clearInterval(interval);
+        }, 500);
+      }, 200);
     }
 
     function closeChatNotify() {
