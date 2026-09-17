@@ -709,9 +709,10 @@
   <!-- NEW: Proactive Chat Notification Popup     -->
   <!-- ========================================== -->
   <div id="chat-notify-popup">
-    <button class="close-notify" onclick="closeChatNotify()">×</button>
+    <button class="close-notify" onclick="closeChatNotify()" aria-label="Close notification">×</button>
     <p>👋 <strong>Need a ride?</strong><br>Chat with our AI assistant to book your taxi instantly. Available 24/7!</p>
     <button class="notify-btn" onclick="openChatbot()">Open Chat</button>
+    <p style="margin: 8px 0 0 0; font-size: 11px; color: #94a3b8; text-align: center;">Close window to ignore</p>
   </div>
 
   <script>
@@ -1053,17 +1054,44 @@
       // Hide the notification
       closeChatNotify();
       
-      // Attempt to click the Botpress webchat toggle button
-      const chatButton = document.querySelector('button[aria-label="Open chat"]') || 
-                         document.querySelector('.bpw-layout') || 
-                         document.querySelector('[data-testid="webchat-toggle"]');
-      
-      if (chatButton) {
-        chatButton.click();
-      } else {
-        // Fallback: scroll to bottom where chat widget usually is
-        window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
-      }
+      // Wait a moment for the popup to close smoothly
+      setTimeout(function() {
+        // Try multiple methods to open the Botpress chat
+        const selectors = [
+          'button[aria-label="Open chat"]',
+          'button[aria-label="Toggle chat"]',
+          '.bpw-layout',
+          '[data-testid="webchat-toggle"]',
+          'button.bpw-open-chat',
+          '.botpress-webchat-toggle'
+        ];
+        
+        let chatOpened = false;
+        
+        // Try each selector
+        for (let selector of selectors) {
+          const chatButton = document.querySelector(selector);
+          if (chatButton && !chatOpened) {
+            chatButton.click();
+            chatOpened = true;
+            console.log('Chat opened using:', selector);
+            break;
+          }
+        }
+        
+        // If not found, try to trigger Botpress event or fallback
+        if (!chatOpened) {
+          window.postMessage({ type: 'botpress.openChat' }, '*');
+          
+          setTimeout(function() {
+            const chatBubble = document.querySelector('.bpw-layout') || document.querySelector('[class*="chat"]');
+            if (chatBubble) {
+              chatBubble.scrollIntoView({ behavior: 'smooth', block: 'end' });
+              chatBubble.click();
+            }
+          }, 100);
+        }
+      }, 150);
     }
 
     function closeChatNotify() {
