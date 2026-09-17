@@ -137,7 +137,7 @@
     /* ========================================== */
     #chat-notify-popup {
       position: fixed;
-      bottom: 100px; /* Positioned just above the chat widget */
+      bottom: 100px;
       right: 20px;
       background: rgba(30, 41, 59, 0.95);
       backdrop-filter: blur(10px);
@@ -146,7 +146,7 @@
       box-shadow: 0 8px 25px rgba(0,0,0,0.4);
       z-index: 9998;
       max-width: 280px;
-      display: none; /* Hidden by default, shown via JS */
+      display: none;
       border: 1px solid rgba(250, 204, 21, 0.3);
       animation: slideInRight 0.5s ease-out forwards;
     }
@@ -1039,7 +1039,7 @@
     });
 
     // ==========================================
-    // FIXED: Proactive Chat Notification Logic
+    // FOOLPROOF: Proactive Chat Notification Logic
     // ==========================================
     
     // Show the popup after 3 seconds
@@ -1056,24 +1056,44 @@
         // Method 1: Official Botpress API (Most reliable for v5)
         if (window.botpressWebChat) {
           window.botpressWebChat.sendEvent({ type: 'show' });
-          console.log('✅ Chat opened via Botpress API');
+          console.log('✅ Opened via botpressWebChat API');
           return;
         }
-        // Method 2: Standard Selectors
-        const selectors = ['button[aria-label="Open chat"]', 'button[aria-label="Toggle chat"]', '.bpw-open-chat', '.bpw-layout', '#botpress-webchat button'];
+
+        // Method 2: Known Botpress v5 selectors
+        const selectors = [
+          'button[aria-label="Open chat"]',
+          'button[aria-label="Toggle chat"]',
+          'button[title="Open chat"]',
+          '.bpw-open-chat',
+          '.bpw-layout button',
+          'button[data-testid="webchat-launcher"]'
+        ];
         for (let selector of selectors) {
-          const el = document.querySelector(selector);
-          if (el) { el.click(); console.log('✅ Chat opened via selector:', selector); return; }
+          const btn = document.querySelector(selector);
+          if (btn) { btn.click(); console.log('✅ Opened via selector:', selector); return; }
         }
-        // Method 3: Retry mechanism (in case widget loads slightly after)
-        let attempts = 0;
-        const interval = setInterval(() => {
-          attempts++;
-          if (window.botpressWebChat) { window.botpressWebChat.sendEvent({ type: 'show' }); clearInterval(interval); } 
-          else { const el = document.querySelector('button[aria-label="Open chat"]'); if (el) { el.click(); clearInterval(interval); } }
-          if (attempts > 5) clearInterval(interval);
-        }, 500);
-      }, 200);
+
+        // Method 3: GEOMETRIC FALLBACK (Foolproof)
+        // Finds the button physically located in the bottom-right corner of the screen
+        const allButtons = document.querySelectorAll('button');
+        for (let btn of allButtons) {
+          const rect = btn.getBoundingClientRect();
+          // Check if button is in the bottom right 150x150px area
+          if (rect.right > window.innerWidth - 150 && rect.bottom > window.innerHeight - 150) {
+            // Make sure it's not our own "Open Chat" button or the scroll-to-top button
+            if (!btn.classList.contains('notify-btn') && !btn.id.includes('scroll')) {
+              btn.click();
+              console.log('✅ Opened via bottom-right geometric fallback');
+              return;
+            }
+          }
+        }
+
+        // Method 4: Last resort postMessage
+        window.postMessage({ type: 'BOTPRESS_WEBCHAT:TOGGLE' }, '*');
+        console.log('⚠️ Attempted postMessage fallback');
+      }, 300);
     }
 
     function closeChatNotify() {
