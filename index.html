@@ -560,7 +560,7 @@
           <optgroup label="✈️ Airports">
             <option value="Piarco International Airport, Trinidad">Piarco International Airport</option>
           </optgroup>
-          <optgroup label="🛍️ Malls & Shopping">
+          <optgroup label="️ Malls & Shopping">
             <option value="C3 Centre, Sir Solomon Hochoy Highway, San Fernando">C3 Centre (San Fernando)</option>
             <option value="Grand Bazaar, Chaguanas">Grand Bazaar (Chaguanas)</option>
             <option value="West Mall, Westmoorings">West Mall (Westmoorings)</option>
@@ -672,7 +672,7 @@
 
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div><label class="block text-sm font-bold text-gray-300 mb-2"><i class="fas fa-car text-indigo-400 mr-2"></i><span data-en="Vehicle Type" data-es="Tipo de Vehículo">Vehicle Type</span> *</label><select name="vehicleType" required class="w-full p-3 border rounded-xl focus:outline-none input-focus transition bg-dark-input"><option value="" data-en="Select a vehicle..." data-es="Selecciona un vehículo...">Select a vehicle...</option><option value="Standard Sedan (1-4 Passengers)" data-en="Standard Sedan (1-4 Passengers)" data-es="Sedán Estándar (1-4 Pasajeros)">Standard Sedan (1-4 Passengers)</option><option value="SUV (5-7 Passengers) - Security Deposit Required" data-en="SUV (5-7 Passengers) - Security Deposit Required" data-es="SUV (5-7 Pasajeros) - Depósito de Seguridad Requerido">SUV (5-7 Passengers) <span class="text-red-500 font-bold">- Security Deposit Required</span></option><option value="Van (8-12 Passengers) - Security Deposit Required" data-en="Van (8-12 Passengers) - Security Deposit Required" data-es="Furgoneta (8-12 Pasajeros) - Depósito de Seguridad Requerido">Van (8-12 Passengers) <span class="text-red-500 font-bold">- Security Deposit Required</span></option><option value="Luxury Vehicle - Security Deposit Required" data-en="Luxury Vehicle - Security Deposit Required" data-es="Vehículo de Lujo - Depósito de Seguridad Requerido">Luxury Vehicle <span class="text-red-500 font-bold">- Security Deposit Required</span></option></select></div>
-        <div><label class="block text-sm font-bold text-gray-300 mb-2"><i class="fas fa-concierge-bell text-pink-400 mr-2"></i><span data-en="Service Type" data-es="Tipo de Servicio">Service Type</span> *</label><select name="serviceType" id="serviceType" required onchange="handleServiceTypeChange()" class="w-full p-3 border rounded-xl focus:outline-none input-focus transition bg-dark-input"><option value="" data-en="Select a service..." data-es="Selecciona un servicio...">Select a service...</option><option value="private" data-en=" Private Transfer (single person)" data-es=" Private Transfer (single person)"> Private Transfer (single person)</option><option value="shared" data-en=" Shared Ride (groups)" data-es=" Shared Ride (groups)">👥 Shared Ride (groups)</option><option value="hourly" data-en="⏰ Hourly Charter (add $100.00 per hour rate automatically)" data-es="⏰ Hourly Charter (add $100.00 per hour rate automatically)">⏰ Hourly Charter (add $100.00 per hour rate automatically)</option><option value="caroni" data-en="🦜 Caroni Bird Sanctuary Tour Taxi Service" data-es="🦜 Caroni Bird Sanctuary Tour Taxi Service">🦜 Caroni Bird Sanctuary Tour Taxi Service</option></select></div>
+        <div><label class="block text-sm font-bold text-gray-300 mb-2"><i class="fas fa-concierge-bell text-pink-400 mr-2"></i><span data-en="Service Type" data-es="Tipo de Servicio">Service Type</span> *</label><select name="serviceType" id="serviceType" required onchange="handleServiceTypeChange()" class="w-full p-3 border rounded-xl focus:outline-none input-focus transition bg-dark-input"><option value="" data-en="Select a service..." data-es="Selecciona un servicio...">Select a service...</option><option value="private" data-en=" Private Transfer (single person)" data-es=" Private Transfer (single person)"> Private Transfer (single person)</option><option value="shared" data-en=" Shared Ride (groups)" data-es=" Shared Ride (groups)">👥 Shared Ride (groups)</option><option value="hourly" data-en="⏰ Hourly Charter (add $100.00 per hour rate automatically)" data-es="⏰ Hourly Charter (add $100.00 per hour rate automatically)">⏰ Hourly Charter (add $100.00 per hour rate automatically)</option><option value="caroni" data-en="🦜 Caroni Bird Sanctuary Tour Taxi Service" data-es=" Caroni Bird Sanctuary Tour Taxi Service"> Caroni Bird Sanctuary Tour Taxi Service</option></select></div>
       </div>
       
       <!-- Service Type Warning Messages -->
@@ -1039,7 +1039,7 @@
     });
 
     // ==========================================
-    // FOOLPROOF: Proactive Chat Notification Logic
+    // Proactive Chat Notification Logic
     // ==========================================
     
     // Show the popup after 3 seconds
@@ -1051,49 +1051,8 @@
     }, 3000);
 
     function openChatbot() {
+      // Just close the popup. The user can manually click the chat bubble.
       closeChatNotify();
-      setTimeout(function() {
-        // Method 1: Official Botpress API (Most reliable for v5)
-        if (window.botpressWebChat) {
-          window.botpressWebChat.sendEvent({ type: 'show' });
-          console.log('✅ Opened via botpressWebChat API');
-          return;
-        }
-
-        // Method 2: Known Botpress v5 selectors
-        const selectors = [
-          'button[aria-label="Open chat"]',
-          'button[aria-label="Toggle chat"]',
-          'button[title="Open chat"]',
-          '.bpw-open-chat',
-          '.bpw-layout button',
-          'button[data-testid="webchat-launcher"]'
-        ];
-        for (let selector of selectors) {
-          const btn = document.querySelector(selector);
-          if (btn) { btn.click(); console.log('✅ Opened via selector:', selector); return; }
-        }
-
-        // Method 3: GEOMETRIC FALLBACK (Foolproof)
-        // Finds the button physically located in the bottom-right corner of the screen
-        const allButtons = document.querySelectorAll('button');
-        for (let btn of allButtons) {
-          const rect = btn.getBoundingClientRect();
-          // Check if button is in the bottom right 150x150px area
-          if (rect.right > window.innerWidth - 150 && rect.bottom > window.innerHeight - 150) {
-            // Make sure it's not our own "Open Chat" button or the scroll-to-top button
-            if (!btn.classList.contains('notify-btn') && !btn.id.includes('scroll')) {
-              btn.click();
-              console.log('✅ Opened via bottom-right geometric fallback');
-              return;
-            }
-          }
-        }
-
-        // Method 4: Last resort postMessage
-        window.postMessage({ type: 'BOTPRESS_WEBCHAT:TOGGLE' }, '*');
-        console.log('⚠️ Attempted postMessage fallback');
-      }, 300);
     }
 
     function closeChatNotify() {
