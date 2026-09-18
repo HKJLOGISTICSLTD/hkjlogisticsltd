@@ -184,7 +184,7 @@
       <a href="#confirm" class="nav-link font-semibold text-center py-3 border-b border-gray-700" data-en="CONFIRM BOOKING" data-es="CONFIRMAR">CONFIRM BOOKING</a>
       <a href="#faq" class="nav-link font-semibold text-center py-3 border-b border-gray-700" data-en="FAQ" data-es="PREGUNTAS">FAQ</a>
       <a href="#contact" class="nav-link font-semibold text-center py-3 border-b border-gray-700" data-en="CONTACT US" data-es="CONTACTO">CONTACT US</a>
-      <a href="#" onclick="event.preventDefault(); openBotChat();" class="font-semibold text-center py-3 bg-gradient-to-r from-yellow-400 to-yellow-500 text-black rounded-lg mt-2 shadow-md" data-en="💬 CHAT WITH US" data-es="💬 CHAT CON NOSOTROS"> CHAT WITH US</a>
+      <a href="#" onclick="event.preventDefault(); openBotChat();" class="font-semibold text-center py-3 bg-gradient-to-r from-yellow-400 to-yellow-500 text-black rounded-lg mt-2 shadow-md" data-en="💬 CHAT WITH US" data-es="💬 CHAT CON NOSOTROS">💬 CHAT WITH US</a>
     </div>
   </div>
 
@@ -376,7 +376,7 @@
             <option value="South Park Mall, San Fernando">South Park Mall, San Fernando</option>
             <option value="Gulf City Mall, La Romain">Gulf City Mall, La Romain</option>
           </optgroup>
-          <optgroup label="️ Major Areas">
+          <optgroup label="🏙️ Major Areas">
             <option value="Port of Spain, Trinidad">Port of Spain</option>
             <option value="San Fernando, Trinidad">San Fernando</option>
             <option value="Chaguanas, Trinidad">Chaguanas</option>
@@ -435,7 +435,7 @@
             <option value="South Western Court — Point Fortin">South Western Court — Point Fortin</option>
             <option value="Seven Days Guest House — Esmeralda">Seven Days Guest House — Esmeralda</option>
           </optgroup>
-          <optgroup label="️ North Coast Beaches ($700 TTD)">
+          <optgroup label="🏖️ North Coast Beaches ($700 TTD)">
             <option value="Maracas Beach, North Coast, Trinidad">Maracas Beach</option>
             <option value="Las Cuevas Beach, North Coast, Trinidad">Las Cuevas Beach</option>
             <option value="Blanchisseuse Beach, North Coast, Trinidad">Blanchisseuse Beach</option>
@@ -453,7 +453,7 @@
             <option value="Oceanview Eco Lodge — Manzanilla">Oceanview Eco Lodge — Manzanilla</option>
             <option value="Blanchisseuse Beach Facilities — Blanchisseuse">Blanchisseuse Beach Facilities — Blanchisseuse</option>
           </optgroup>
-          <optgroup label=" Other Notable Accommodation">
+          <optgroup label="🏨 Other Notable Accommodation">
             <option value="Pax Guest House — Mount St. Benedict, Tunapuna">Pax Guest House — Mount St. Benedict, Tunapuna</option>
             <option value="La Mamre Resort — Maraval">La Mamre Resort — Maraval</option>
             <option value="The Blue Cottage — Diego Martin">The Blue Cottage — Diego Martin</option>
@@ -487,7 +487,7 @@
         <label class="block text-sm font-bold text-gray-300 mb-2"><i class="fas fa-flag-checkered text-red-500 mr-2"></i><span data-en="Drop-off Location" data-es="Lugar de Destino">Drop-off Location</span> *</label>
         <select onchange="document.getElementById('dropoffAddress').value=this.value" class="w-full p-3 mb-3 border-2 border-gray-600 rounded-xl focus:outline-none bg-dark-input text-white text-sm">
           <option value="">-- Quick Select Popular Location --</option>
-          <optgroup label="️ Airports">
+          <optgroup label="✈️ Airports">
             <option value="Piarco International Airport, Trinidad">Piarco International Airport</option>
           </optgroup>
           <optgroup label="🛍️ Malls & Shopping">
@@ -500,7 +500,7 @@
             <option value="South Park Mall, San Fernando">South Park Mall, San Fernando</option>
             <option value="Gulf City Mall, La Romain">Gulf City Mall, La Romain</option>
           </optgroup>
-          <optgroup label="️ Major Areas">
+          <optgroup label="🏙️ Major Areas">
             <option value="Port of Spain, Trinidad">Port of Spain</option>
             <option value="San Fernando, Trinidad">San Fernando</option>
             <option value="Chaguanas, Trinidad">Chaguanas</option>
@@ -848,7 +848,7 @@
         suggestedPriceInput.value = "";
         
         warningDiv.classList.remove('hidden');
-        warningTitle.textContent = ' Hourly Charter Pricing';
+        warningTitle.textContent = '⏰ Hourly Charter Pricing';
         warningText.textContent = '$100 TTD per hour. Minimum 2 hours booking required. Final price calculated based on total hours.';
       } else {
         // Re-enable dropoff if it was locked
@@ -959,41 +959,41 @@
     });
 
     // ==========================================
-    // ULTRA-RELIABLE Chatbot Open Function
+    // BULLETPROOF Chatbot Open Function (Polling Method)
     // ==========================================
     function openBotChat() {
-      console.log('🔵 Button clicked! Attempting to open chat...');
+      console.log('🔵 Chat button clicked!');
       
       // 1. Close mobile menu if open
       const mobileMenu = document.getElementById('mobileMenu');
       if (mobileMenu) mobileMenu.classList.add('hidden');
 
-      // 2. Try the official Botpress API immediately
-      if (window.botpressWebChat && typeof window.botpressWebChat.sendEvent === 'function') {
-        try {
-          window.botpressWebChat.sendEvent({ type: 'show' });
-          console.log('✅ Chat opened via Botpress API');
-          return;
-        } catch (e) {
-          console.warn('Botpress API failed:', e);
+      // 2. Define the function that actually finds and clicks the bot
+      const forceOpenBot = () => {
+        // Method A: The official API (if available)
+        if (window.botpressWebChat && typeof window.botpressWebChat.sendEvent === 'function') {
+          try {
+            window.botpressWebChat.sendEvent({ type: 'show' });
+            console.log('✅ Opened via API');
+            return true;
+          } catch (e) { /* ignore */ }
         }
-      }
 
-      // 3. Fallback: Try to find and click the launcher button
-      const tryClickLauncher = () => {
-        const selectors = [
+        // Method B: Find the actual Botpress launcher button in the DOM and click it
+        const bpSelectors = [
           'button[aria-label="Open chat"]',
           'button[aria-label="Toggle chat"]',
           'button[title="Open chat"]',
           '.bpw-layout button',
-          '[data-testid="webchat-launcher"]',
-          'button[class*="launcher"]'
+          'div[id^="bp-web-widget"] button',
+          'button[class*="bpw-"]'
         ];
-        for (const selector of selectors) {
+
+        for (const selector of bpSelectors) {
           const btn = document.querySelector(selector);
-          if (btn) {
+          if (btn && btn.offsetParent !== null) { // Ensure it's visible in the DOM
             btn.click();
-            console.log('✅ Chat opened via selector:', selector);
+            console.log('✅ Opened by clicking DOM element:', selector);
             return true;
           }
         }
@@ -1001,21 +1001,27 @@
       };
 
       // Try immediately
-      if (tryClickLauncher()) return;
+      if (forceOpenBot()) return;
 
-      // 4. If still not found, wait a moment and try again (Botpress might still be loading)
-      setTimeout(() => {
-        if (tryClickLauncher()) return;
-        
-        // 5. Last resort: scroll to bottom and try one more time
-        console.log('⚠️ Scrolling to bottom to find chat button...');
-        window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
-        setTimeout(tryClickLauncher, 600);
-      }, 500);
+      // 3. If it fails, the bot might still be loading. Poll every 200ms for up to 4 seconds.
+      let attempts = 0;
+      const maxAttempts = 20; // 20 * 200ms = 4 seconds
+      
+      const pollInterval = setInterval(() => {
+        attempts++;
+        if (forceOpenBot()) {
+          clearInterval(pollInterval);
+        } else if (attempts >= maxAttempts) {
+          clearInterval(pollInterval);
+          console.warn('❌ Could not find Botpress launcher after 4 seconds.');
+          // Absolute last resort: scroll to bottom so the user can see it
+          window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+        }
+      }, 200);
     }
   </script>
   
-  <!-- Botpress Scripts (Exactly as requested) -->
+  <!-- Botpress Scripts -->
   <script src="https://cdn.botpress.cloud/webchat/v5.0/inject.js"></script>
   <script src="https://files.bpcontent.cloud/2026/09/17/11/20260917114049-MZJGV9RI.js" defer></script>
 </body>
