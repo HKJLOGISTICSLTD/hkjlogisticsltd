@@ -184,7 +184,7 @@
       <a href="#confirm" class="nav-link font-semibold text-center py-3 border-b border-gray-700" data-en="CONFIRM BOOKING" data-es="CONFIRMAR">CONFIRM BOOKING</a>
       <a href="#faq" class="nav-link font-semibold text-center py-3 border-b border-gray-700" data-en="FAQ" data-es="PREGUNTAS">FAQ</a>
       <a href="#contact" class="nav-link font-semibold text-center py-3 border-b border-gray-700" data-en="CONTACT US" data-es="CONTACTO">CONTACT US</a>
-      <a href="#" onclick="event.preventDefault(); openBotChat();" class="font-semibold text-center py-3 bg-gradient-to-r from-yellow-400 to-yellow-500 text-black rounded-lg mt-2 shadow-md" data-en="💬 CHAT WITH US" data-es="💬 CHAT CON NOSOTROS">💬 CHAT WITH US</a>
+      <a href="#" onclick="event.preventDefault(); openBotChat();" class="font-semibold text-center py-3 bg-gradient-to-r from-yellow-400 to-yellow-500 text-black rounded-lg mt-2 shadow-md" data-en="💬 CHAT WITH US" data-es="💬 CHAT CON NOSOTROS"> CHAT WITH US</a>
     </div>
   </div>
 
@@ -376,7 +376,7 @@
             <option value="South Park Mall, San Fernando">South Park Mall, San Fernando</option>
             <option value="Gulf City Mall, La Romain">Gulf City Mall, La Romain</option>
           </optgroup>
-          <optgroup label="🏙️ Major Areas">
+          <optgroup label="️ Major Areas">
             <option value="Port of Spain, Trinidad">Port of Spain</option>
             <option value="San Fernando, Trinidad">San Fernando</option>
             <option value="Chaguanas, Trinidad">Chaguanas</option>
@@ -422,7 +422,7 @@
             <option value="Emporis Resorts — D'Abadie">Emporis Resorts — D'Abadie</option>
             <option value="HADCO Experiences at Asa Wright Nature Centre — Arima">HADCO Experiences at Asa Wright Nature Centre — Arima</option>
           </optgroup>
-          <optgroup label="🏨 Central Trinidad">
+          <optgroup label=" Central Trinidad">
             <option value="Metro Hotel — Couva">Metro Hotel — Couva</option>
             <option value="Hacienda Jacana — Talparo">Hacienda Jacana — Talparo</option>
             <option value="Ramel's Tropical Suites — Cunupia">Ramel's Tropical Suites — Cunupia</option>
@@ -435,7 +435,7 @@
             <option value="South Western Court — Point Fortin">South Western Court — Point Fortin</option>
             <option value="Seven Days Guest House — Esmeralda">Seven Days Guest House — Esmeralda</option>
           </optgroup>
-          <optgroup label="🏖️ North Coast Beaches ($700 TTD)">
+          <optgroup label="️ North Coast Beaches ($700 TTD)">
             <option value="Maracas Beach, North Coast, Trinidad">Maracas Beach</option>
             <option value="Las Cuevas Beach, North Coast, Trinidad">Las Cuevas Beach</option>
             <option value="Blanchisseuse Beach, North Coast, Trinidad">Blanchisseuse Beach</option>
@@ -453,7 +453,7 @@
             <option value="Oceanview Eco Lodge — Manzanilla">Oceanview Eco Lodge — Manzanilla</option>
             <option value="Blanchisseuse Beach Facilities — Blanchisseuse">Blanchisseuse Beach Facilities — Blanchisseuse</option>
           </optgroup>
-          <optgroup label="🏨 Other Notable Accommodation">
+          <optgroup label=" Other Notable Accommodation">
             <option value="Pax Guest House — Mount St. Benedict, Tunapuna">Pax Guest House — Mount St. Benedict, Tunapuna</option>
             <option value="La Mamre Resort — Maraval">La Mamre Resort — Maraval</option>
             <option value="The Blue Cottage — Diego Martin">The Blue Cottage — Diego Martin</option>
@@ -725,7 +725,7 @@
       var locateControl = L.control({position: 'topright'});
       locateControl.onAdd = function(map) {
         var div = L.DomUtil.create('div', 'leaflet-bar leaflet-control');
-        div.innerHTML = '<a href="#" title="Use my current location" style="display:block;width:30px;height:30px;line-height:30px;text-align:center;font-size:16px;background:#fff;color:#000;">📍</a>';
+        div.innerHTML = '<a href="#" title="Use my current location" style="display:block;width:30px;height:30px;line-height:30px;text-align:center;font-size:16px;background:#fff;color:#000;"></a>';
         div.onclick = function(e) {
           e.preventDefault();
           if (navigator.geolocation) {
@@ -848,7 +848,7 @@
         suggestedPriceInput.value = "";
         
         warningDiv.classList.remove('hidden');
-        warningTitle.textContent = '⏰ Hourly Charter Pricing';
+        warningTitle.textContent = ' Hourly Charter Pricing';
         warningText.textContent = '$100 TTD per hour. Minimum 2 hours booking required. Final price calculated based on total hours.';
       } else {
         // Re-enable dropoff if it was locked
@@ -959,65 +959,97 @@
     });
 
     // ==========================================
-    // BULLETPROOF Chatbot Open Function (Polling Method)
+    // BULLETPROOF Chatbot Open Function with MutationObserver
     // ==========================================
     function openBotChat() {
-      console.log('🔵 Chat button clicked!');
+      console.log(' Chat button clicked! Starting search...');
       
-      // 1. Close mobile menu if open
+      // Close mobile menu
       const mobileMenu = document.getElementById('mobileMenu');
       if (mobileMenu) mobileMenu.classList.add('hidden');
 
-      // 2. Define the function that actually finds and clicks the bot
-      const forceOpenBot = () => {
-        // Method A: The official API (if available)
+      // Function to find and click the bot button
+      const findAndClickBot = () => {
+        // Try Botpress API first
         if (window.botpressWebChat && typeof window.botpressWebChat.sendEvent === 'function') {
           try {
             window.botpressWebChat.sendEvent({ type: 'show' });
-            console.log('✅ Opened via API');
+            console.log('✅ Opened via Botpress API');
             return true;
-          } catch (e) { /* ignore */ }
+          } catch (e) {
+            console.log('API failed:', e);
+          }
         }
 
-        // Method B: Find the actual Botpress launcher button in the DOM and click it
-        const bpSelectors = [
+        // Try all possible Botpress button selectors
+        const selectors = [
           'button[aria-label="Open chat"]',
           'button[aria-label="Toggle chat"]',
           'button[title="Open chat"]',
           '.bpw-layout button',
-          'div[id^="bp-web-widget"] button',
-          'button[class*="bpw-"]'
+          'div[id*="bp-web"] button',
+          'button[class*="bpw-launcher"]',
+          'button[class*="webchat-launcher"]'
         ];
 
-        for (const selector of bpSelectors) {
+        for (const selector of selectors) {
           const btn = document.querySelector(selector);
-          if (btn && btn.offsetParent !== null) { // Ensure it's visible in the DOM
+          if (btn) {
             btn.click();
-            console.log('✅ Opened by clicking DOM element:', selector);
+            console.log('✅ Opened via selector:', selector);
             return true;
           }
         }
+
+        // Check inside iframes
+        const iframes = document.querySelectorAll('iframe');
+        for (const iframe of iframes) {
+          try {
+            const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+            for (const selector of selectors) {
+              const btn = iframeDoc.querySelector(selector);
+              if (btn) {
+                btn.click();
+                console.log('✅ Opened via iframe selector:', selector);
+                return true;
+              }
+            }
+          } catch (e) {
+            // Cross-origin iframe, skip
+          }
+        }
+
         return false;
       };
 
       // Try immediately
-      if (forceOpenBot()) return;
+      if (findAndClickBot()) return;
 
-      // 3. If it fails, the bot might still be loading. Poll every 200ms for up to 4 seconds.
+      // Use MutationObserver to watch for the bot being added to DOM
+      let observer;
       let attempts = 0;
-      const maxAttempts = 20; // 20 * 200ms = 4 seconds
-      
-      const pollInterval = setInterval(() => {
+      const maxAttempts = 30; // 6 seconds total
+
+      observer = new MutationObserver((mutations, obs) => {
         attempts++;
-        if (forceOpenBot()) {
-          clearInterval(pollInterval);
+        if (findAndClickBot()) {
+          obs.disconnect();
         } else if (attempts >= maxAttempts) {
-          clearInterval(pollInterval);
-          console.warn('❌ Could not find Botpress launcher after 4 seconds.');
-          // Absolute last resort: scroll to bottom so the user can see it
+          obs.disconnect();
+          console.warn('❌ Bot not found after 6 seconds');
+          // Last resort: scroll to bottom
           window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+          alert('Chat is loading. Please scroll to the bottom right corner and click the chat bubble manually.');
         }
-      }, 200);
+      });
+
+      // Start observing the document for changes
+      observer.observe(document.body, {
+        childList: true,
+        subtree: true
+      });
+
+      console.log('🔍 Watching for chatbot to load...');
     }
   </script>
   
