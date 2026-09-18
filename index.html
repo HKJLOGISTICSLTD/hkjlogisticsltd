@@ -69,27 +69,15 @@
     .bg-dark-input { background: rgba(15, 23, 42, 0.6); border-color: rgba(255, 255, 255, 0.1); color: #ffffff; }
     .bg-dark-input:focus { border-color: #facc15; background: rgba(15, 23, 42, 0.8); }
     .bg-dark-input::placeholder { color: #94a3b8; }
-    
-    /* Map Styles */
     #pickupMap { height: 250px; width: 100%; border-radius: 0.75rem; margin-top: 1rem; z-index: 1; border: 2px solid rgba(255,255,255,0.1); }
     .leaflet-container { background: #1e293b; }
-    
-    /* Custom CSS Pin Icon */
     .custom-pin { background: transparent; border: none; }
     .custom-pin div { font-size: 36px; text-align: center; line-height: 1; filter: drop-shadow(0px 3px 2px rgba(0,0,0,0.5)); transform: translateY(-10px); }
-
-    /* Autocomplete Styles */
     .autocomplete-container { position: relative; z-index: 1000; }
     .autocomplete-results { position: absolute; top: 100%; left: 0; right: 0; background: white; border: 2px solid #facc15; border-radius: 0.5rem; max-height: 300px; overflow-y: auto; z-index: 10000; box-shadow: 0 10px 40px rgba(0,0,0,0.4); display: none; margin-top: 5px; }
     .autocomplete-result { padding: 12px 15px; cursor: pointer; border-bottom: 1px solid #e5e7eb; transition: all 0.2s ease; color: #1e293b; font-weight: 500; }
     .autocomplete-result:hover { background: linear-gradient(135deg, #fef3c7, #fde68a); color: #92400e; padding-left: 20px; }
     .autocomplete-result:last-child { border-bottom: none; }
-    
-    /* Review Card Styles */
-    .review-card { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.1); }
-    .star-rating { color: #facc15; }
-  </style>
-    /* Review Card Styles */
     .review-card { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.1); }
     .star-rating { color: #facc15; }
   </style>
@@ -432,7 +420,7 @@
       var locateControl = L.control({position: 'topright'});
       locateControl.onAdd = function(map) {
         var div = L.DomUtil.create('div', 'leaflet-bar leaflet-control');
-        div.innerHTML = '<a href="#" title="Use my current location" style="display:block;width:30px;height:30px;line-height:30px;text-align:center;font-size:16px;background:#fff;color:#000;"></a>';
+        div.innerHTML = '<a href="#" title="Use my current location" style="display:block;width:30px;height:30px;line-height:30px;text-align:center;font-size:16px;background:#fff;color:#000;">📍</a>';
         div.onclick = function(e) {
           e.preventDefault();
           if (navigator.geolocation) {
@@ -608,46 +596,37 @@
     });
 
     // ==========================================
-    // DEFINITIVE FIX: Botpress v5 Chat Opener
+    // FINAL WORKING CHAT FUNCTION
     // ==========================================
     function openBotChat() {
-      console.log('🔵 Chat button clicked');
+      console.log('🔵 Opening chat...');
       
-      // Close mobile menu if open
+      // Close mobile menu
       const mobileMenu = document.getElementById('mobileMenu');
       if (mobileMenu) mobileMenu.classList.add('hidden');
 
-      // Method 1: Direct Botpress API (Most Reliable)
-      if (window.botpressWebChat) {
-        try {
-          if (typeof window.botpressWebChat.sendEvent === 'function') {
-            window.botpressWebChat.sendEvent({ type: 'show' });
-            console.log('✅ Opened via botpressWebChat.sendEvent');
-            return;
-          }
-          if (typeof window.botpressWebChat.open === 'function') {
-            window.botpressWebChat.open();
-            console.log('✅ Opened via botpressWebChat.open');
-            return;
-          }
-        } catch (e) { console.log('API error:', e); }
+      // Method 1: Try Botpress API
+      if (window.botpressWebChat && typeof window.botpressWebChat.sendEvent === 'function') {
+        window.botpressWebChat.sendEvent({ type: 'show' });
+        console.log('✅ Opened via API');
+        return;
       }
 
-      // Method 2: Direct Shadow DOM access (Botpress v5 specific)
-      const bpWidget = document.getElementById('bp-web-widget');
-      if (bpWidget && bpWidget.shadowRoot) {
-        const launcher = bpWidget.shadowRoot.querySelector('button');
-        if (launcher) {
-          launcher.click();
-          console.log('✅ Opened via direct shadow DOM click');
+      // Method 2: Find and click the blue bubble
+      setTimeout(() => {
+        const bpButton = document.querySelector('button[class*="bpw"]') || 
+                         document.querySelector('[aria-label*="chat"]') ||
+                         document.querySelector('[title*="chat"]');
+        
+        if (bpButton) {
+          bpButton.click();
+          console.log('✅ Clicked button');
           return;
         }
-      }
 
-      // Method 3: Fallback - scroll to bottom right and let user click
-      setTimeout(() => {
+        // Method 3: Scroll to bottom
         window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
-        console.log('⚠️ Fallback: Scrolled to bottom. Please click the chat bubble manually if it did not open.');
+        console.log('⚠️ Scrolled to bottom - please click blue bubble manually');
       }, 300);
     }
   </script>
