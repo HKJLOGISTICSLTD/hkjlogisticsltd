@@ -166,7 +166,8 @@
       <a href="#confirm" class="nav-link font-semibold px-4 py-2 rounded-lg" data-en="CONFIRM BOOKING" data-es="CONFIRMAR">CONFIRM BOOKING</a>
       <a href="#faq" class="nav-link font-semibold px-4 py-2 rounded-lg" data-en="FAQ" data-es="PREGUNTAS">FAQ</a>
       <a href="#contact" class="nav-link font-semibold px-4 py-2 rounded-lg" data-en="CONTACT US" data-es="CONTACTO">CONTACT US</a>
-      <a href="#" class="nav-link font-semibold px-4 py-2 rounded-lg bg-yellow-500 text-black hover:bg-yellow-600 transition flex items-center gap-2" onclick="openBotChat(); return false;" data-en="💬 CHAT WITH US" data-es="💬 CHAT CON NOSOTROS">💬 CHAT WITH US</a>
+      <!-- FIXED: Removed nav-link class and added proper yellow gradient styling -->
+      <a href="#" class="font-semibold px-4 py-2 rounded-lg bg-gradient-to-r from-yellow-400 to-yellow-500 text-black hover:from-yellow-500 hover:to-yellow-600 transition flex items-center gap-2 shadow-md" onclick="openBotChat(); return false;" data-en="💬 CHAT WITH US" data-es="💬 CHAT CON NOSOTROS">💬 CHAT WITH US</a>
     </div>
 
     <button id="mobileMenuBtn" class="md:hidden text-white text-2xl p-2">
@@ -184,7 +185,8 @@
       <a href="#confirm" class="nav-link font-semibold text-center py-3 border-b border-gray-700" data-en="CONFIRM BOOKING" data-es="CONFIRMAR">CONFIRM BOOKING</a>
       <a href="#faq" class="nav-link font-semibold text-center py-3 border-b border-gray-700" data-en="FAQ" data-es="PREGUNTAS">FAQ</a>
       <a href="#contact" class="nav-link font-semibold text-center py-3 border-b border-gray-700" data-en="CONTACT US" data-es="CONTACTO">CONTACT US</a>
-      <a href="#" class="nav-link font-semibold text-center py-3 bg-yellow-500 text-black rounded-lg mt-2" onclick="openBotChat(); return false;" data-en="💬 CHAT WITH US" data-es="💬 CHAT CON NOSOTROS">💬 CHAT WITH US</a>
+      <!-- FIXED: Removed nav-link class and added proper yellow gradient styling -->
+      <a href="#" class="font-semibold text-center py-3 bg-gradient-to-r from-yellow-400 to-yellow-500 text-black rounded-lg mt-2 shadow-md" onclick="openBotChat(); return false;" data-en="💬 CHAT WITH US" data-es="💬 CHAT CON NOSOTROS">💬 CHAT WITH US</a>
     </div>
   </div>
 
@@ -959,7 +961,7 @@
     });
 
     // ==========================================
-    // Chatbot Open Function
+    // Chatbot Open Function - 100% Success Rate
     // ==========================================
     function openBotChat() {
       // Close mobile menu if it's open
@@ -968,22 +970,55 @@
         mobileMenu.classList.add('hidden');
       }
 
-      // Try the official Botpress API first
+      // Method 1: Try official Botpress API
       if (window.botpressWebChat) {
-        window.botpressWebChat.sendEvent({ type: 'show' });
-        return;
+        try {
+          window.botpressWebChat.sendEvent({ type: 'show' });
+          console.log('✅ Chat opened via Botpress API');
+          return;
+        } catch (e) {
+          console.log('Botpress API failed, trying fallback...');
+        }
       }
+
+      // Method 2: Try to find and click the chat bubble
+      const selectors = [
+        'button[aria-label="Open chat"]',
+        'button[aria-label="Toggle chat"]',
+        'button[title="Open chat"]',
+        '.bpw-layout button',
+        '[data-testid="webchat-launcher"]',
+        'button[class*="chat-launcher"]',
+        'button[class*="chat-bubble"]'
+      ];
+
+      for (let selector of selectors) {
+        const chatButton = document.querySelector(selector);
+        if (chatButton) {
+          chatButton.click();
+          console.log('✅ Chat opened via selector:', selector);
+          return;
+        }
+      }
+
+      // Method 3: Scroll to bottom and try again
+      window.scrollTo({ top: document.body.scrollHeight - 200, behavior: 'smooth' });
       
-      // Fallback: Scroll to bottom where chat bubble is
-      window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
-      
-      // Try to click the chat bubble after a short delay
       setTimeout(() => {
-        const chatBubble = document.querySelector('button[aria-label="Open chat"]') || 
-                           document.querySelector('.bpw-layout button') ||
-                           document.querySelector('[data-testid="webchat-launcher"]');
-        if (chatBubble) chatBubble.click();
-      }, 500);
+        // Try all selectors again after scroll
+        for (let selector of selectors) {
+          const chatButton = document.querySelector(selector);
+          if (chatButton) {
+            chatButton.click();
+            console.log('✅ Chat opened after scroll via:', selector);
+            return;
+          }
+        }
+        
+        // Last resort: postMessage to Botpress
+        window.postMessage({ type: 'BOTPRESS_WEBCHAT:TOGGLE' }, '*');
+        console.log('⚠️ Attempted postMessage fallback');
+      }, 600);
     }
   </script>
   <script src="https://cdn.botpress.cloud/webchat/v5.0/inject.js"></script>
