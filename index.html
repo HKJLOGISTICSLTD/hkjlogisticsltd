@@ -435,7 +435,7 @@
             <option value="South Western Court — Point Fortin">South Western Court — Point Fortin</option>
             <option value="Seven Days Guest House — Esmeralda">Seven Days Guest House — Esmeralda</option>
           </optgroup>
-          <optgroup label="️ North Coast Beaches ($700 TTD)">
+          <optgroup label="🏖️ North Coast Beaches ($700 TTD)">
             <option value="Maracas Beach, North Coast, Trinidad">Maracas Beach</option>
             <option value="Las Cuevas Beach, North Coast, Trinidad">Las Cuevas Beach</option>
             <option value="Blanchisseuse Beach, North Coast, Trinidad">Blanchisseuse Beach</option>
@@ -453,7 +453,7 @@
             <option value="Oceanview Eco Lodge — Manzanilla">Oceanview Eco Lodge — Manzanilla</option>
             <option value="Blanchisseuse Beach Facilities — Blanchisseuse">Blanchisseuse Beach Facilities — Blanchisseuse</option>
           </optgroup>
-          <optgroup label=" Other Notable Accommodation">
+          <optgroup label="🏨 Other Notable Accommodation">
             <option value="Pax Guest House — Mount St. Benedict, Tunapuna">Pax Guest House — Mount St. Benedict, Tunapuna</option>
             <option value="La Mamre Resort — Maraval">La Mamre Resort — Maraval</option>
             <option value="The Blue Cottage — Diego Martin">The Blue Cottage — Diego Martin</option>
@@ -546,7 +546,7 @@
             <option value="Emporis Resorts — D'Abadie">Emporis Resorts — D'Abadie</option>
             <option value="HADCO Experiences at Asa Wright Nature Centre — Arima">HADCO Experiences at Asa Wright Nature Centre — Arima</option>
           </optgroup>
-          <optgroup label=" Central Trinidad">
+          <optgroup label="🏨 Central Trinidad">
             <option value="Metro Hotel — Couva">Metro Hotel — Couva</option>
             <option value="Hacienda Jacana — Talparo">Hacienda Jacana — Talparo</option>
             <option value="Ramel's Tropical Suites — Cunupia">Ramel's Tropical Suites — Cunupia</option>
@@ -676,7 +676,7 @@
         translatePage();
       }
       
-      // CUSTOM CSS PIN ICON - Matches the corner button ()
+      // CUSTOM CSS PIN ICON - Matches the corner button (📍)
       var customIcon = L.divIcon({
         className: 'custom-pin',
         html: '<div>📍</div>',
@@ -848,7 +848,7 @@
         suggestedPriceInput.value = "";
         
         warningDiv.classList.remove('hidden');
-        warningTitle.textContent = ' Hourly Charter Pricing';
+        warningTitle.textContent = '⏰ Hourly Charter Pricing';
         warningText.textContent = '$100 TTD per hour. Minimum 2 hours booking required. Final price calculated based on total hours.';
       } else {
         // Re-enable dropoff if it was locked
@@ -959,60 +959,86 @@
     });
 
     // ==========================================
-    // FINAL ATTEMPT - PostMessage to Botpress
+    // Botpress v5 Chat Opener - Shadow DOM Safe
     // ==========================================
     function openBotChat() {
-      console.log('🔵 Opening chatbot...');
+      console.log('🔵 Chat button clicked');
       
-      // Close mobile menu
+      // Close mobile menu if open
       const mobileMenu = document.getElementById('mobileMenu');
       if (mobileMenu) mobileMenu.classList.add('hidden');
 
-      // Method 1: Botpress API
+      // Helper: recursively search shadow DOMs
+      function findInShadow(root, selector) {
+        if (!root) return null;
+        const el = root.querySelector(selector);
+        if (el) return el;
+        for (const node of root.querySelectorAll('*')) {
+          if (node.shadowRoot) {
+            const found = findInShadow(node.shadowRoot, selector);
+            if (found) return found;
+          }
+        }
+        return null;
+      }
+
+      // Try Botpress global API first (most reliable)
       if (window.botpressWebChat) {
         try {
-          window.botpressWebChat.sendEvent({ type: 'show' });
-          console.log('✅ Opened via API');
-          return;
-        } catch (e) {
-          console.log('API failed:', e);
-        }
-      }
-
-      // Method 2: PostMessage to Botpress iframe
-      const iframes = document.querySelectorAll('iframe');
-      let found = false;
-      
-      for (const iframe of iframes) {
-        try {
-          // Try to send postMessage to open the chat
-          iframe.contentWindow.postMessage({ type: 'BOTPRESS_WEBCHAT:TOGGLE' }, '*');
-          iframe.contentWindow.postMessage({ type: 'BOTPRESS_WEBCHAT:SHOW' }, '*');
-          console.log('✅ Sent postMessage to iframe');
-          found = true;
-        } catch (e) {
-          // Cross-origin, but message might still work
-        }
-      }
-
-      // Method 3: Scroll to bottom and wait
-      if (!found) {
-        console.log('️ Scrolling to bottom...');
-        window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
-        
-        // Try clicking after scroll
-        setTimeout(() => {
-          const bpButton = document.querySelector('button[class*="bpw"]') || 
-                          document.querySelector('[aria-label*="chat"]') ||
-                          document.querySelector('[title*="chat"]');
-          if (bpButton) {
-            bpButton.click();
-            console.log('✅ Clicked button after scroll');
-          } else {
-            alert('Please click the blue chat bubble in the bottom right corner.');
+          if (typeof window.botpressWebChat.sendEvent === 'function') {
+            window.botpressWebChat.sendEvent({ type: 'show' });
+            console.log('✅ Opened via botpressWebChat.sendEvent');
+            return;
           }
-        }, 1000);
+          if (typeof window.botpressWebChat.open === 'function') {
+            window.botpressWebChat.open();
+            console.log('✅ Opened via botpressWebChat.open');
+            return;
+          }
+        } catch (e) { console.log('API error:', e); }
       }
+
+      // Try finding the launcher button inside shadow DOM
+      const btn = findInShadow(document, 'button') || 
+                  findInShadow(document, '[role="button"]');
+      
+      // More specific search for Botpress launcher
+      const bpHost = document.querySelector('botpress-webchat') || 
+                     document.querySelector('[data-botpress]') ||
+                     document.querySelector('div[id*="botpress"]') ||
+                     document.querySelector('div[class*="botpress"]');
+      
+      if (bpHost) {
+        const root = bpHost.shadowRoot || bpHost;
+        const launcher = root.querySelector('button') || 
+                         root.querySelector('[role="button"]') ||
+                         root.querySelector('div[role="button"]');
+        if (launcher) {
+          launcher.click();
+          console.log('✅ Clicked launcher inside Botpress host');
+          return;
+        }
+      }
+
+      // Last resort: coordinate click on bottom-right corner
+      setTimeout(() => {
+        const x = window.innerWidth - 30;
+        const y = window.innerHeight - 30;
+        const el = document.elementFromPoint(x, y);
+        if (el) {
+          let target = el;
+          while (target && target.tagName !== 'BUTTON' && target.parentElement) {
+            target = target.parentElement;
+          }
+          if (target) {
+            target.click();
+            console.log('✅ Coordinate click worked');
+            return;
+          }
+        }
+        // If nothing worked, just scroll to bottom so user can see it
+        window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+      }, 200);
     }
   </script>
   
