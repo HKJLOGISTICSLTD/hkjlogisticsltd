@@ -131,78 +131,6 @@
     /* Review Card Styles */
     .review-card { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.1); }
     .star-rating { color: #facc15; }
-
-    /* ========================================== */
-    /* NEW: Proactive Chat Notification Styles    */
-    /* ========================================== */
-    #chat-notify-popup {
-      position: fixed;
-      bottom: 100px;
-      right: 20px;
-      background: rgba(30, 41, 59, 0.95);
-      backdrop-filter: blur(10px);
-      padding: 16px 20px;
-      border-radius: 12px;
-      box-shadow: 0 8px 25px rgba(0,0,0,0.4);
-      z-index: 9998;
-      max-width: 280px;
-      display: none;
-      border: 1px solid rgba(250, 204, 21, 0.3);
-      animation: slideInRight 0.5s ease-out forwards;
-    }
-    
-    @keyframes slideInRight {
-      from { transform: translateX(100%); opacity: 0; }
-      to { transform: translateX(0); opacity: 1; }
-    }
-    
-    #chat-notify-popup p {
-      margin: 0 0 12px 0;
-      font-size: 14px;
-      color: #f8fafc;
-      line-height: 1.5;
-    }
-    
-    #chat-notify-popup .notify-btn {
-      background: linear-gradient(135deg, #facc15, #f59e0b);
-      color: #0f172a;
-      border: none;
-      padding: 8px 16px;
-      border-radius: 8px;
-      cursor: pointer;
-      font-size: 14px;
-      font-weight: 700;
-      width: 100%;
-      transition: all 0.3s ease;
-    }
-    
-    #chat-notify-popup .notify-btn:hover {
-      background: linear-gradient(135deg, #f59e0b, #d97706);
-      transform: translateY(-1px);
-    }
-
-    #chat-notify-popup .close-notify {
-      position: absolute;
-      top: 8px;
-      right: 8px;
-      background: transparent;
-      border: none;
-      color: #94a3b8;
-      cursor: pointer;
-      font-size: 18px;
-      padding: 4px;
-      line-height: 1;
-    }
-    #chat-notify-popup .close-notify:hover { color: #f8fafc; }
-
-    @media (max-width: 768px) {
-      #chat-notify-popup {
-        bottom: 90px;
-        right: 10px;
-        left: 10px;
-        max-width: none;
-      }
-    }
   </style>
 </head>
 <body class="p-4 md:p-6">
@@ -238,6 +166,7 @@
       <a href="#confirm" class="nav-link font-semibold px-4 py-2 rounded-lg" data-en="CONFIRM BOOKING" data-es="CONFIRMAR">CONFIRM BOOKING</a>
       <a href="#faq" class="nav-link font-semibold px-4 py-2 rounded-lg" data-en="FAQ" data-es="PREGUNTAS">FAQ</a>
       <a href="#contact" class="nav-link font-semibold px-4 py-2 rounded-lg" data-en="CONTACT US" data-es="CONTACTO">CONTACT US</a>
+      <a href="#" class="nav-link font-semibold px-4 py-2 rounded-lg bg-yellow-500 text-black hover:bg-yellow-600 transition flex items-center gap-2" onclick="openBotChat(); return false;" data-en="💬 CHAT WITH US" data-es="💬 CHAT CON NOSOTROS">💬 CHAT WITH US</a>
     </div>
 
     <button id="mobileMenuBtn" class="md:hidden text-white text-2xl p-2">
@@ -254,7 +183,8 @@
       <a href="#book" class="nav-link font-semibold text-center py-3 border-b border-gray-700" data-en="BOOK A RIDE" data-es="RESERVAR">BOOK A RIDE</a>
       <a href="#confirm" class="nav-link font-semibold text-center py-3 border-b border-gray-700" data-en="CONFIRM BOOKING" data-es="CONFIRMAR">CONFIRM BOOKING</a>
       <a href="#faq" class="nav-link font-semibold text-center py-3 border-b border-gray-700" data-en="FAQ" data-es="PREGUNTAS">FAQ</a>
-      <a href="#contact" class="nav-link font-semibold text-center py-3" data-en="CONTACT US" data-es="CONTACTO">CONTACT US</a>
+      <a href="#contact" class="nav-link font-semibold text-center py-3 border-b border-gray-700" data-en="CONTACT US" data-es="CONTACTO">CONTACT US</a>
+      <a href="#" class="nav-link font-semibold text-center py-3 bg-yellow-500 text-black rounded-lg mt-2" onclick="openBotChat(); return false;" data-en="💬 CHAT WITH US" data-es="💬 CHAT CON NOSOTROS">💬 CHAT WITH US</a>
     </div>
   </div>
 
@@ -560,7 +490,7 @@
           <optgroup label="✈️ Airports">
             <option value="Piarco International Airport, Trinidad">Piarco International Airport</option>
           </optgroup>
-          <optgroup label="️ Malls & Shopping">
+          <optgroup label="🛍️ Malls & Shopping">
             <option value="C3 Centre, Sir Solomon Hochoy Highway, San Fernando">C3 Centre (San Fernando)</option>
             <option value="Grand Bazaar, Chaguanas">Grand Bazaar (Chaguanas)</option>
             <option value="West Mall, Westmoorings">West Mall (Westmoorings)</option>
@@ -672,7 +602,7 @@
 
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div><label class="block text-sm font-bold text-gray-300 mb-2"><i class="fas fa-car text-indigo-400 mr-2"></i><span data-en="Vehicle Type" data-es="Tipo de Vehículo">Vehicle Type</span> *</label><select name="vehicleType" required class="w-full p-3 border rounded-xl focus:outline-none input-focus transition bg-dark-input"><option value="" data-en="Select a vehicle..." data-es="Selecciona un vehículo...">Select a vehicle...</option><option value="Standard Sedan (1-4 Passengers)" data-en="Standard Sedan (1-4 Passengers)" data-es="Sedán Estándar (1-4 Pasajeros)">Standard Sedan (1-4 Passengers)</option><option value="SUV (5-7 Passengers) - Security Deposit Required" data-en="SUV (5-7 Passengers) - Security Deposit Required" data-es="SUV (5-7 Pasajeros) - Depósito de Seguridad Requerido">SUV (5-7 Passengers) <span class="text-red-500 font-bold">- Security Deposit Required</span></option><option value="Van (8-12 Passengers) - Security Deposit Required" data-en="Van (8-12 Passengers) - Security Deposit Required" data-es="Furgoneta (8-12 Pasajeros) - Depósito de Seguridad Requerido">Van (8-12 Passengers) <span class="text-red-500 font-bold">- Security Deposit Required</span></option><option value="Luxury Vehicle - Security Deposit Required" data-en="Luxury Vehicle - Security Deposit Required" data-es="Vehículo de Lujo - Depósito de Seguridad Requerido">Luxury Vehicle <span class="text-red-500 font-bold">- Security Deposit Required</span></option></select></div>
-        <div><label class="block text-sm font-bold text-gray-300 mb-2"><i class="fas fa-concierge-bell text-pink-400 mr-2"></i><span data-en="Service Type" data-es="Tipo de Servicio">Service Type</span> *</label><select name="serviceType" id="serviceType" required onchange="handleServiceTypeChange()" class="w-full p-3 border rounded-xl focus:outline-none input-focus transition bg-dark-input"><option value="" data-en="Select a service..." data-es="Selecciona un servicio...">Select a service...</option><option value="private" data-en=" Private Transfer (single person)" data-es=" Private Transfer (single person)"> Private Transfer (single person)</option><option value="shared" data-en=" Shared Ride (groups)" data-es=" Shared Ride (groups)">👥 Shared Ride (groups)</option><option value="hourly" data-en="⏰ Hourly Charter (add $100.00 per hour rate automatically)" data-es="⏰ Hourly Charter (add $100.00 per hour rate automatically)">⏰ Hourly Charter (add $100.00 per hour rate automatically)</option><option value="caroni" data-en="🦜 Caroni Bird Sanctuary Tour Taxi Service" data-es=" Caroni Bird Sanctuary Tour Taxi Service"> Caroni Bird Sanctuary Tour Taxi Service</option></select></div>
+        <div><label class="block text-sm font-bold text-gray-300 mb-2"><i class="fas fa-concierge-bell text-pink-400 mr-2"></i><span data-en="Service Type" data-es="Tipo de Servicio">Service Type</span> *</label><select name="serviceType" id="serviceType" required onchange="handleServiceTypeChange()" class="w-full p-3 border rounded-xl focus:outline-none input-focus transition bg-dark-input"><option value="" data-en="Select a service..." data-es="Selecciona un servicio...">Select a service...</option><option value="private" data-en=" Private Transfer (single person)" data-es=" Private Transfer (single person)"> Private Transfer (single person)</option><option value="shared" data-en=" Shared Ride (groups)" data-es=" Shared Ride (groups)">👥 Shared Ride (groups)</option><option value="hourly" data-en="⏰ Hourly Charter (add $100.00 per hour rate automatically)" data-es="⏰ Hourly Charter (add $100.00 per hour rate automatically)">⏰ Hourly Charter (add $100.00 per hour rate automatically)</option><option value="caroni" data-en="🦜 Caroni Bird Sanctuary Tour Taxi Service" data-es="🦜 Caroni Bird Sanctuary Tour Taxi Service">🦜 Caroni Bird Sanctuary Tour Taxi Service</option></select></div>
       </div>
       
       <!-- Service Type Warning Messages -->
@@ -704,16 +634,6 @@
 
   <footer class="glass-card rounded-2xl shadow-lg p-6 text-center mb-6 border-t border-white/10"><div class="flex justify-center items-center mb-4"><div class="w-10 h-10 bg-gradient-to-br from-yellow-400 to-yellow-500 rounded-full flex items-center justify-center mr-3"><i class="fas fa-truck text-black"></i></div><span class="text-xl font-bold text-white">HKJ <span class="text-yellow-500">Logistics</span></span></div><p class="text-gray-400">&copy; 2026 HKJ Logistics Ltd. <span data-en="All rights reserved." data-es="Todos los derechos reservados.">All rights reserved.</span></p><p class="text-sm text-gray-500 mt-2" data-en="Serving Trinidad with pride and professionalism." data-es="Sirviendo a Trinidad con orgullo y profesionalismo.">Serving Trinidad with pride and professionalism.</p></footer>
   <button id="scrollToTop" class="hidden fixed bottom-8 right-8 bg-yellow-500 text-black w-12 h-12 rounded-full shadow-lg hover:bg-yellow-600 transition z-30 flex items-center justify-center"><i class="fas fa-arrow-up"></i></button>
-
-  <!-- ========================================== -->
-  <!-- NEW: Proactive Chat Notification Popup     -->
-  <!-- ========================================== -->
-  <div id="chat-notify-popup">
-    <button class="close-notify" onclick="closeChatNotify()" aria-label="Close notification">×</button>
-    <p>👋 <strong>Need a ride?</strong><br>Chat with our AI assistant to book your taxi instantly. Available 24/7!</p>
-    <button class="notify-btn" onclick="openChatbot()">Open Chat</button>
-    <p style="margin: 8px 0 0 0; font-size: 11px; color: #94a3b8; text-align: center;">Close window to ignore</p>
-  </div>
 
   <script>
     const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwVyYUxmhxqA01l1i1tDqT_qJekDTYREe5iv1PlFZaN7IjKCMt-nudsgZquPwXx2CFfxg/exec'; 
@@ -1039,27 +959,31 @@
     });
 
     // ==========================================
-    // Proactive Chat Notification Logic
+    // Chatbot Open Function
     // ==========================================
-    
-    // Show the popup after 3 seconds
-    setTimeout(function() {
-      const popup = document.getElementById('chat-notify-popup');
-      if (popup) {
-        popup.style.display = 'block';
+    function openBotChat() {
+      // Close mobile menu if it's open
+      const mobileMenu = document.getElementById('mobileMenu');
+      if (mobileMenu && !mobileMenu.classList.contains('hidden')) {
+        mobileMenu.classList.add('hidden');
       }
-    }, 3000);
 
-    function openChatbot() {
-      // Just close the popup. The user can manually click the chat bubble.
-      closeChatNotify();
-    }
-
-    function closeChatNotify() {
-      const popup = document.getElementById('chat-notify-popup');
-      if (popup) {
-        popup.style.display = 'none';
+      // Try the official Botpress API first
+      if (window.botpressWebChat) {
+        window.botpressWebChat.sendEvent({ type: 'show' });
+        return;
       }
+      
+      // Fallback: Scroll to bottom where chat bubble is
+      window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+      
+      // Try to click the chat bubble after a short delay
+      setTimeout(() => {
+        const chatBubble = document.querySelector('button[aria-label="Open chat"]') || 
+                           document.querySelector('.bpw-layout button') ||
+                           document.querySelector('[data-testid="webchat-launcher"]');
+        if (chatBubble) chatBubble.click();
+      }, 500);
     }
   </script>
   <script src="https://cdn.botpress.cloud/webchat/v5.0/inject.js"></script>
