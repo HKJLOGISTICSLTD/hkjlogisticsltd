@@ -1026,11 +1026,31 @@
         chatHistory.push({ role: 'user', text: message });
 
         try {
+            // Send to Make.com
             const response = await fetch(MAKE_WEBHOOK_URL, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ history: chatHistory })
             });
+            
+            // Wait 3 seconds for Make.com to process
+            await new Promise(resolve => setTimeout(resolve, 3000));
+            
+            // Try to get the actual response
+            let aiResponse = "I'm processing your request. For immediate assistance, please call or WhatsApp us at +1 (868) 780-0300.";
+            
+            try {
+                const data = await response.json();
+                if (data.reply) {
+                    aiResponse = data.reply;
+                } else if (data.action === 'book') {
+                    aiResponse = "Perfect! I'm sending your booking request to our dispatch team now. One moment...";
+                    chatHistory = [{ role: 'user', text: chatHistory[0].text }];
+                }
+            } catch (e) {
+                // If we can't parse the response, use the default message
+                console.log('Could not parse response, using default message');
+            }
             
             // Remove typing indicator
             const typingElement = document.getElementById(typingId);
@@ -1038,12 +1058,11 @@
                 typingElement.remove();
             }
             
-            // For now, just show a confirmation since Make.com sends "Accepted"
-            appendMessage('model', "Thanks for your message! Our AI assistant is processing your request. For immediate assistance, please call or WhatsApp us at +1 (868) 780-0300.");
-            chatHistory.push({ role: 'model', text: "Thanks for your message! Our AI assistant is processing your request." });
+            appendMessage('model', aiResponse);
+            chatHistory.push({ role: 'model', text: aiResponse });
             
         } catch (error) {
-            // Remove typing indicator on error too
+            // Remove typing indicator on error
             const typingElement = document.getElementById(typingId);
             if (typingElement) {
                 typingElement.remove();
