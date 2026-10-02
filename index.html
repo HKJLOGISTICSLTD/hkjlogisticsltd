@@ -1021,7 +1021,7 @@
 
   <script>
       // ONLY ONE KEY NEEDED: Your Make.com Webhook URL
-      const MAKE_WEBHOOK_URL = 'https://hook.eu1.make.com/65ac8pot9rb7whenm3t9vpq1pecgmykd';
+      const MAKE_WEBHOOK_URL = 'const MAKE_WEBHOOK_URL = 'https://corsproxy.io/?https://hook.eu1.make.com/65ac8pot9rb7whenm3t9vpq1pecgmykd';
       
       let chatHistory = [{ role: 'user', text: "You are the AI dispatcher for HKJ Logistics in Trinidad. Be friendly, professional, and concise. Services: Airport Transfers, Island Tours, Corporate Travel, Event Transport, Parcel Delivery, Executive Chauffeur. Pricing: North Coast Beaches flat rate $700 TTD. Hourly charter $100 TTD/hr (min 2 hrs). Caroni Bird Sanctuary tour base $300 TTD. Waiting time: 0-15m FREE, 16-30m $50 TTD, 31-60m $100 TTD, 61-90m $200 TTD, 91-120m $300 TTD. Surcharges: Peak (6-9 AM) +$50 TTD, Late Night (10 PM-12 AM) +15%, Early Morning (12-6 AM) +20%, Public Holidays +25%. If the user wants to book, ask for: Full Name, Phone, Date, Time, Pickup, Dropoff. ONCE YOU HAVE ALL 6, reply with ONLY this JSON: {\"action\": \"book\", \"name\": \"...\", \"phone\": \"...\", \"date\": \"...\", \"time\": \"...\", \"pickup\": \"...\", \"dropoff\": \"...\"}" }];
 
@@ -1047,8 +1047,7 @@
           messagesDiv.insertAdjacentHTML('beforeend', html);
           messagesDiv.scrollTop = messagesDiv.scrollHeight;
       }
-
-   async function sendHkjMessage() {
+async function sendHkjMessage() {
     const input = document.getElementById('hkj-chat-input');
     const message = input.value.trim();
     if (!message) return;
@@ -1064,18 +1063,11 @@
     chatHistory.push({ role: 'user', text: message });
 
     try {
-        // Send to Make.com and ignore the "Accepted" response
-        await fetch(MAKE_WEBHOOK_URL, {
+        const response = await fetch(MAKE_WEBHOOK_URL, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ history: chatHistory })
         });
-        
-        // Wait 4 seconds for Make.com to process
-        await new Promise(resolve => setTimeout(resolve, 4000));
-        
-        // Now fetch the actual response from Make.com
-        const response = await fetch(MAKE_WEBHOOK_URL + '/response');
         const data = await response.json();
         
         document.getElementById(typingId).remove();
@@ -1091,6 +1083,9 @@
         document.getElementById(typingId).remove();
         appendMessage('model', "I'm sorry, I'm having a little trouble connecting right now. Please call or WhatsApp us at +1 (868) 780-0300.");
         console.error("Make.com Error:", error);
+    }
+}
+   
     }
 }
   </script>
