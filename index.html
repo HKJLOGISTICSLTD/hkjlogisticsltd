@@ -923,54 +923,7 @@
       }
     });
   </script>
-
-  <!-- ========================================== -->
-  <!-- HKJ LOGISTICS AI CHATBOT (Gemini Powered) -->
-  <!-- ========================================== -->
-  <div id="hkj-chat-widget" class="fixed bottom-6 right-6 z-50 flex flex-col items-end">
-      <!-- Chat Window -->
-      <div id="hkj-chat-window" class="hidden mb-4 w-80 md:w-96 bg-slate-900 border border-yellow-500/30 rounded-2xl shadow-2xl overflow-hidden flex flex-col" style="height: 500px; max-height: 80vh;">
-          <!-- Header -->
-          <div class="bg-gradient-to-r from-yellow-500 to-yellow-600 p-4 flex justify-between items-center">
-              <div class="flex items-center gap-2">
-                  <div class="w-8 h-8 bg-black/20 rounded-full flex items-center justify-center">
-                      <i class="fas fa-truck text-black text-sm"></i>
-                  </div>
-                  <div>
-                      <h4 class="text-black font-bold text-sm">HKJ Logistics AI</h4>
-                      <p class="text-black/80 text-xs">Online | Ready to help</p>
-                  </div>
-              </div>
-              <button onclick="toggleHkjChat()" class="text-black hover:text-white transition"><i class="fas fa-times"></i></button>
-          </div>
-          
-          <!-- Messages Area -->
-          <div id="hkj-chat-messages" class="flex-1 overflow-y-auto p-4 space-y-3 bg-slate-900">
-              <div class="flex gap-2">
-                  <div class="w-8 h-8 bg-yellow-500 rounded-full flex items-center justify-center flex-shrink-0"><i class="fas fa-robot text-black text-xs"></i></div>
-                  <div class="bg-slate-800 text-gray-200 p-3 rounded-2xl rounded-tl-none text-sm max-w-[85%] border border-white/5">
-                      Hello! I'm the HKJ Logistics AI assistant. 🚗<br><br>
-                      I can answer questions about our services, pricing, and areas we cover. Or, if you're ready, I can help you book a ride right now! How can I help you today?
-                  </div>
-                </div>
-          </div>
-          
-          <!-- Input Area -->
-          <div class="p-3 bg-slate-800 border-t border-white/10">
-              <div class="flex gap-2">
-                  <input type="text" id="hkj-chat-input" placeholder="Type your message..." class="flex-1 bg-slate-900 text-white text-sm p-3 rounded-xl border border-white/10 focus:outline-none focus:border-yellow-500 transition" onkeypress="if(event.key==='Enter') sendHkjMessage()">
-                  <button onclick="sendHkjMessage()" id="hkj-send-btn" class="bg-yellow-500 hover:bg-yellow-600 text-black w-10 h-10 rounded-xl flex items-center justify-center transition flex-shrink-0">
-                      <i class="fas fa-paper-plane"></i>
-                  </button>
-              </div>
-          </div>
-      </div>
-
-      <!-- Floating Toggle Button -->
-      <button onclick="toggleHkjChat()" class="w-14 h-14 bg-gradient-to-br from-yellow-400 to-yellow-500 rounded-full shadow-lg hover:shadow-yellow-500/50 hover:scale-105 transition flex items-center justify-center text-black text-2xl">
-          <i class="fas fa-comments"></i>
-      </button>
-  </div>
+  
       <!-- ========================================== -->
   <!-- HKJ LOGISTICS AI CHATBOT (Make.com Powered) -->
   <!-- ========================================== -->
