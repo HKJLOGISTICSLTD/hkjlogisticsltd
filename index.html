@@ -1006,70 +1006,58 @@
     }
 
     async function sendHkjMessage() {
-        const input = document.getElementById('hkj-chat-input');
-        if (!input) return;
-        
-        const message = input.value.trim();
-        if (!message) return;
+    const input = document.getElementById('hkj-chat-input');
+    if (!input) return;
+    
+    const message = input.value.trim();
+    if (!message) return;
 
-        appendMessage('user', message);
-        input.value = '';
+    appendMessage('user', message);
+    input.value = '';
+    
+    const messagesDiv = document.getElementById('hkj-chat-messages');
+    const typingId = 'typing-' + Date.now();
+    
+    if (messagesDiv) {
+        messagesDiv.insertAdjacentHTML('beforeend', `<div id="${typingId}" class="flex gap-2"><div class="w-8 h-8 bg-yellow-500 rounded-full flex items-center justify-center flex-shrink-0"><i class="fas fa-robot text-black text-xs"></i></div><div class="bg-slate-800 text-gray-400 p-3 rounded-2xl rounded-tl-none text-sm border border-white/5 italic">Thinking...</div></div>`);
+        messagesDiv.scrollTop = messagesDiv.scrollHeight;
+    }
+
+    chatHistory.push({ role: 'user', text: message });
+
+    try {
+        const response = await fetch(MAKE_WEBHOOK_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ history: chatHistory })
+        });
         
-        const messagesDiv = document.getElementById('hkj-chat-messages');
-        const typingId = 'typing-' + Date.now();
+        const data = await response.json();
         
-        if (messagesDiv) {
-            messagesDiv.insertAdjacentHTML('beforeend', `<div id="${typingId}" class="flex gap-2"><div class="w-8 h-8 bg-yellow-500 rounded-full flex items-center justify-center flex-shrink-0"><i class="fas fa-robot text-black text-xs"></i></div><div class="bg-slate-800 text-gray-400 p-3 rounded-2xl rounded-tl-none text-sm border border-white/5 italic">Thinking...</div></div>`);
-            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        // Remove typing indicator
+        const typingElement = document.getElementById(typingId);
+        if (typingElement) {
+            typingElement.remove();
         }
-
-        chatHistory.push({ role: 'user', text: message });
-
-        try {
-            // Send to Make.com
-            const response = await fetch(MAKE_WEBHOOK_URL, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ history: chatHistory })
-            });
-            
-            // Wait 3 seconds for Make.com to process
-            await new Promise(resolve => setTimeout(resolve, 3000));
-            
-            // Try to get the actual response
-            let aiResponse = "I'm processing your request. For immediate assistance, please call or WhatsApp us at +1 (868) 780-0300.";
-            
-            try {
-                const data = await response.json();
-                if (data.reply) {
-                    aiResponse = data.reply;
-                } else if (data.action === 'book') {
-                    aiResponse = "Perfect! I'm sending your booking request to our dispatch team now. One moment...";
-                    chatHistory = [{ role: 'user', text: chatHistory[0].text }];
-                }
-            } catch (e) {
-                // If we can't parse the response, use the default message
-                console.log('Could not parse response, using default message');
-            }
-            
-            // Remove typing indicator
-            const typingElement = document.getElementById(typingId);
-            if (typingElement) {
-                typingElement.remove();
-            }
-            
-            appendMessage('model', aiResponse);
-            chatHistory.push({ role: 'model', text: aiResponse });
-            
-        } catch (error) {
-            // Remove typing indicator on error
-            const typingElement = document.getElementById(typingId);
-            if (typingElement) {
-                typingElement.remove();
-            }
-            
-            appendMessage('model', "I'm sorry, I'm having a little trouble connecting right now. Please call or WhatsApp us at +1 (868) 780-0300.");
-            console.error("Make.com Error:", error);
+        
+        // Check if we got a reply from the AI
+        if (data && data.reply) {
+            appendMessage('model', data.reply);
+            chatHistory.push({ role: 'model', text: data.reply });
+        } else {
+            appendMessage('model', "I'm sorry, I'm having trouble processing that. Please call or WhatsApp us at +1 (868) 780-0300.");
+        }
+        
+    } catch (error) {
+        const typingElement = document.getElementById(typingId);
+        if (typingElement) {
+            typingElement.remove();
+        }
+        
+        appendMessage('model', "I'm sorry, I'm having a little trouble connecting right now. Please call or WhatsApp us at +1 (868) 780-0300.");
+        console.error("Make.com Error:", error);
+    }
+}
         }
     }
 </script>
