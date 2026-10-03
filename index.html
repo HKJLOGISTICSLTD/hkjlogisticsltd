@@ -972,10 +972,16 @@
   </div>
 
   <script>
+    // 1. The Webhook URL
     const MAKE_WEBHOOK_URL = 'https://hook.eu1.make.com/mylij6848ejoe6hlx9cgfef8n51vlefy';
     
-    let chatHistory = [{ role: 'user', text: "You are the AI dispatcher for HKJ Logistics in Trinidad. Be friendly, professional, and concise. Services: Airport Transfers, Island Tours, Corporate Travel, Event Transport, Parcel Delivery, Executive Chauffeur. Pricing: North Coast Beaches flat rate $700 TTD. Hourly charter $100 TTD/hr (min 2 hrs). Caroni Bird Sanctuary tour base $300 TTD. Waiting time: 0-15m FREE, 16-30m $50 TTD, 31-60m $100 TTD, 61-90m $200 TTD, 91-120m $300 TTD. Surcharges: Peak (6-9 AM) +$50 TTD, Late Night (10 PM-12 AM) +15%, Early Morning (12-6 AM) +20%, Public Holidays +25%. If the user wants to book, ask for: Full Name, Phone, Date, Time, Pickup, Dropoff. ONCE YOU HAVE ALL 6, reply with ONLY this JSON: {\"action\": \"book\", \"name\": \"...\", \"phone\": \"...\", \"date\": \"...\", \"time\": \"...\", \"pickup\": \"...\", \"dropoff\": \"...\"}" }];
+    // 2. The Chat History (Starts with instructions for the AI)
+    let chatHistory = [{ 
+        role: 'user', 
+        text: "You are the AI dispatcher for HKJ Logistics in Trinidad. Be friendly, professional, and concise. Detect language (English/Spanish) and reply in that language. Services: Airport Transfers, Island Tours, Corporate Travel, Event Transport, Parcel Delivery, Executive Chauffeur. Pricing: North Coast Beaches flat rate $700 TTD. Hourly charter $100 TTD/hr (min 2 hrs). Caroni Bird Sanctuary tour base $300 TTD. Waiting time: 0-15m FREE, 16-30m $50 TTD, 31-60m $100 TTD, 61-90m $200 TTD, 91-120m $300 TTD. Surcharges: Peak (6-9 AM) +$50 TTD, Late Night (10 PM-12 AM) +15%, Early Morning (12-6 AM) +20%, Public Holidays +25%. CRITICAL RULE: You must ALWAYS reply with a valid JSON object. Never reply with plain text. If chatting, use: {\"action\": \"chat\", \"reply\": \"Your message\"}. If booking and you have Name, Phone, Date, Time, Pickup, Dropoff, use: {\"action\": \"book\", \"name\": \"...\", \"phone\": \"...\", \"date\": \"...\", \"time\": \"...\", \"pickup\": \"...\", \"dropoff\": \"...\"}. IMPORTANT: Do not use markdown code blocks." 
+    }];
 
+    // 3. Function to Open/Close Chat
     function toggleHkjChat() {
         const chatWindow = document.getElementById('hkj-chat-window');
         if (chatWindow) {
@@ -987,6 +993,7 @@
         }
     }
 
+    // 4. Function to Add Messages to Screen
     function appendMessage(role, text) {
         const messagesDiv = document.getElementById('hkj-chat-messages');
         if (!messagesDiv) return;
@@ -1005,61 +1012,59 @@
         messagesDiv.scrollTop = messagesDiv.scrollHeight;
     }
 
+    // 5. Function to Send Message to Make.com
     async function sendHkjMessage() {
-    const input = document.getElementById('hkj-chat-input');
-    if (!input) return;
-    
-    const message = input.value.trim();
-    if (!message) return;
+        const input = document.getElementById('hkj-chat-input');
+        if (!input) return;
+        
+        const message = input.value.trim();
+        if (!message) return;
 
-    appendMessage('user', message);
-    input.value = '';
-    
-    const messagesDiv = document.getElementById('hkj-chat-messages');
-    const typingId = 'typing-' + Date.now();
-    
-    if (messagesDiv) {
-        messagesDiv.insertAdjacentHTML('beforeend', `<div id="${typingId}" class="flex gap-2"><div class="w-8 h-8 bg-yellow-500 rounded-full flex items-center justify-center flex-shrink-0"><i class="fas fa-robot text-black text-xs"></i></div><div class="bg-slate-800 text-gray-400 p-3 rounded-2xl rounded-tl-none text-sm border border-white/5 italic">Thinking...</div></div>`);
-        messagesDiv.scrollTop = messagesDiv.scrollHeight;
-    }
+        // Show user message
+        appendMessage('user', message);
+        input.value = '';
+        
+        // Show "Thinking..."
+        const messagesDiv = document.getElementById('hkj-chat-messages');
+        const typingId = 'typing-' + Date.now();
+        if (messagesDiv) {
+            messagesDiv.insertAdjacentHTML('beforeend', `<div id="${typingId}" class="flex gap-2"><div class="w-8 h-8 bg-yellow-500 rounded-full flex items-center justify-center flex-shrink-0"><i class="fas fa-robot text-black text-xs"></i></div><div class="bg-slate-800 text-gray-400 p-3 rounded-2xl rounded-tl-none text-sm border border-white/5 italic">Thinking...</div></div>`);
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        }
 
-    chatHistory.push({ role: 'user', text: message });
+        // Add to history
+        chatHistory.push({ role: 'user', text: message });
 
-    try {
-        const response = await fetch(MAKE_WEBHOOK_URL, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ history: chatHistory })
-        });
-        
-        const data = await response.json();
-        
-        // Remove typing indicator
-        const typingElement = document.getElementById(typingId);
-        if (typingElement) {
-            typingElement.remove();
-        }
-        
-        // Check if we got a reply from the AI
-        if (data && data.reply) {
-            appendMessage('model', data.reply);
-            chatHistory.push({ role: 'model', text: data.reply });
-        } else {
-            appendMessage('model', "I'm sorry, I'm having trouble processing that. Please call or WhatsApp us at +1 (868) 780-0300.");
-        }
-        
-    } catch (error) {
-        const typingElement = document.getElementById(typingId);
-        if (typingElement) {
-            typingElement.remove();
-        }
-        
-        appendMessage('model', "I'm sorry, I'm having a little trouble connecting right now. Please call or WhatsApp us at +1 (868) 780-0300.");
-        console.error("Make.com Error:", error);
-    }
-}
+        try {
+            // Send to Make.com
+            const response = await fetch(MAKE_WEBHOOK_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ history: chatHistory })
+            });
+            
+            const data = await response.json();
+            
+            // Remove "Thinking..."
+            const typingElement = document.getElementById(typingId);
+            if (typingElement) typingElement.remove();
+            
+            // Handle Response
+            if (data && data.reply) {
+                appendMessage('model', data.reply);
+                chatHistory.push({ role: 'model', text: data.reply });
+            } else {
+                appendMessage('model', "I'm sorry, I'm having trouble processing that. Please call or WhatsApp us at +1 (868) 780-0300.");
+            }
+            
+        } catch (error) {
+            const typingElement = document.getElementById(typingId);
+            if (typingElement) typingElement.remove();
+            appendMessage('model', "I'm sorry, I'm having a little trouble connecting right now. Please call or WhatsApp us at +1 (868) 780-0300.");
+            console.error("Make.com Error:", error);
         }
     }
+</script>
 </script>
 </body>
 </html>
