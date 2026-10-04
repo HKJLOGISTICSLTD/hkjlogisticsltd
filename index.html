@@ -1052,7 +1052,10 @@
                     chatHistory.push({ role: 'model', text: reply });
                     return;
                 }
-                throw new Error("Invalid JSON");
+                // If it's not JSON, just show the text anyway!
+appendMessage('model', responseText);
+chatHistory.push({ role: 'model', text: responseText });
+return;
             }
             
             if (data && data.reply) {
