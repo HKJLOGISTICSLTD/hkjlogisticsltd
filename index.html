@@ -1049,13 +1049,25 @@
             const typingElement = document.getElementById(typingId);
             if (typingElement) typingElement.remove();
             
-            // Handle Response
-            if (data && data.reply) {
-                appendMessage('model', data.reply);
-                chatHistory.push({ role: 'model', text: data.reply });
-            } else {
-                appendMessage('model', "I'm sorry, I'm having trouble processing that. Please call or WhatsApp us at +1 (868) 780-0300.");
-            }
+      // Handle Response
+if (data) {
+    // If Make.com sends back {"reply": "text"}, use that
+    if (data.reply) {
+        appendMessage('model', data.reply);
+        chatHistory.push({ role: 'model', text: data.reply });
+    } 
+    // If Make.com sends back the raw AI JSON {"action": "...", "reply": "..."}
+    else if (data.action && data.reply) {
+        appendMessage('model', data.reply);
+        chatHistory.push({ role: 'model', text: data.reply });
+    }
+    // Fallback
+    else {
+        appendMessage('model', "I'm sorry, I'm having trouble processing that. Please call or WhatsApp us at +1 (868) 780-0300.");
+    }
+} else {
+    appendMessage('model', "I'm sorry, I'm having a little trouble connecting right now. Please call or WhatsApp us at +1 (868) 780-0300.");
+}
             
         } catch (error) {
             const typingElement = document.getElementById(typingId);
