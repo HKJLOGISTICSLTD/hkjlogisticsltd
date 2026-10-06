@@ -974,10 +974,7 @@
   <script>
     const MAKE_WEBHOOK_URL = 'https://hook.eu1.make.com/mylij6848ejoe6hlx9cgfef8n51vlefy';
     
-    let chatHistory = [{ 
-        role: 'user', 
-        text: "You are HKJ Logistics AI. ALWAYS reply with JSON. If chatting, use: {\"action\": \"chat\", \"reply\": \"Your message\"}. If booking and you have Name, Phone, Date, Time, Pickup, Dropoff, use: {\"action\": \"book\", \"name\": \"...\", \"phone\": \"...\", \"date\": \"...\", \"time\": \"...\", \"pickup\": \"...\", \"dropoff\": \"...\"}. Do not output plain text." 
-    }];
+    let chatHistory = [];
 
     function toggleHkjChat() {
         const chatWindow = document.getElementById('hkj-chat-window');
