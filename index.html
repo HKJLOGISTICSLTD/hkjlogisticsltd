@@ -1031,7 +1031,7 @@
             const response = await fetch(MAKE_WEBHOOK_URL, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ history: chatHistory })
+                body: JSON.stringify({ history: chatHistory.slice(-6) })
             });
             
             const typingElement = document.getElementById(typingId);
