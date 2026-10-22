@@ -137,8 +137,8 @@
 
   <nav id="mainNav" class="glass-card rounded-2xl shadow-lg p-4 mb-6 flex flex-col md:flex-row justify-between items-center gap-4 sticky top-4 z-50 transition-all duration-300">
     <div class="flex items-center">
-      <div class="w-12 h-12 bg-gradient-to-br from-yellow-400 to-yellow-500 rounded-full flex items-center justify-center mr-3 shadow-md">
-        <i class="fas fa-truck text-black text-xl"></i>
+      <div class="w-12 h-12 bg-white rounded-full flex items-center justify-center mr-3 shadow-md overflow-hidden">
+        <img src="icon-192.png" alt="HKJ Logistics" class="w-full h-full object-contain">
       </div>
       <div>
         <h1 class="text-2xl font-bold text-white">HKJ <span class="text-yellow-500">Logistics</span></h1>
@@ -184,7 +184,7 @@
       <a href="#confirm" class="nav-link font-semibold text-center py-3 border-b border-gray-700" data-en="CONFIRM BOOKING" data-es="CONFIRMAR">CONFIRM BOOKING</a>
       <a href="#faq" class="nav-link font-semibold text-center py-3 border-b border-gray-700" data-en="FAQ" data-es="PREGUNTAS">FAQ</a>
       <a href="#contact" class="nav-link font-semibold text-center py-3 border-b border-gray-700" data-en="CONTACT US" data-es="CONTACTO">CONTACT US</a>
-      <a href="#" onclick="event.preventDefault(); toggleHkjChat();" class="font-semibold text-center py-3 bg-gradient-to-r from-yellow-400 to-yellow-500 text-black rounded-lg mt-2 shadow-md" data-en="💬 CHAT WITH US" data-es="💬 CHAT CON NOSOTROS"> CHAT WITH US</a>
+      <a href="#" onclick="event.preventDefault(); toggleHkjChat();" class="font-semibold text-center py-3 bg-gradient-to-r from-yellow-400 to-yellow-500 text-black rounded-lg mt-2 shadow-md" data-en="💬 CHAT WITH US" data-es=" CHAT CON NOSOTROS"> CHAT WITH US</a>
     </div>
   </div>
 
@@ -384,7 +384,7 @@
             <option value="Couva, Trinidad">Couva</option>
             <option value="Point Fortin, Trinidad">Point Fortin</option>
           </optgroup>
-          <optgroup label="🏨 Port of Spain / St. Clair / St. Ann's / Cascade">
+          <optgroup label=" Port of Spain / St. Clair / St. Ann's / Cascade">
             <option value="Hyatt Regency Trinidad — Port of Spain">Hyatt Regency Trinidad — Port of Spain</option>
             <option value="Hilton Trinidad & Conference Centre — Port of Spain">Hilton Trinidad & Conference Centre — Port of Spain</option>
             <option value="Courtyard by Marriott Port of Spain — Port of Spain">Courtyard by Marriott Port of Spain — Port of Spain</option>
@@ -532,7 +532,7 @@
             <option value="Samise Villa — St. Ann's">Samise Villa — St. Ann's</option>
             <option value="Kiskadee Korner — St. Clair">Kiskadee Korner — St. Clair</option>
           </optgroup>
-          <optgroup label="🏨 Piarco / Trincity / East Trinidad">
+          <optgroup label=" Piarco / Trincity / East Trinidad">
             <option value="Holiday Inn Express & Suites Trincity Trinidad Airport by IHG — Trincity">Holiday Inn Express & Suites Trincity Trinidad Airport by IHG — Trincity</option>
             <option value="Regent Star Hotel — Piarco">Regent Star Hotel — Piarco</option>
             <option value="Runway Hotel and Restaurant — Piarco">Runway Hotel and Restaurant — Piarco</option>
@@ -602,7 +602,7 @@
 
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div><label class="block text-sm font-bold text-gray-300 mb-2"><i class="fas fa-car text-indigo-400 mr-2"></i><span data-en="Vehicle Type" data-es="Tipo de Vehículo">Vehicle Type</span> *</label><select name="vehicleType" required class="w-full p-3 border rounded-xl focus:outline-none input-focus transition bg-dark-input"><option value="" data-en="Select a vehicle..." data-es="Selecciona un vehículo...">Select a vehicle...</option><option value="Standard Sedan (1-4 Passengers)" data-en="Standard Sedan (1-4 Passengers)" data-es="Sedán Estándar (1-4 Pasajeros)">Standard Sedan (1-4 Passengers)</option><option value="SUV (5-7 Passengers) - Security Deposit Required" data-en="SUV (5-7 Passengers) - Security Deposit Required" data-es="SUV (5-7 Pasajeros) - Depósito de Seguridad Requerido">SUV (5-7 Passengers) <span class="text-red-500 font-bold">- Security Deposit Required</span></option><option value="Van (8-12 Passengers) - Security Deposit Required" data-en="Van (8-12 Passengers) - Security Deposit Required" data-es="Furgoneta (8-12 Pasajeros) - Depósito de Seguridad Requerido">Van (8-12 Passengers) <span class="text-red-500 font-bold">- Security Deposit Required</span></option><option value="Luxury Vehicle - Security Deposit Required" data-en="Luxury Vehicle - Security Deposit Required" data-es="Vehículo de Lujo - Depósito de Seguridad Requerido">Luxury Vehicle <span class="text-red-500 font-bold">- Security Deposit Required</span></option></select></div>
-        <div><label class="block text-sm font-bold text-gray-300 mb-2"><i class="fas fa-concierge-bell text-pink-400 mr-2"></i><span data-en="Service Type" data-es="Tipo de Servicio">Service Type</span> *</label><select name="serviceType" id="serviceType" required onchange="handleServiceTypeChange()" class="w-full p-3 border rounded-xl focus:outline-none input-focus transition bg-dark-input"><option value="" data-en="Select a service..." data-es="Selecciona un servicio...">Select a service...</option><option value="private" data-en=" Private Transfer (single person)" data-es=" Private Transfer (single person)"> Private Transfer (single person)</option><option value="shared" data-en=" Shared Ride (groups)" data-es=" Shared Ride (groups)">👥 Shared Ride (groups)</option><option value="hourly" data-en="⏰ Hourly Charter (add $100.00 per hour rate automatically)" data-es="⏰ Hourly Charter (add $100.00 per hour rate automatically)">⏰ Hourly Charter (add $100.00 per hour rate automatically)</option><option value="caroni" data-en="🦜 Caroni Bird Sanctuary Tour Taxi Service" data-es="🦜 Caroni Bird Sanctuary Tour Taxi Service">🦜 Caroni Bird Sanctuary Tour Taxi Service</option></select></div>
+        <div><label class="block text-sm font-bold text-gray-300 mb-2"><i class="fas fa-concierge-bell text-pink-400 mr-2"></i><span data-en="Service Type" data-es="Tipo de Servicio">Service Type</span> *</label><select name="serviceType" id="serviceType" required onchange="handleServiceTypeChange()" class="w-full p-3 border rounded-xl focus:outline-none input-focus transition bg-dark-input"><option value="" data-en="Select a service..." data-es="Selecciona un servicio...">Select a service...</option><option value="private" data-en=" Private Transfer (single person)" data-es=" Private Transfer (single person)"> Private Transfer (single person)</option><option value="shared" data-en=" Shared Ride (groups)" data-es=" Shared Ride (groups)">👥 Shared Ride (groups)</option><option value="hourly" data-en="⏰ Hourly Charter (add $100.00 per hour rate automatically)" data-es="⏰ Hourly Charter (add $100.00 per hour rate automatically)">⏰ Hourly Charter (add $100.00 per hour rate automatically)</option><option value="caroni" data-en=" Caroni Bird Sanctuary Tour Taxi Service" data-es="🦜 Caroni Bird Sanctuary Tour Taxi Service">🦜 Caroni Bird Sanctuary Tour Taxi Service</option></select></div>
       </div>
       
       <!-- Service Type Warning Messages -->
@@ -632,7 +632,7 @@
 
   <section id="contact" class="glass-card rounded-2xl shadow-lg p-8 mb-6"><div class="text-center"><h3 class="text-3xl font-bold text-white section-title" data-en="Contact Us" data-es="Contáctanos">Contact Us</h3></div><div class="grid grid-cols-1 md:grid-cols-2 gap-8 mt-8"><div class="space-y-6"><a href="tel:+18687800300" class="flex items-center bg-gradient-to-r from-yellow-900/30 to-amber-900/30 p-4 rounded-xl border border-yellow-700/30 hover:border-yellow-500/50 transition group"><div class="w-14 h-14 bg-gradient-to-br from-yellow-400 to-yellow-500 rounded-full flex items-center justify-center mr-4 shadow-md group-hover:scale-110 transition"><i class="fas fa-phone text-black text-xl"></i></div><div><p class="text-sm text-gray-400 font-semibold" data-en="Phone" data-es="Teléfono">Phone</p><p class="text-lg font-bold text-white">+1 (868) 780-0300</p></div></a><a href="https://wa.me/18687800300" target="_blank" class="flex items-center bg-gradient-to-r from-green-900/30 to-emerald-900/30 p-4 rounded-xl border border-green-700/30 hover:border-green-500/50 transition group"><div class="w-14 h-14 bg-gradient-to-br from-green-400 to-green-500 rounded-full flex items-center justify-center mr-4 shadow-md group-hover:scale-110 transition"><i class="fab fa-whatsapp text-white text-xl"></i></div><div><p class="text-sm text-gray-400 font-semibold" data-en="WhatsApp" data-es="WhatsApp">WhatsApp</p><p class="text-lg font-bold text-white">+1 (868) 780-0300</p></div></a><a href="mailto:hkjlogisticsltd@gmail.com" class="flex items-center bg-gradient-to-r from-blue-900/30 to-cyan-900/30 p-4 rounded-xl border border-blue-700/30 hover:border-blue-500/50 transition group"><div class="w-14 h-14 bg-gradient-to-br from-blue-400 to-blue-500 rounded-full flex items-center justify-center mr-4 shadow-md group-hover:scale-110 transition"><i class="fas fa-envelope text-white text-xl"></i></div><div><p class="text-sm text-gray-400 font-semibold" data-en="Email" data-es="Correo">Email</p><p class="text-lg font-bold text-white">hkjlogisticsltd@gmail.com</p></div></a><div class="flex items-center bg-gradient-to-r from-purple-900/30 to-pink-900/30 p-4 rounded-xl border border-purple-700/30"><div class="w-14 h-14 bg-gradient-to-br from-purple-400 to-purple-500 rounded-full flex items-center justify-center mr-4 shadow-md"><i class="fas fa-clock text-white text-xl"></i></div><div><p class="text-sm text-gray-400 font-semibold" data-en="Availability" data-es="Disponibilidad">Availability</p><p class="text-lg font-bold text-white" data-en="24/7 Service" data-es="Servicio 24/7">24/7 Service</p></div></div></div><div class="bg-gradient-to-br from-slate-800/50 to-slate-900/50 p-6 rounded-xl border border-white/10"><h4 class="text-xl font-bold text-white mb-4" data-en="Why Choose HKJ Logistics?" data-es="¿Por Qué Elegir HKJ Logistics?">Why Choose HKJ Logistics?</h4><ul class="space-y-3"><li class="flex items-center"><i class="fas fa-check-circle text-green-500 mr-3 text-lg"></i><span data-en="Professional, Licensed Drivers" data-es="Conductores Profesionales con Licencia">Professional, Licensed Drivers</span></li><li class="flex items-center"><i class="fas fa-check-circle text-green-500 mr-3 text-lg"></i><span data-en="24/7 Availability & Support" data-es="Disponibilidad y Soporte 24/7">24/7 Availability & Support</span></li><li class="flex items-center"><i class="fas fa-check-circle text-green-500 mr-3 text-lg"></i><span data-en="Competitive & Transparent Pricing" data-es="Precios Competitivos y Transparentes">Competitive & Transparent Pricing</span></li><li class="flex items-center"><i class="fas fa-check-circle text-green-500 mr-3 text-lg"></i><span data-en="Safe, Clean & Reliable Vehicles" data-es="Vehículos Seguros, Limpios y Confiables">Safe, Clean & Reliable Vehicles</span></li><li class="flex items-center"><i class="fas fa-check-circle text-green-500 mr-3 text-lg"></i><span data-en="Specialists in Airport Transfers" data-es="Especialistas en Traslados al Aeropuerto">Specialists in Airport Transfers</span></li></ul></div></div></section>
 
-  <footer class="glass-card rounded-2xl shadow-lg p-6 text-center mb-6 border-t border-white/10"><div class="flex justify-center items-center mb-4"><div class="w-10 h-10 bg-gradient-to-br from-yellow-400 to-yellow-500 rounded-full flex items-center justify-center mr-3"><i class="fas fa-truck text-black"></i></div><span class="text-xl font-bold text-white">HKJ <span class="text-yellow-500">Logistics</span></span></div><p class="text-gray-400">&copy; 2026 HKJ Logistics Ltd. <span data-en="All rights reserved." data-es="Todos los derechos reservados.">All rights reserved.</span></p><p class="text-sm text-gray-500 mt-2" data-en="Serving Trinidad with pride and professionalism." data-es="Sirviendo a Trinidad con orgullo y profesionalismo.">Serving Trinidad with pride and professionalism.</p></footer>
+  <footer class="glass-card rounded-2xl shadow-lg p-6 text-center mb-6 border-t border-white/10"><div class="flex justify-center items-center mb-4"><div class="w-10 h-10 bg-white rounded-full flex items-center justify-center mr-3 overflow-hidden"><img src="icon-192.png" alt="HKJ Logistics" class="w-full h-full object-contain"></div><span class="text-xl font-bold text-white">HKJ <span class="text-yellow-500">Logistics</span></span></div><p class="text-gray-400">&copy; 2026 HKJ Logistics Ltd. <span data-en="All rights reserved." data-es="Todos los derechos reservados.">All rights reserved.</span></p><p class="text-sm text-gray-500 mt-2" data-en="Serving Trinidad with pride and professionalism." data-es="Sirviendo a Trinidad con orgullo y profesionalismo.">Serving Trinidad with pride and professionalism.</p></footer>
   <button id="scrollToTop" class="hidden fixed bottom-8 right-8 bg-yellow-500 text-black w-12 h-12 rounded-full shadow-lg hover:bg-yellow-600 transition z-30 flex items-center justify-center"><i class="fas fa-arrow-up"></i></button>
 
   <script>
@@ -932,8 +932,8 @@
           <!-- Header -->
           <div class="bg-gradient-to-r from-yellow-500 to-yellow-600 p-4 flex justify-between items-center">
               <div class="flex items-center gap-2">
-                  <div class="w-8 h-8 bg-black/20 rounded-full flex items-center justify-center">
-                      <i class="fas fa-truck text-black text-sm"></i>
+                  <div class="w-8 h-8 bg-white rounded-full flex items-center justify-center overflow-hidden">
+                      <img src="icon-192.png" alt="HKJ Logistics" class="w-full h-full object-contain">
                   </div>
                   <div>
                       <h4 class="text-black font-bold text-sm">HKJ Logistics AI</h4>
@@ -1072,5 +1072,3 @@ return;
 </script>
 </body>
 </html>
-  
-  
